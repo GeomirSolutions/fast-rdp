@@ -11,33 +11,29 @@
 #include <Eigen/Core>
 namespace igl
 {
-  /// Orient each component (identified by C) of a mesh (V,F) so the normals on
-  /// average point away from the patch's centroid.
-  ///
-  /// @param[in] V  #V by 3 list of vertex positions
-  /// @param[in] F  #F by 3 list of triangle indices
-  /// @param[in] C  #F list of components (output of orientable_patches)
-  /// @param[out] FF  #F by 3 list of new triangle indices such that FF(~I,:) = F(~I,:) and
-  ///     FF(I,:) = fliplr(F(I,:)) (OK if &FF = &F)
-  /// @param[out] I  max(C)+1 list of whether face has been flipped
-  ///
-  /// \see orientable_patches, reorient_facets_raycast
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedC,
-    typename DerivedFF,
-    typename DerivedI>
-  IGL_INLINE void orient_outward(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
-    const Eigen::MatrixBase<DerivedC> & C,
-    Eigen::PlainObjectBase<DerivedFF> & FF,
-    Eigen::PlainObjectBase<DerivedI> & I);
-};
+/// Orient each component (identified by C) of a mesh (V,F) so the normals on
+/// average point away from the patch's centroid.
+///
+/// @param[in] V  #V by 3 list of vertex positions
+/// @param[in] F  #F by 3 list of triangle indices
+/// @param[in] C  #F list of components (output of orientable_patches)
+/// @param[out] FF  #F by 3 list of new triangle indices such that FF(~I,:) =
+/// F(~I,:) and
+///     FF(I,:) = fliplr(F(I,:)) (OK if &FF = &F)
+/// @param[out] I  max(C)+1 list of whether face has been flipped
+///
+/// \see orientable_patches, reorient_facets_raycast
+template <typename DerivedV, typename DerivedF, typename DerivedC,
+          typename DerivedFF, typename DerivedI>
+IGL_INLINE void orient_outward(const Eigen::MatrixBase<DerivedV> &V,
+                               const Eigen::MatrixBase<DerivedF> &F,
+                               const Eigen::MatrixBase<DerivedC> &C,
+                               Eigen::PlainObjectBase<DerivedFF> &FF,
+                               Eigen::PlainObjectBase<DerivedI> &I);
+}; // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "orient_outward.cpp"
+#include "orient_outward.cpp"
 #endif
 
 #endif

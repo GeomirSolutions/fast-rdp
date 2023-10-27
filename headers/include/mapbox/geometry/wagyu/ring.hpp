@@ -26,12 +26,17 @@
 // free(strs);
 #endif
 
-namespace mapbox {
-namespace geometry {
-namespace wagyu {
+namespace mapbox
+{
+namespace geometry
+{
+namespace wagyu
+{
 
 template <typename T>
-double area_from_point(point_ptr<T> op, std::size_t& size, mapbox::geometry::box<T>& bbox) {
+double area_from_point(point_ptr<T> op, std::size_t &size,
+                       mapbox::geometry::box<T> &bbox)
+{
     point_ptr<T> startOp = op;
     size = 0;
     double a = 0.0;
@@ -51,7 +56,8 @@ double area_from_point(point_ptr<T> op, std::size_t& size, mapbox::geometry::box
         } else if (op->y < min_y) {
             min_y = op->y;
         }
-        a += static_cast<double>(op->prev->x + op->x) * static_cast<double>(op->prev->y - op->y);
+        a += static_cast<double>(op->prev->x + op->x) *
+             static_cast<double>(op->prev->y - op->y);
         op = op->next;
     } while (op != startOp);
     bbox.min.x = min_x;
@@ -63,12 +69,12 @@ double area_from_point(point_ptr<T> op, std::size_t& size, mapbox::geometry::box
 
 // NOTE: ring and ring_ptr are forward declared in wagyu/point.hpp
 
-template <typename T>
-using ring_vector = std::vector<ring_ptr<T>>;
+template <typename T> using ring_vector = std::vector<ring_ptr<T>>;
 
-template <typename T>
-struct ring {
-    std::size_t ring_index; // To support unset 0 is undefined and indexes offset by 1
+template <typename T> struct ring
+{
+    std::size_t
+        ring_index; // To support unset 0 is undefined and indexes offset by 1
 
     std::size_t size_;             // number of points in the ring
     double area_;                  // area of the ring
@@ -82,23 +88,19 @@ struct ring {
     bool is_hole_;
     bool corrected;
 
-    ring(ring const&) = delete;
-    ring& operator=(ring const&) = delete;
+    ring(ring const &) = delete;
+    ring &operator=(ring const &) = delete;
 
     ring()
-        : ring_index(0),
-          size_(0),
-          area_(std::numeric_limits<double>::quiet_NaN()),
-          bbox({ 0, 0 }, { 0, 0 }),
-          parent(nullptr),
-          children(),
-          points(nullptr),
-          bottom_point(nullptr),
-          is_hole_(false),
-          corrected(false) {
+        : ring_index(0), size_(0),
+          area_(std::numeric_limits<double>::quiet_NaN()), bbox({0, 0}, {0, 0}),
+          parent(nullptr), children(), points(nullptr), bottom_point(nullptr),
+          is_hole_(false), corrected(false)
+    {
     }
 
-    void reset_stats() {
+    void reset_stats()
+    {
         area_ = std::numeric_limits<double>::quiet_NaN();
         is_hole_ = false;
         bbox.min.x = 0;
@@ -108,35 +110,40 @@ struct ring {
         size_ = 0;
     }
 
-    void recalculate_stats() {
+    void recalculate_stats()
+    {
         if (points != nullptr) {
             area_ = area_from_point(points, size_, bbox);
             is_hole_ = !(area_ > 0.0);
         }
     }
 
-    void set_stats(double a, std::size_t s, mapbox::geometry::box<T> const& b) {
+    void set_stats(double a, std::size_t s, mapbox::geometry::box<T> const &b)
+    {
         bbox = b;
         area_ = a;
         size_ = s;
         is_hole_ = !(area_ > 0.0);
     }
 
-    double area() {
+    double area()
+    {
         if (std::isnan(area_)) {
             recalculate_stats();
         }
         return area_;
     }
 
-    bool is_hole() {
+    bool is_hole()
+    {
         if (std::isnan(area_)) {
             recalculate_stats();
         }
         return is_hole_;
     }
 
-    std::size_t size() {
+    std::size_t size()
+    {
         if (std::isnan(area_)) {
             recalculate_stats();
         }
@@ -153,8 +160,8 @@ using hot_pixel_itr = typename hot_pixel_vector<T>::iterator;
 template <typename T>
 using hot_pixel_rev_itr = typename hot_pixel_vector<T>::reverse_iterator;
 
-template <typename T>
-struct ring_manager {
+template <typename T> struct ring_manager
+{
 
     ring_vector<T> children;
     point_vector<T> all_points;
@@ -165,29 +172,26 @@ struct ring_manager {
     std::vector<point<T>> storage;
     std::size_t index;
 
-    ring_manager(ring_manager const&) = delete;
-    ring_manager& operator=(ring_manager const&) = delete;
+    ring_manager(ring_manager const &) = delete;
+    ring_manager &operator=(ring_manager const &) = delete;
 
     ring_manager()
-        : children(),
-          all_points(),
-          hot_pixels(),
-          current_hp_itr(hot_pixels.end()),
-          points(),
-          rings(),
-          storage(),
-          index(0) {
+        : children(), all_points(), hot_pixels(),
+          current_hp_itr(hot_pixels.end()), points(), rings(), storage(),
+          index(0)
+    {
     }
 };
 
 template <typename T>
-void preallocate_point_memory(ring_manager<T>& rings, std::size_t size) {
+void preallocate_point_memory(ring_manager<T> &rings, std::size_t size)
+{
     rings.storage.reserve(size);
     rings.all_points.reserve(size);
 }
 
-template <typename T>
-ring_ptr<T> create_new_ring(ring_manager<T>& manager) {
+template <typename T> ring_ptr<T> create_new_ring(ring_manager<T> &manager)
+{
     manager.rings.emplace_back();
     ring_ptr<T> result = &manager.rings.back();
     result->ring_index = manager.index++;
@@ -195,7 +199,10 @@ ring_ptr<T> create_new_ring(ring_manager<T>& manager) {
 }
 
 template <typename T>
-point_ptr<T> create_new_point(ring_ptr<T> r, mapbox::geometry::point<T> const& pt, ring_manager<T>& rings) {
+point_ptr<T> create_new_point(ring_ptr<T> r,
+                              mapbox::geometry::point<T> const &pt,
+                              ring_manager<T> &rings)
+{
     point_ptr<T> point;
     if (rings.storage.size() < rings.storage.capacity()) {
         rings.storage.emplace_back(r, pt);
@@ -209,10 +216,10 @@ point_ptr<T> create_new_point(ring_ptr<T> r, mapbox::geometry::point<T> const& p
 }
 
 template <typename T>
-point_ptr<T> create_new_point(ring_ptr<T> r,
-                              mapbox::geometry::point<T> const& pt,
-                              point_ptr<T> before_this_point,
-                              ring_manager<T>& rings) {
+point_ptr<T>
+create_new_point(ring_ptr<T> r, mapbox::geometry::point<T> const &pt,
+                 point_ptr<T> before_this_point, ring_manager<T> &rings)
+{
     point_ptr<T> point;
     if (rings.storage.size() < rings.storage.capacity()) {
         rings.storage.emplace_back(r, pt, before_this_point);
@@ -226,8 +233,9 @@ point_ptr<T> create_new_point(ring_ptr<T> r,
 }
 
 template <typename T>
-void set_to_children(ring_ptr<T> r, ring_vector<T>& children) {
-    for (auto& c : children) {
+void set_to_children(ring_ptr<T> r, ring_vector<T> &children)
+{
+    for (auto &c : children) {
         if (c == nullptr) {
             c = r;
             return;
@@ -237,8 +245,9 @@ void set_to_children(ring_ptr<T> r, ring_vector<T>& children) {
 }
 
 template <typename T>
-void remove_from_children(ring_ptr<T> r, ring_vector<T>& children) {
-    for (auto& c : children) {
+void remove_from_children(ring_ptr<T> r, ring_vector<T> &children)
+{
+    for (auto &c : children) {
         if (c == r) {
             c = nullptr;
             return;
@@ -247,51 +256,66 @@ void remove_from_children(ring_ptr<T> r, ring_vector<T>& children) {
 }
 
 template <typename T>
-void assign_as_child(ring_ptr<T> new_ring, ring_ptr<T> parent, ring_manager<T>& manager) {
+void assign_as_child(ring_ptr<T> new_ring, ring_ptr<T> parent,
+                     ring_manager<T> &manager)
+{
     // Assigning as a child assumes that this is
     // a brand new ring. Therefore it does
     // not have any existing relationships
-    if ((parent == nullptr && new_ring->is_hole()) || (parent != nullptr && new_ring->is_hole() == parent->is_hole())) {
-        throw std::runtime_error("Trying to assign a child that is the same orientation as the parent");
+    if ((parent == nullptr && new_ring->is_hole()) ||
+        (parent != nullptr && new_ring->is_hole() == parent->is_hole())) {
+        throw std::runtime_error("Trying to assign a child that is the same "
+                                 "orientation as the parent");
     }
-    auto& children = parent == nullptr ? manager.children : parent->children;
+    auto &children = parent == nullptr ? manager.children : parent->children;
     set_to_children(new_ring, children);
     new_ring->parent = parent;
 }
 
 template <typename T>
-void reassign_as_child(ring_ptr<T> ring, ring_ptr<T> parent, ring_manager<T>& manager) {
+void reassign_as_child(ring_ptr<T> ring, ring_ptr<T> parent,
+                       ring_manager<T> &manager)
+{
     // Reassigning a ring assumes it already
     // has an existing parent
-    if ((parent == nullptr && ring->is_hole()) || (parent != nullptr && ring->is_hole() == parent->is_hole())) {
-        throw std::runtime_error("Trying to re-assign a child that is the same orientation as the parent");
+    if ((parent == nullptr && ring->is_hole()) ||
+        (parent != nullptr && ring->is_hole() == parent->is_hole())) {
+        throw std::runtime_error("Trying to re-assign a child that is the same "
+                                 "orientation as the parent");
     }
 
     // Remove the old child relationship
-    auto& old_children = ring->parent == nullptr ? manager.children : ring->parent->children;
+    auto &old_children =
+        ring->parent == nullptr ? manager.children : ring->parent->children;
     remove_from_children(ring, old_children);
 
     // Add new child relationship
-    auto& children = parent == nullptr ? manager.children : parent->children;
+    auto &children = parent == nullptr ? manager.children : parent->children;
     set_to_children(ring, children);
     ring->parent = parent;
 }
 
 template <typename T>
-void assign_as_sibling(ring_ptr<T> new_ring, ring_ptr<T> sibling, ring_manager<T>& manager) {
+void assign_as_sibling(ring_ptr<T> new_ring, ring_ptr<T> sibling,
+                       ring_manager<T> &manager)
+{
     // Assigning as a sibling assumes that this is
     // a brand new ring. Therefore it does
     // not have any existing relationships
     if (new_ring->is_hole() != sibling->is_hole()) {
-        throw std::runtime_error("Trying to assign to be a sibling that is not the same orientation as the sibling");
+        throw std::runtime_error("Trying to assign to be a sibling that is not "
+                                 "the same orientation as the sibling");
     }
-    auto& children = sibling->parent == nullptr ? manager.children : sibling->parent->children;
+    auto &children = sibling->parent == nullptr ? manager.children
+                                                : sibling->parent->children;
     set_to_children(new_ring, children);
     new_ring->parent = sibling->parent;
 }
 
 template <typename T>
-void reassign_as_sibling(ring_ptr<T> ring, ring_ptr<T> sibling, ring_manager<T>& manager) {
+void reassign_as_sibling(ring_ptr<T> ring, ring_ptr<T> sibling,
+                         ring_manager<T> &manager)
+{
     if (ring->parent == sibling->parent) {
         return;
     }
@@ -299,22 +323,28 @@ void reassign_as_sibling(ring_ptr<T> ring, ring_ptr<T> sibling, ring_manager<T>&
     // a brand new ring. Therefore it does
     // not have any existing relationships
     if (ring->is_hole() != sibling->is_hole()) {
-        throw std::runtime_error("Trying to assign to be a sibling that is not the same orientation as the sibling");
+        throw std::runtime_error("Trying to assign to be a sibling that is not "
+                                 "the same orientation as the sibling");
     }
     // Remove the old child relationship
-    auto& old_children = ring->parent == nullptr ? manager.children : ring->parent->children;
+    auto &old_children =
+        ring->parent == nullptr ? manager.children : ring->parent->children;
     remove_from_children(ring, old_children);
     // Add new relationship
-    auto& children = sibling->parent == nullptr ? manager.children : sibling->parent->children;
+    auto &children = sibling->parent == nullptr ? manager.children
+                                                : sibling->parent->children;
     set_to_children(ring, children);
     ring->parent = sibling->parent;
 }
 
 template <typename T>
-void ring1_replaces_ring2(ring_ptr<T> ring1, ring_ptr<T> ring2, ring_manager<T>& manager) {
+void ring1_replaces_ring2(ring_ptr<T> ring1, ring_ptr<T> ring2,
+                          ring_manager<T> &manager)
+{
     assert(ring1 != ring2);
-    auto& ring1_children = ring1 == nullptr ? manager.children : ring1->children;
-    for (auto& c : ring2->children) {
+    auto &ring1_children =
+        ring1 == nullptr ? manager.children : ring1->children;
+    for (auto &c : ring2->children) {
         if (c == nullptr) {
             continue;
         }
@@ -323,14 +353,15 @@ void ring1_replaces_ring2(ring_ptr<T> ring1, ring_ptr<T> ring2, ring_manager<T>&
         c = nullptr;
     }
     // Remove the old child relationship
-    auto& old_children = ring2->parent == nullptr ? manager.children : ring2->parent->children;
+    auto &old_children =
+        ring2->parent == nullptr ? manager.children : ring2->parent->children;
     remove_from_children(ring2, old_children);
     ring2->points = nullptr;
     ring2->reset_stats();
 }
 
-template <typename T>
-void remove_points(point_ptr<T> pt) {
+template <typename T> void remove_points(point_ptr<T> pt)
+{
     if (pt != nullptr) {
         pt->prev->next = nullptr;
         while (pt != nullptr) {
@@ -344,13 +375,13 @@ void remove_points(point_ptr<T> pt) {
 }
 
 template <typename T>
-void remove_ring_and_points(ring_ptr<T> r,
-                            ring_manager<T>& manager,
+void remove_ring_and_points(ring_ptr<T> r, ring_manager<T> &manager,
                             bool remove_children = true,
-                            bool remove_from_parent = true) {
+                            bool remove_from_parent = true)
+{
     // Removes a ring and any children that might be
     // under that ring.
-    for (auto& c : r->children) {
+    for (auto &c : r->children) {
         if (c == nullptr) {
             continue;
         }
@@ -361,7 +392,8 @@ void remove_ring_and_points(ring_ptr<T> r,
     }
     if (remove_from_parent) {
         // Remove the old child relationship
-        auto& old_children = r->parent == nullptr ? manager.children : r->parent->children;
+        auto &old_children =
+            r->parent == nullptr ? manager.children : r->parent->children;
         remove_from_children(r, old_children);
     }
     point_ptr<T> pt = r->points;
@@ -380,10 +412,12 @@ void remove_ring_and_points(ring_ptr<T> r,
 }
 
 template <typename T>
-void remove_ring(ring_ptr<T> r, ring_manager<T>& manager, bool remove_children = true, bool remove_from_parent = true) {
+void remove_ring(ring_ptr<T> r, ring_manager<T> &manager,
+                 bool remove_children = true, bool remove_from_parent = true)
+{
     // Removes a ring and any children that might be
     // under that ring.
-    for (auto& c : r->children) {
+    for (auto &c : r->children) {
         if (c == nullptr) {
             continue;
         }
@@ -394,15 +428,16 @@ void remove_ring(ring_ptr<T> r, ring_manager<T>& manager, bool remove_children =
     }
     if (remove_from_parent) {
         // Remove the old child relationship
-        auto& old_children = r->parent == nullptr ? manager.children : r->parent->children;
+        auto &old_children =
+            r->parent == nullptr ? manager.children : r->parent->children;
         remove_from_children(r, old_children);
     }
     r->points = nullptr;
     r->reset_stats();
 }
 
-template <typename T>
-inline std::size_t ring_depth(ring_ptr<T> r) {
+template <typename T> inline std::size_t ring_depth(ring_ptr<T> r)
+{
     std::size_t depth = 0;
     if (!r) {
         return depth;
@@ -414,8 +449,8 @@ inline std::size_t ring_depth(ring_ptr<T> r) {
     return depth;
 }
 
-template <typename T>
-inline bool ring_is_hole(ring_ptr<T> r) {
+template <typename T> inline bool ring_is_hole(ring_ptr<T> r)
+{
     // This is different then the "normal" way of determing if
     // a ring is a hole or not because it uses the depth of the
     // the ring to determine if it is a hole or not. This is only done
@@ -424,33 +459,36 @@ inline bool ring_is_hole(ring_ptr<T> r) {
 }
 
 template <typename T>
-void set_next(const_point_ptr<T>& node, const const_point_ptr<T>& next_node) {
+void set_next(const_point_ptr<T> &node, const const_point_ptr<T> &next_node)
+{
     node->next = next_node;
 }
 
-template <typename T>
-point_ptr<T> get_next(const_point_ptr<T>& node) {
+template <typename T> point_ptr<T> get_next(const_point_ptr<T> &node)
+{
     return node->next;
 }
 
-template <typename T>
-point_ptr<T> get_prev(const_point_ptr<T>& node) {
+template <typename T> point_ptr<T> get_prev(const_point_ptr<T> &node)
+{
     return node->prev;
 }
 
 template <typename T>
-void set_prev(const_point_ptr<T>& node, const const_point_ptr<T>& prev_node) {
+void set_prev(const_point_ptr<T> &node, const const_point_ptr<T> &prev_node)
+{
     node->prev = prev_node;
 }
 
-template <typename T>
-void init(const_point_ptr<T>& node) {
+template <typename T> void init(const_point_ptr<T> &node)
+{
     set_next(node, node);
     set_prev(node, node);
 }
 
 template <typename T>
-void link_before(point_ptr<T>& node, point_ptr<T>& new_node) {
+void link_before(point_ptr<T> &node, point_ptr<T> &new_node)
+{
     point_ptr<T> prev_node = get_prev(node);
     set_prev(new_node, prev_node);
     set_next(new_node, node);
@@ -459,7 +497,8 @@ void link_before(point_ptr<T>& node, point_ptr<T>& new_node) {
 }
 
 template <typename T>
-void link_after(point_ptr<T>& node, point_ptr<T>& new_node) {
+void link_after(point_ptr<T> &node, point_ptr<T> &new_node)
+{
     point_ptr<T> next_node = get_next(node);
     set_prev(new_node, node);
     set_next(new_node, next_node);
@@ -468,7 +507,8 @@ void link_after(point_ptr<T>& node, point_ptr<T>& new_node) {
 }
 
 template <typename T>
-void transfer_point(point_ptr<T>& p, point_ptr<T>& b, point_ptr<T>& e) {
+void transfer_point(point_ptr<T> &p, point_ptr<T> &b, point_ptr<T> &e)
+{
     if (b != e) {
         point_ptr<T> prev_p = get_prev(p);
         point_ptr<T> prev_b = get_prev(b);
@@ -484,8 +524,8 @@ void transfer_point(point_ptr<T>& p, point_ptr<T>& b, point_ptr<T>& e) {
     }
 }
 
-template <typename T>
-void reverse_ring(point_ptr<T> pp) {
+template <typename T> void reverse_ring(point_ptr<T> pp)
+{
     if (!pp) {
         return;
     }
@@ -503,7 +543,9 @@ void reverse_ring(point_ptr<T> pp) {
 #ifdef DEBUG
 
 template <class charT, class traits, typename T>
-inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, traits>& out, ring<T>& r) {
+inline std::basic_ostream<charT, traits> &
+operator<<(std::basic_ostream<charT, traits> &out, ring<T> &r)
+{
     out << "  ring_index: " << r.ring_index << std::endl;
     if (!r.parent) {
         // out << "  parent_ring ptr: nullptr" << std::endl;
@@ -536,8 +578,8 @@ inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, t
     return out;
 }
 
-template <typename T>
-std::string debug_ring_addresses(ring_ptr<T> r) {
+template <typename T> std::string debug_ring_addresses(ring_ptr<T> r)
+{
     std::ostringstream out;
     out << "Ring: " << r->ring_index << std::endl;
     if (r->points == nullptr) {
@@ -546,14 +588,15 @@ std::string debug_ring_addresses(ring_ptr<T> r) {
     }
     auto pt_itr = r->points;
     do {
-        out << "    [" << pt_itr->x << "," << pt_itr->y << "] - " << pt_itr << std::endl;
+        out << "    [" << pt_itr->x << "," << pt_itr->y << "] - " << pt_itr
+            << std::endl;
         pt_itr = pt_itr->next;
     } while (pt_itr != r->points);
     return out.str();
 }
 
-template <typename T>
-std::string output_as_polygon(ring_ptr<T> r) {
+template <typename T> std::string output_as_polygon(ring_ptr<T> r)
+{
     std::ostringstream out;
 
     auto pt_itr = r->points;
@@ -566,7 +609,7 @@ std::string output_as_polygon(ring_ptr<T> r) {
             pt_itr = pt_itr->next;
         }
         out << "[" << pt_itr->x << "," << pt_itr->y << "]]";
-        for (auto const& c : r->children) {
+        for (auto const &c : r->children) {
             if (c == nullptr) {
                 continue;
             }
@@ -590,9 +633,11 @@ std::string output_as_polygon(ring_ptr<T> r) {
 }
 
 template <class charT, class traits, typename T>
-inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, traits>& out, ring_vector<T>& rings) {
+inline std::basic_ostream<charT, traits> &
+operator<<(std::basic_ostream<charT, traits> &out, ring_vector<T> &rings)
+{
     out << "START RING VECTOR" << std::endl;
-    for (auto& r : rings) {
+    for (auto &r : rings) {
         if (r == nullptr || !r->points) {
             continue;
         }
@@ -604,10 +649,11 @@ inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, t
 }
 
 template <class charT, class traits, typename T>
-inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, traits>& out,
-                                                     std::deque<ring<T>>& rings) {
+inline std::basic_ostream<charT, traits> &
+operator<<(std::basic_ostream<charT, traits> &out, std::deque<ring<T>> &rings)
+{
     out << "START RING VECTOR" << std::endl;
-    for (auto& r : rings) {
+    for (auto &r : rings) {
         if (!r.points) {
             continue;
         }
@@ -619,10 +665,11 @@ inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, t
 }
 
 template <class charT, class traits, typename T>
-inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, traits>& out,
-                                                     hot_pixel_vector<T>& hp_vec) {
+inline std::basic_ostream<charT, traits> &
+operator<<(std::basic_ostream<charT, traits> &out, hot_pixel_vector<T> &hp_vec)
+{
     out << "Hot Pixels: " << std::endl;
-    for (auto& hp : hp_vec) {
+    for (auto &hp : hp_vec) {
         out << hp << std::endl;
     }
     return out;

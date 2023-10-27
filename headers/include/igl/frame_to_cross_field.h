@@ -13,25 +13,26 @@
 
 namespace igl
 {
-  /// Convert a frame field into its closest cross field
-  ///
-  /// @param[in] V       #V by 3 coordinates of the vertices
-  /// @param[in] F       #F by 3 list of mesh faces (must be triangles)
-  /// @param[in] FF1     #F by 3 the first representative vector of the frame field (up to permutation and sign)
-  /// @param[in] FF2     #F by 3 the second representative vector of the frame field (up to permutation and sign)
-  /// @param[out] X       #F by 3 representative vector of the closest cross field
-  ///
-  IGL_INLINE void frame_to_cross_field(
-    const Eigen::MatrixXd& V,
-    const Eigen::MatrixXi& F,
-    const Eigen::MatrixXd& FF1,
-    const Eigen::MatrixXd& FF2,
-    Eigen::MatrixXd& X);
+/// Convert a frame field into its closest cross field
+///
+/// @param[in] V       #V by 3 coordinates of the vertices
+/// @param[in] F       #F by 3 list of mesh faces (must be triangles)
+/// @param[in] FF1     #F by 3 the first representative vector of the frame
+/// field (up to permutation and sign)
+/// @param[in] FF2     #F by 3 the second representative vector of the frame
+/// field (up to permutation and sign)
+/// @param[out] X       #F by 3 representative vector of the closest cross field
+///
+IGL_INLINE void frame_to_cross_field(const Eigen::MatrixXd &V,
+                                     const Eigen::MatrixXi &F,
+                                     const Eigen::MatrixXd &FF1,
+                                     const Eigen::MatrixXd &FF2,
+                                     Eigen::MatrixXd &X);
 
-}
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "frame_to_cross_field.cpp"
+#include "frame_to_cross_field.cpp"
 #endif
 
 #endif

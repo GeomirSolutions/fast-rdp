@@ -5,22 +5,23 @@
 /// License
 /// Copyright 2018-2022 David Pilger
 ///
-/// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-/// software and associated documentation files(the "Software"), to deal in the Software
-/// without restriction, including without limitation the rights to use, copy, modify,
-/// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-/// permit persons to whom the Software is furnished to do so, subject to the following
-/// conditions :
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files(the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions :
 ///
-/// The above copyright notice and this permission notice shall be included in all copies
-/// or substantial portions of the Software.
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
 ///
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-/// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-/// PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-/// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-/// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-/// DEALINGS IN THE SOFTWARE.
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+/// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+/// IN THE SOFTWARE.
 ///
 /// Description
 /// Functions for working with NdArrays
@@ -36,42 +37,40 @@
 
 namespace nc
 {
-    //============================================================================
-    // Method Description:
-    /// Hyperbolic Cosine.
-    ///
-    /// NumPy Reference: https://www.numpy.org/devdocs/reference/generated/numpy.cosh.html
-    ///
-    /// @param inValue
-    /// @return value
-    ///
-    template<typename dtype>
-    auto cosh(dtype inValue) noexcept
-    {
-        STATIC_ASSERT_ARITHMETIC_OR_COMPLEX(dtype);
+//============================================================================
+// Method Description:
+/// Hyperbolic Cosine.
+///
+/// NumPy Reference:
+/// https://www.numpy.org/devdocs/reference/generated/numpy.cosh.html
+///
+/// @param inValue
+/// @return value
+///
+template <typename dtype> auto cosh(dtype inValue) noexcept
+{
+    STATIC_ASSERT_ARITHMETIC_OR_COMPLEX(dtype);
 
-        return std::cosh(inValue);
-    }
+    return std::cosh(inValue);
+}
 
-    //============================================================================
-    // Method Description:
-    /// Hyperbolic Cosine element-wise.
-    ///
-    /// NumPy Reference: https://www.numpy.org/devdocs/reference/generated/numpy.cosh.html
-    ///
-    /// @param inArray
-    /// @return NdArray
-    ///
-    template<typename dtype>
-    auto cosh(const NdArray<dtype>& inArray)
-    {
-        NdArray<decltype(cosh(dtype{ 0 }))> returnArray(inArray.shape());
-        stl_algorithms::transform(
-            inArray.cbegin(),
-            inArray.cend(),
-            returnArray.begin(),
-            [](dtype inValue) noexcept -> auto{ return cosh(inValue); });
+//============================================================================
+// Method Description:
+/// Hyperbolic Cosine element-wise.
+///
+/// NumPy Reference:
+/// https://www.numpy.org/devdocs/reference/generated/numpy.cosh.html
+///
+/// @param inArray
+/// @return NdArray
+///
+template <typename dtype> auto cosh(const NdArray<dtype> &inArray)
+{
+    NdArray<decltype(cosh(dtype{0}))> returnArray(inArray.shape());
+    stl_algorithms::transform(
+        inArray.cbegin(), inArray.cend(), returnArray.begin(),
+        [](dtype inValue) noexcept -> auto { return cosh(inValue); });
 
-        return returnArray;
-    }
+    return returnArray;
+}
 } // namespace nc

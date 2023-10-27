@@ -12,29 +12,28 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  /// Computes the midpoints of edges in a triangle mesh.
-  ///
-  /// @param[in] V  #V by 3 list of vertex positions
-  /// @param[in] F  #F by 3 list of triangle indices
-  /// @param[in] E #F by 3 a mapping from each halfedge to each edge
-  /// @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
-  ///    compared to the orientation of the actual edge, as computed with
-  ///    orient_halfedges. will be computed if not provided.
-  /// @param[out] mps |HE| list of edge midpoints
-  ///
-  /// \see orient_halfedges
-  template<typename DerivedV,typename DerivedF,typename DerivedE,
-  typename DerivedoE, typename Derivedmps>
-  IGL_INLINE void edge_midpoints(
-    const Eigen::MatrixBase<DerivedV> &V,
-    const Eigen::MatrixBase<DerivedF> &F,
-    const Eigen::MatrixBase<DerivedE> &E,
-    const Eigen::MatrixBase<DerivedoE> &oE,
-    Eigen::PlainObjectBase<Derivedmps> &mps);
-}
+/// Computes the midpoints of edges in a triangle mesh.
+///
+/// @param[in] V  #V by 3 list of vertex positions
+/// @param[in] F  #F by 3 list of triangle indices
+/// @param[in] E #F by 3 a mapping from each halfedge to each edge
+/// @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
+///    compared to the orientation of the actual edge, as computed with
+///    orient_halfedges. will be computed if not provided.
+/// @param[out] mps |HE| list of edge midpoints
+///
+/// \see orient_halfedges
+template <typename DerivedV, typename DerivedF, typename DerivedE,
+          typename DerivedoE, typename Derivedmps>
+IGL_INLINE void edge_midpoints(const Eigen::MatrixBase<DerivedV> &V,
+                               const Eigen::MatrixBase<DerivedF> &F,
+                               const Eigen::MatrixBase<DerivedE> &E,
+                               const Eigen::MatrixBase<DerivedoE> &oE,
+                               Eigen::PlainObjectBase<Derivedmps> &mps);
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "edge_midpoints.cpp"
+#include "edge_midpoints.cpp"
 #endif
 
 #endif

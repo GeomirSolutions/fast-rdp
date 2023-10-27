@@ -16,67 +16,71 @@
 #define CISTA_BYTESWAP_64 __builtin_bswap64
 #endif
 
-namespace cista {
+namespace cista
+{
 
-template <typename T>
-constexpr T endian_swap(T t) {
-  static_assert(sizeof(T) == 1U || sizeof(T) == 2U || sizeof(T) == 4U ||
-                sizeof(T) == 8U);
+template <typename T> constexpr T endian_swap(T t)
+{
+    static_assert(sizeof(T) == 1U || sizeof(T) == 2U || sizeof(T) == 4U ||
+                  sizeof(T) == 8U);
 
-  if constexpr (sizeof(T) == 1U) {
-    return t;
-  } else if constexpr (sizeof(T) == 2U) {
-    union {
-      T t;
-      uint16_t i;
-    } u{t};
-    u.i = CISTA_BYTESWAP_16(u.i);
-    return u.t;
-  } else if constexpr (sizeof(T) == 4U) {
-    union {
-      T t;
-      uint32_t i;
-    } u{t};
-    u.i = CISTA_BYTESWAP_32(u.i);
-    return u.t;
-  } else if constexpr (sizeof(T) == 8U) {
-    union {
-      T t;
-      uint64_t i;
-    } u{t};
-    u.i = CISTA_BYTESWAP_64(u.i);
-    return u.t;
-  }
+    if constexpr (sizeof(T) == 1U) {
+        return t;
+    } else if constexpr (sizeof(T) == 2U) {
+        union
+        {
+            T t;
+            uint16_t i;
+        } u{t};
+        u.i = CISTA_BYTESWAP_16(u.i);
+        return u.t;
+    } else if constexpr (sizeof(T) == 4U) {
+        union
+        {
+            T t;
+            uint32_t i;
+        } u{t};
+        u.i = CISTA_BYTESWAP_32(u.i);
+        return u.t;
+    } else if constexpr (sizeof(T) == 8U) {
+        union
+        {
+            T t;
+            uint64_t i;
+        } u{t};
+        u.i = CISTA_BYTESWAP_64(u.i);
+        return u.t;
+    }
 }
 
-template <mode Mode>
-constexpr bool endian_conversion_necessary() {
-  if constexpr ((Mode & mode::SERIALIZE_BIG_ENDIAN) ==
-                mode::SERIALIZE_BIG_ENDIAN) {
+template <mode Mode> constexpr bool endian_conversion_necessary()
+{
+    if constexpr ((Mode & mode::SERIALIZE_BIG_ENDIAN) ==
+                  mode::SERIALIZE_BIG_ENDIAN) {
 #if defined(CISTA_BIG_ENDIAN)
-    return false;
+        return false;
 #else
-    return true;
+        return true;
 #endif
-  } else {
+    } else {
 #if defined(CISTA_LITTLE_ENDIAN)
-    return false;
+        return false;
 #else
-    return true;
+        return true;
 #endif
-  }
+    }
 }
 
-template <mode Mode, typename T>
-constexpr T convert_endian(T t) {
-  if constexpr (endian_conversion_necessary<Mode>()) {
-    return endian_swap(t);
-  } else {
-    return t;
-  }
+template <mode Mode, typename T> constexpr T convert_endian(T t)
+{
+    if constexpr (endian_conversion_necessary<Mode>()) {
+        return endian_swap(t);
+    } else {
+        return t;
+    }
 }
 
-}  // namespace cista
+} // namespace cista
 
 #undef CISTA_BYTESWAP_16
 #undef CISTA_BYTESWAP_32

@@ -12,8 +12,10 @@
 #include <map>
 #include <unordered_map>
 
-namespace mapbox {
-namespace geojsonvt {
+namespace mapbox
+{
+namespace geojsonvt
+{
 
 using geometry = mapbox::geometry::geometry<double>;
 using feature = mapbox::feature::feature<double>;
@@ -21,19 +23,24 @@ using feature_collection = mapbox::feature::feature_collection<double>;
 using geometry_collection = mapbox::geometry::geometry_collection<double>;
 using geojson = mapbox::util::variant<geometry, feature, feature_collection>;
 
-struct ToFeatureCollection {
-    feature_collection operator()(const feature_collection& value) const {
+struct ToFeatureCollection
+{
+    feature_collection operator()(const feature_collection &value) const
+    {
         return value;
     }
-    feature_collection operator()(const feature& value) const {
-        return { value };
+    feature_collection operator()(const feature &value) const
+    {
+        return {value};
     }
-    feature_collection operator()(const geometry& value) const {
-        return { { value } };
+    feature_collection operator()(const geometry &value) const
+    {
+        return {{value}};
     }
 };
 
-struct TileOptions {
+struct TileOptions
+{
     // simplification tolerance (higher means simpler)
     double tolerance = 3;
 
@@ -47,7 +54,8 @@ struct TileOptions {
     bool lineMetrics = false;
 };
 
-struct Options : TileOptions {
+struct Options : TileOptions
+{
     // max zoom to preserve detail on
     uint8_t maxZoom = 18;
 
@@ -57,67 +65,82 @@ struct Options : TileOptions {
     // max number of points per tile in the tile index
     uint32_t indexMaxPoints = 100000;
 
-    // whether to generate feature ids, overriding existing ids  
+    // whether to generate feature ids, overriding existing ids
     bool generateId = false;
 };
 
 const Tile empty_tile{};
 
-inline uint64_t toID(uint8_t z, uint32_t x, uint32_t y) {
+inline uint64_t toID(uint8_t z, uint32_t x, uint32_t y)
+{
     return (((1ull << z) * y + x) * 32) + z;
 }
 
-inline const Tile geoJSONToTile(const geojson& geojson_,
-                                uint8_t z,
-                                uint32_t x,
+inline const Tile geoJSONToTile(const geojson &geojson_, uint8_t z, uint32_t x,
                                 uint32_t y,
-                                const TileOptions& options = TileOptions(),
-                                bool wrap = false,
-                                bool clip = false) {
+                                const TileOptions &options = TileOptions(),
+                                bool wrap = false, bool clip = false)
+{
 
     const auto features_ = geojson::visit(geojson_, ToFeatureCollection{});
     auto z2 = 1u << z;
     auto tolerance = (options.tolerance / options.extent) / z2;
     auto features = detail::convert(features_, tolerance, false);
     if (wrap) {
-        features = detail::wrap(features, double(options.buffer) / options.extent, options.lineMetrics);
+        features =
+            detail::wrap(features, double(options.buffer) / options.extent,
+                         options.lineMetrics);
     }
     if (clip || options.lineMetrics) {
         const double p = double(options.buffer) / options.extent;
 
-        const auto left = detail::clip<0>(features, (x - p) / z2, (x + 1 + p) / z2, -1, 2, options.lineMetrics);
-        features = detail::clip<1>(left, (y - p) / z2, (y + 1 + p) / z2, -1, 2, options.lineMetrics);
+        const auto left =
+            detail::clip<0>(features, (x - p) / z2, (x + 1 + p) / z2, -1, 2,
+                            options.lineMetrics);
+        features = detail::clip<1>(left, (y - p) / z2, (y + 1 + p) / z2, -1, 2,
+                                   options.lineMetrics);
     }
-    return detail::InternalTile({ features, z, x, y, options.extent, tolerance, options.lineMetrics }).tile;
+    return detail::InternalTile({features, z, x, y, options.extent, tolerance,
+                                 options.lineMetrics})
+        .tile;
 }
 
-class GeoJSONVT {
-public:
+class GeoJSONVT
+{
+  public:
     const Options options;
 
-    GeoJSONVT(const mapbox::feature::feature_collection<double>& features_,
-              const Options& options_ = Options())
-        : options(options_) {
+    GeoJSONVT(const mapbox::feature::feature_collection<double> &features_,
+              const Options &options_ = Options())
+        : options(options_)
+    {
 
         const uint32_t z2 = 1u << options.maxZoom;
 
-        auto converted = detail::convert(features_, (options.tolerance / options.extent) / z2, options.generateId);
-        auto features = detail::wrap(converted, double(options.buffer) / options.extent, options.lineMetrics);
+        auto converted = detail::convert(
+            features_, (options.tolerance / options.extent) / z2,
+            options.generateId);
+        auto features =
+            detail::wrap(converted, double(options.buffer) / options.extent,
+                         options.lineMetrics);
 
         splitTile(features, 0, 0, 0);
     }
 
-    GeoJSONVT(const geojson& geojson_, const Options& options_ = Options())
-        : GeoJSONVT(geojson::visit(geojson_, ToFeatureCollection{}), options_) {
+    GeoJSONVT(const geojson &geojson_, const Options &options_ = Options())
+        : GeoJSONVT(geojson::visit(geojson_, ToFeatureCollection{}), options_)
+    {
     }
 
     std::map<uint8_t, uint32_t> stats;
     uint32_t total = 0;
 
-    const Tile& getTile(const uint8_t z, const uint32_t x_, const uint32_t y) {
+    const Tile &getTile(const uint8_t z, const uint32_t x_, const uint32_t y)
+    {
 
         if (z > options.maxZoom)
-            throw std::runtime_error("Requested zoom higher than maxZoom: " + std::to_string(z));
+            throw std::runtime_error("Requested zoom higher than maxZoom: " +
+                                     std::to_string(z));
 
         const uint32_t z2 = 1u << z;
         const uint32_t x = ((x_ % z2) + z2) % z2; // wrap tile x coordinate
@@ -132,11 +155,13 @@ public:
         if (it == tiles.end())
             throw std::runtime_error("Parent tile not found");
 
-        // if we found a parent tile containing the original geometry, we can drill down from it
-        const auto& parent = it->second;
+        // if we found a parent tile containing the original geometry, we can
+        // drill down from it
+        const auto &parent = it->second;
 
         // drill down parent tile up to the requested one
-        splitTile(parent.source_features, parent.z, parent.x, parent.y, z, x, y);
+        splitTile(parent.source_features, parent.z, parent.x, parent.y, z, x,
+                  y);
 
         it = tiles.find(id);
         if (it != tiles.end())
@@ -149,15 +174,18 @@ public:
         return empty_tile;
     }
 
-    const std::unordered_map<uint64_t, detail::InternalTile>& getInternalTiles() const {
+    const std::unordered_map<uint64_t, detail::InternalTile> &
+    getInternalTiles() const
+    {
         return tiles;
     }
 
-private:
+  private:
     std::unordered_map<uint64_t, detail::InternalTile> tiles;
 
     std::unordered_map<uint64_t, detail::InternalTile>::iterator
-    findParent(const uint8_t z, const uint32_t x, const uint32_t y) {
+    findParent(const uint8_t z, const uint32_t x, const uint32_t y)
+    {
         uint8_t z0 = z;
         uint32_t x0 = x;
         uint32_t y0 = y;
@@ -175,13 +203,10 @@ private:
         return parent;
     }
 
-    void splitTile(const detail::vt_features& features,
-                   const uint8_t z,
-                   const uint32_t x,
-                   const uint32_t y,
-                   const uint8_t cz = 0,
-                   const uint32_t cx = 0,
-                   const uint32_t cy = 0) {
+    void splitTile(const detail::vt_features &features, const uint8_t z,
+                   const uint32_t x, const uint32_t y, const uint8_t cz = 0,
+                   const uint32_t cx = 0, const uint32_t cy = 0)
+    {
 
         const double z2 = 1u << z;
         const uint64_t id = toID(z, x, y);
@@ -190,18 +215,22 @@ private:
 
         if (it == tiles.end()) {
             const double tolerance =
-                (z == options.maxZoom ? 0 : options.tolerance / (z2 * options.extent));
+                (z == options.maxZoom
+                     ? 0
+                     : options.tolerance / (z2 * options.extent));
 
-            it = tiles
-                     .emplace(id,
-                              detail::InternalTile{ features, z, x, y, options.extent, tolerance, options.lineMetrics })
-                     .first;
+            it =
+                tiles
+                    .emplace(id, detail::InternalTile{features, z, x, y,
+                                                      options.extent, tolerance,
+                                                      options.lineMetrics})
+                    .first;
             stats[z] = (stats.count(z) ? stats[z] + 1 : 1);
             total++;
             // printf("tile z%i-%i-%i\n", z, x, y);
         }
 
-        auto& tile = it->second;
+        auto &tile = it->second;
 
         if (features.empty())
             return;
@@ -209,7 +238,8 @@ private:
         // if it's the first-pass tiling
         if (cz == 0u) {
             // stop tiling if we reached max zoom, or if the tile is too simple
-            if (z == options.indexMaxZoom || tile.tile.num_points <= options.indexMaxPoints) {
+            if (z == options.indexMaxZoom ||
+                tile.tile.num_points <= options.indexMaxPoints) {
                 tile.source_features = features;
                 return;
             }
@@ -235,23 +265,30 @@ private:
         }
 
         const double p = 0.5 * options.buffer / options.extent;
-        const auto& min = tile.bbox.min;
-        const auto& max = tile.bbox.max;
+        const auto &min = tile.bbox.min;
+        const auto &max = tile.bbox.max;
 
-        const auto left = detail::clip<0>(features, (x - p) / z2, (x + 0.5 + p) / z2, min.x, max.x, options.lineMetrics);
+        const auto left =
+            detail::clip<0>(features, (x - p) / z2, (x + 0.5 + p) / z2, min.x,
+                            max.x, options.lineMetrics);
 
-        splitTile(detail::clip<1>(left, (y - p) / z2, (y + 0.5 + p) / z2, min.y, max.y, options.lineMetrics), z + 1,
-                  x * 2, y * 2, cz, cx, cy);
-        splitTile(detail::clip<1>(left, (y + 0.5 - p) / z2, (y + 1 + p) / z2, min.y, max.y, options.lineMetrics), z + 1,
-                  x * 2, y * 2 + 1, cz, cx, cy);
+        splitTile(detail::clip<1>(left, (y - p) / z2, (y + 0.5 + p) / z2, min.y,
+                                  max.y, options.lineMetrics),
+                  z + 1, x * 2, y * 2, cz, cx, cy);
+        splitTile(detail::clip<1>(left, (y + 0.5 - p) / z2, (y + 1 + p) / z2,
+                                  min.y, max.y, options.lineMetrics),
+                  z + 1, x * 2, y * 2 + 1, cz, cx, cy);
 
         const auto right =
-            detail::clip<0>(features, (x + 0.5 - p) / z2, (x + 1 + p) / z2, min.x, max.x, options.lineMetrics);
+            detail::clip<0>(features, (x + 0.5 - p) / z2, (x + 1 + p) / z2,
+                            min.x, max.x, options.lineMetrics);
 
-        splitTile(detail::clip<1>(right, (y - p) / z2, (y + 0.5 + p) / z2, min.y, max.y, options.lineMetrics), z + 1,
-                  x * 2 + 1, y * 2, cz, cx, cy);
-        splitTile(detail::clip<1>(right, (y + 0.5 - p) / z2, (y + 1 + p) / z2, min.y, max.y, options.lineMetrics), z + 1,
-                  x * 2 + 1, y * 2 + 1, cz, cx, cy);
+        splitTile(detail::clip<1>(right, (y - p) / z2, (y + 0.5 + p) / z2,
+                                  min.y, max.y, options.lineMetrics),
+                  z + 1, x * 2 + 1, y * 2, cz, cx, cy);
+        splitTile(detail::clip<1>(right, (y + 0.5 - p) / z2, (y + 1 + p) / z2,
+                                  min.y, max.y, options.lineMetrics),
+                  z + 1, x * 2 + 1, y * 2 + 1, cz, cx, cy);
 
         // if we sliced further down, no need to keep source geometry
         tile.source_features = {};

@@ -2,30 +2,28 @@
 
 #include "cista/containers/offset_ptr.h"
 
-namespace cista {
+namespace cista
+{
 
-namespace raw {
+namespace raw
+{
 
-template <typename T>
-using ptr = T*;
+template <typename T> using ptr = T *;
 
-}  // namespace raw
+} // namespace raw
 
-namespace offset {
+namespace offset
+{
 
-template <typename T>
-using ptr = cista::offset_ptr<T>;
+template <typename T> using ptr = cista::offset_ptr<T>;
 
-}  // namespace offset
+} // namespace offset
 
-template <typename T>
-T* ptr_cast(raw::ptr<T> const p) noexcept {
-  return p;
+template <typename T> T *ptr_cast(raw::ptr<T> const p) noexcept { return p; }
+
+template <typename T> T *ptr_cast(offset::ptr<T> const p) noexcept
+{
+    return p.get();
 }
 
-template <typename T>
-T* ptr_cast(offset::ptr<T> const p) noexcept {
-  return p.get();
-}
-
-}  // namespace cista
+} // namespace cista

@@ -13,29 +13,27 @@
 
 namespace igl
 {
-  namespace png
-  {
-    // Writes an image to a png file
-    //
-    // Input:
-    //  R,G,B,A texture channels
-    // Output:
-    //  png_file  path to .png file
-    // Returns true on success, false on failure
-    //
-    IGL_INLINE bool writePNG
-    (
-      const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-      const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-      const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-      const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A,
-      const std::string png_file
-    );
-  }
-}
+namespace png
+{
+// Writes an image to a png file
+//
+// Input:
+//  R,G,B,A texture channels
+// Output:
+//  png_file  path to .png file
+// Returns true on success, false on failure
+//
+IGL_INLINE bool
+writePNG(const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &R,
+         const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &G,
+         const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &B,
+         const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &A,
+         const std::string png_file);
+} // namespace png
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "writePNG.cpp"
+#include "writePNG.cpp"
 #endif
 
 #endif

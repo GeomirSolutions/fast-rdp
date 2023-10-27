@@ -16,106 +16,98 @@
 
 #include "triangle_triangle_adjacency.h"
 
-namespace igl {
-template <typename DerivedV, typename DerivedF>
-class CombLine
+namespace igl
 {
-public:
-
+template <typename DerivedV, typename DerivedF> class CombLine
+{
+  public:
     const Eigen::MatrixBase<DerivedV> &V;
     const Eigen::MatrixBase<DerivedF> &F;
     const Eigen::MatrixBase<DerivedV> &PD1;
     DerivedV N;
 
-private:
+  private:
     // internal
     DerivedF TT;
     DerivedF TTi;
 
+  private:
+    static inline double Sign(double a) { return (double)((a > 0) ? +1 : -1); }
 
-private:
-
-
-    static inline double Sign(double a){return (double)((a>0)?+1:-1);}
-
-
-private:
-
+  private:
     // returns the 180 deg rotation of a (around n) most similar to target b
     // a and b should be in the same plane orthogonal to N
-    static inline Eigen::Matrix<typename DerivedV::Scalar, 3, 1> K_PI_line(const Eigen::Matrix<typename DerivedV::Scalar, 3, 1>& a,
-                                                                           const Eigen::Matrix<typename DerivedV::Scalar, 3, 1>& b)
+    static inline Eigen::Matrix<typename DerivedV::Scalar, 3, 1>
+    K_PI_line(const Eigen::Matrix<typename DerivedV::Scalar, 3, 1> &a,
+              const Eigen::Matrix<typename DerivedV::Scalar, 3, 1> &b)
     {
         typename DerivedV::Scalar scorea = a.dot(b);
-        if (scorea<0)
+        if (scorea < 0)
             return -a;
         else
             return a;
     }
 
-
-
-public:
-
+  public:
     inline CombLine(const Eigen::MatrixBase<DerivedV> &_V,
                     const Eigen::MatrixBase<DerivedF> &_F,
-                    const Eigen::MatrixBase<DerivedV> &_PD1):
-        V(_V),
-        F(_F),
-        PD1(_PD1)
+                    const Eigen::MatrixBase<DerivedV> &_PD1)
+        : V(_V), F(_F), PD1(_PD1)
     {
-        igl::per_face_normals(V,F,N);
-        igl::triangle_triangle_adjacency(F,TT,TTi);
+        igl::per_face_normals(V, F, N);
+        igl::triangle_triangle_adjacency(F, TT, TTi);
     }
 
     inline void comb(Eigen::PlainObjectBase<DerivedV> &PD1out)
     {
-        PD1out.setZero(F.rows(),3);PD1out<<PD1;
+        PD1out.setZero(F.rows(), 3);
+        PD1out << PD1;
 
-        Eigen::VectorXi mark = Eigen::VectorXi::Constant(F.rows(),false);
+        Eigen::VectorXi mark = Eigen::VectorXi::Constant(F.rows(), false);
 
         std::deque<int> d;
 
         d.push_back(0);
         mark(0) = true;
 
-        while (!d.empty())
-        {
+        while (!d.empty()) {
             int f0 = d.at(0);
             d.pop_front();
-            for (int k=0; k<3; k++)
-            {
-                int f1 = TT(f0,k);
-                if (f1==-1) continue;
-                if (mark(f1)) continue;
+            for (int k = 0; k < 3; k++) {
+                int f1 = TT(f0, k);
+                if (f1 == -1)
+                    continue;
+                if (mark(f1))
+                    continue;
 
-                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0  = PD1out.row(f0);
-                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1  = PD1out.row(f1);
-                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n0    = N.row(f0);
-                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n1    = N.row(f1);
+                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0 =
+                    PD1out.row(f0);
+                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1 =
+                    PD1out.row(f1);
+                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n0 = N.row(f0);
+                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n1 = N.row(f1);
 
-                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0Rot = igl::rotation_matrix_from_directions(n0, n1)*dir0;
+                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0Rot =
+                    igl::rotation_matrix_from_directions(n0, n1) * dir0;
                 dir0Rot.normalize();
-                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> targD   = K_PI_line(dir1,dir0Rot);
+                Eigen::Matrix<typename DerivedV::Scalar, 3, 1> targD =
+                    K_PI_line(dir1, dir0Rot);
 
-                PD1out.row(f1)  = targD;
-                //PD2out.row(f1)  = n1.cross(targD).normalized();
+                PD1out.row(f1) = targD;
+                // PD2out.row(f1)  = n1.cross(targD).normalized();
 
                 mark(f1) = true;
                 d.push_back(f1);
-
             }
         }
 
         // everything should be marked
-        for (int i=0; i<F.rows(); i++)
-        {
+        for (int i = 0; i < F.rows(); i++) {
             assert(mark(i));
         }
     }
-
 };
-}
+} // namespace igl
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comb_line_field(const Eigen::MatrixBase<DerivedV> &V,

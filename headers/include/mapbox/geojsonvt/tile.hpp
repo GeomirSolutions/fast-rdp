@@ -4,19 +4,24 @@
 #include <cmath>
 #include <mapbox/geojsonvt/types.hpp>
 
-namespace mapbox {
-namespace geojsonvt {
+namespace mapbox
+{
+namespace geojsonvt
+{
 
-struct Tile {
+struct Tile
+{
     mapbox::feature::feature_collection<int16_t> features;
     uint32_t num_points = 0;
     uint32_t num_simplified = 0;
 };
 
-namespace detail {
+namespace detail
+{
 
-class InternalTile {
-public:
+class InternalTile
+{
+  public:
     const uint16_t extent;
     const uint8_t z;
     const uint32_t x;
@@ -28,37 +33,30 @@ public:
     const bool lineMetrics;
 
     vt_features source_features;
-    mapbox::geometry::box<double> bbox = { { 2, 1 }, { -1, 0 } };
+    mapbox::geometry::box<double> bbox = {{2, 1}, {-1, 0}};
 
     Tile tile;
 
-    InternalTile(const vt_features& source,
-                 const uint8_t z_,
-                 const uint32_t x_,
-                 const uint32_t y_,
-                 const uint16_t extent_,
-                 const double tolerance_,
-                 const bool lineMetrics_)
-        : extent(extent_),
-          z(z_),
-          x(x_),
-          y(y_),
-          z2(std::pow(2, z)),
-          tolerance(tolerance_),
-          sq_tolerance(tolerance_ * tolerance_),
-          lineMetrics(lineMetrics_) {
+    InternalTile(const vt_features &source, const uint8_t z_, const uint32_t x_,
+                 const uint32_t y_, const uint16_t extent_,
+                 const double tolerance_, const bool lineMetrics_)
+        : extent(extent_), z(z_), x(x_), y(y_), z2(std::pow(2, z)),
+          tolerance(tolerance_), sq_tolerance(tolerance_ * tolerance_),
+          lineMetrics(lineMetrics_)
+    {
 
         tile.features.reserve(source.size());
-        for (const auto& feature : source) {
-            const auto& geom = feature.geometry;
+        for (const auto &feature : source) {
+            const auto &geom = feature.geometry;
             assert(feature.properties);
-            const auto& props = feature.properties;
-            const auto& id = feature.id;
+            const auto &props = feature.properties;
+            const auto &id = feature.id;
 
             tile.num_points += feature.num_points;
 
-            vt_geometry::visit(geom, [&](const auto& g) {
-                // `this->` is a workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61636
+            vt_geometry::visit(geom, [&](const auto &g) {
+                // `this->` is a workaround for
+                // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61636
                 this->addFeature(g, *props, id);
             });
 
@@ -69,52 +67,61 @@ public:
         }
     }
 
-private:
-    void addFeature(const vt_empty& empty, const property_map& props, const identifier& id) {
+  private:
+    void addFeature(const vt_empty &empty, const property_map &props,
+                    const identifier &id)
+    {
         tile.features.emplace_back(transform(empty), props, id);
     }
 
-    void
-    addFeature(const vt_point& point, const property_map& props, const identifier& id) {
+    void addFeature(const vt_point &point, const property_map &props,
+                    const identifier &id)
+    {
         tile.features.emplace_back(transform(point), props, id);
     }
 
-    void addFeature(const vt_line_string& line,
-                    const property_map& props,
-                    const identifier& id) {
+    void addFeature(const vt_line_string &line, const property_map &props,
+                    const identifier &id)
+    {
         const auto new_line = transform(line);
         if (!new_line.empty()) {
             if (lineMetrics) {
                 property_map newProps = props;
-                newProps.emplace(std::make_pair<std::string, value>("mapbox_clip_start", line.segStart / line.dist));
-                newProps.emplace(std::make_pair<std::string, value>("mapbox_clip_end", line.segEnd / line.dist));
-                tile.features.emplace_back(std::move(new_line), std::move(newProps), id);
+                newProps.emplace(std::make_pair<std::string, value>(
+                    "mapbox_clip_start", line.segStart / line.dist));
+                newProps.emplace(std::make_pair<std::string, value>(
+                    "mapbox_clip_end", line.segEnd / line.dist));
+                tile.features.emplace_back(std::move(new_line),
+                                           std::move(newProps), id);
             } else
                 tile.features.emplace_back(std::move(new_line), props, id);
         }
     }
 
-    void addFeature(const vt_polygon& polygon,
-                    const property_map& props,
-                    const identifier& id) {
+    void addFeature(const vt_polygon &polygon, const property_map &props,
+                    const identifier &id)
+    {
         const auto new_polygon = transform(polygon);
         if (!new_polygon.empty())
             tile.features.emplace_back(std::move(new_polygon), props, id);
     }
 
-    void addFeature(const vt_geometry_collection& collection,
-                    const property_map& props,
-                    const identifier& id) {
-        for (const auto& geom : collection) {
-            vt_geometry::visit(geom, [&](const auto& g) {
-                // `this->` is a workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61636
+    void addFeature(const vt_geometry_collection &collection,
+                    const property_map &props, const identifier &id)
+    {
+        for (const auto &geom : collection) {
+            vt_geometry::visit(geom, [&](const auto &g) {
+                // `this->` is a workaround for
+                // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61636
                 this->addFeature(g, props, id);
             });
         }
     }
 
     template <class T>
-    void addFeature(const T& multi, const property_map& props, const identifier& id) {
+    void addFeature(const T &multi, const property_map &props,
+                    const identifier &id)
+    {
         const auto new_multi = transform(multi);
 
         switch (new_multi.size()) {
@@ -129,30 +136,32 @@ private:
         }
     }
 
-    mapbox::geometry::empty transform(const vt_empty& empty) {
-        return empty;
-    }
+    mapbox::geometry::empty transform(const vt_empty &empty) { return empty; }
 
-    mapbox::geometry::point<int16_t> transform(const vt_point& p) {
+    mapbox::geometry::point<int16_t> transform(const vt_point &p)
+    {
         ++tile.num_simplified;
-        return { static_cast<int16_t>(::round((p.x * z2 - x) * extent)),
-                 static_cast<int16_t>(::round((p.y * z2 - y) * extent)) };
+        return {static_cast<int16_t>(::round((p.x * z2 - x) * extent)),
+                static_cast<int16_t>(::round((p.y * z2 - y) * extent))};
     }
 
-    mapbox::geometry::multi_point<int16_t> transform(const vt_multi_point& points) {
+    mapbox::geometry::multi_point<int16_t>
+    transform(const vt_multi_point &points)
+    {
         mapbox::geometry::multi_point<int16_t> result;
         result.reserve(points.size());
-        for (const auto& p : points) {
+        for (const auto &p : points) {
             result.emplace_back(transform(p));
         }
         return result;
     }
 
-    mapbox::geometry::line_string<int16_t> transform(const vt_line_string& line) {
+    mapbox::geometry::line_string<int16_t> transform(const vt_line_string &line)
+    {
         mapbox::geometry::line_string<int16_t> result;
         if (line.dist > tolerance) {
             result.reserve(line.size());
-            for (const auto& p : line) {
+            for (const auto &p : line) {
                 if (p.z > sq_tolerance)
                     result.emplace_back(transform(p));
             }
@@ -160,11 +169,12 @@ private:
         return result;
     }
 
-    mapbox::geometry::linear_ring<int16_t> transform(const vt_linear_ring& ring) {
+    mapbox::geometry::linear_ring<int16_t> transform(const vt_linear_ring &ring)
+    {
         mapbox::geometry::linear_ring<int16_t> result;
         if (ring.area > sq_tolerance) {
             result.reserve(ring.size());
-            for (const auto& p : ring) {
+            for (const auto &p : ring) {
                 if (p.z > sq_tolerance)
                     result.emplace_back(transform(p));
             }
@@ -172,30 +182,35 @@ private:
         return result;
     }
 
-    mapbox::geometry::multi_line_string<int16_t> transform(const vt_multi_line_string& lines) {
+    mapbox::geometry::multi_line_string<int16_t>
+    transform(const vt_multi_line_string &lines)
+    {
         mapbox::geometry::multi_line_string<int16_t> result;
         result.reserve(lines.size());
-        for (const auto& line : lines) {
+        for (const auto &line : lines) {
             if (line.dist > tolerance)
                 result.emplace_back(transform(line));
         }
         return result;
     }
 
-    mapbox::geometry::polygon<int16_t> transform(const vt_polygon& rings) {
+    mapbox::geometry::polygon<int16_t> transform(const vt_polygon &rings)
+    {
         mapbox::geometry::polygon<int16_t> result;
         result.reserve(rings.size());
-        for (const auto& ring : rings) {
+        for (const auto &ring : rings) {
             if (ring.area > sq_tolerance)
                 result.emplace_back(transform(ring));
         }
         return result;
     }
 
-    mapbox::geometry::multi_polygon<int16_t> transform(const vt_multi_polygon& polygons) {
+    mapbox::geometry::multi_polygon<int16_t>
+    transform(const vt_multi_polygon &polygons)
+    {
         mapbox::geometry::multi_polygon<int16_t> result;
         result.reserve(polygons.size());
-        for (const auto& polygon : polygons) {
+        for (const auto &polygon : polygons) {
             const auto p = transform(polygon);
             if (!p.empty())
                 result.emplace_back(std::move(p));

@@ -1,8 +1,7 @@
 import builtins
 
-import pytest
-
 import env
+import pytest
 from pybind11_tests import ConstructorStats
 from pybind11_tests import modules as m
 from pybind11_tests.modules import subsubmodule as ms

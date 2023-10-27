@@ -5,15 +5,15 @@
 
 namespace igl
 {
-  namespace opengl
-  {
-    /// Decompress the vera sans mono font atlas
-    IGL_INLINE void decompress_verasansmono_atlas(unsigned char* _fontatlas);
-  }
-}
+namespace opengl
+{
+/// Decompress the vera sans mono font atlas
+IGL_INLINE void decompress_verasansmono_atlas(unsigned char *_fontatlas);
+} // namespace opengl
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "verasansmono_compressed.cpp"
+#include "verasansmono_compressed.cpp"
 #endif
 
 #endif

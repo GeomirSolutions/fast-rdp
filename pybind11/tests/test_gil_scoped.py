@@ -3,9 +3,8 @@ import sys
 import threading
 import time
 
-import pytest
-
 import env
+import pytest
 from pybind11_tests import gil_scoped as m
 
 

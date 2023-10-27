@@ -6,7 +6,6 @@
 #include <jni/functions.hpp>
 #include <jni/npe.hpp>
 
-
 // High-level
 
 #include <jni/unique.hpp>

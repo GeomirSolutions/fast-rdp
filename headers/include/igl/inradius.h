@@ -11,23 +11,18 @@
 #include <Eigen/Core>
 namespace igl
 {
-  /// Compute the inradius of each triangle in a mesh (V,F)
-  ///
-  /// @param[in] V  #V by dim list of mesh vertex positions
-  /// @param[in] F  #F by 3 list of triangle indices into V
-  /// @param[out] R  #F list of inradii
-  ///
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedR>
-  IGL_INLINE void inradius(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
-    Eigen::PlainObjectBase<DerivedR> & R);
-}
+/// Compute the inradius of each triangle in a mesh (V,F)
+///
+/// @param[in] V  #V by dim list of mesh vertex positions
+/// @param[in] F  #F by 3 list of triangle indices into V
+/// @param[out] R  #F list of inradii
+///
+template <typename DerivedV, typename DerivedF, typename DerivedR>
+IGL_INLINE void inradius(const Eigen::MatrixBase<DerivedV> &V,
+                         const Eigen::MatrixBase<DerivedF> &F,
+                         Eigen::PlainObjectBase<DerivedR> &R);
+} // namespace igl
 #ifndef IGL_STATIC_LIBRARY
-#  include "inradius.cpp"
+#include "inradius.cpp"
 #endif
 #endif
-

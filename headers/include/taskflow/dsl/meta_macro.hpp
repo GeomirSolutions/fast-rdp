@@ -4,21 +4,21 @@
 #ifdef _MSC_VER
 #define TF_EMPTY()
 #define TF_GET_ARG_COUNT_(...)                                                 \
-  TF_PASTE(TF_GET_ARG_COUNT_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, \
-                              55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44,  \
-                              43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32,  \
-                              31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20,  \
-                              19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, \
-                              6, 5, 4, 3, 2, 1, 0, ),                          \
-           TF_EMPTY())
+    TF_PASTE(TF_GET_ARG_COUNT_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57,   \
+                                56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46,    \
+                                45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35,    \
+                                34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24,    \
+                                23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13,    \
+                                12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, ),   \
+             TF_EMPTY())
 
 #else
 #define TF_GET_ARG_COUNT_(...)                                                 \
-  TF_GET_ARG_COUNT_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54,  \
-                     53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40,   \
-                     39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26,   \
-                     25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12,   \
-                     11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, )
+    TF_GET_ARG_COUNT_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55,    \
+                       54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, \
+                       40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, \
+                       26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, \
+                       12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, )
 #endif
 
 #define TF_GET_ARG_COUNT(...) TF_GET_ARG_COUNT_(__dummy__, ##__VA_ARGS__)
@@ -28,7 +28,7 @@
     e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, \
     e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, \
     e62, e63, e64, size, ...)                                                  \
-  size
+    size
 
 #define TF_GET_FIRST(a, ...) a
 #define TF_GET_SECOND(a, b, ...) b
@@ -64,9 +64,9 @@
 #define TF_MAP_NEXT(test, next) TF_MAP_NEXT1(TF_MAP_GET_END test, next)
 
 #define TF_MAP0(f, x, peek, ...)                                               \
-  f(x) DEFER(TF_MAP_NEXT(peek, TF_MAP1))(f, peek, __VA_ARGS__)
+    f(x) DEFER(TF_MAP_NEXT(peek, TF_MAP1))(f, peek, __VA_ARGS__)
 #define TF_MAP1(f, x, peek, ...)                                               \
-  f(x) DEFER(TF_MAP_NEXT(peek, TF_MAP0))(f, peek, __VA_ARGS__)
+    f(x) DEFER(TF_MAP_NEXT(peek, TF_MAP0))(f, peek, __VA_ARGS__)
 
 #define TF_MAP(f, ...)                                                         \
-  TF_EVAL(TF_MAP1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
+    TF_EVAL(TF_MAP1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))

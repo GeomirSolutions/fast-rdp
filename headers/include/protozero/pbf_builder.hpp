@@ -21,11 +21,11 @@ documentation.
 
 #include <string>
 
-namespace protozero {
+namespace protozero
+{
 
 /// Specialization of basic_pbf_builder using std::string as buffer type.
-template <typename T>
-using pbf_builder = basic_pbf_builder<std::string, T>;
+template <typename T> using pbf_builder = basic_pbf_builder<std::string, T>;
 
 } // end namespace protozero
 

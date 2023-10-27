@@ -1,11 +1,15 @@
 #pragma once
 
-namespace mapbox {
-namespace geometry {
-namespace wagyu {
+namespace mapbox
+{
+namespace geometry
+{
+namespace wagyu
+{
 
 template <typename It, class Compare, class MethodOnSwap>
-void bubble_sort(It begin, It end, Compare c, MethodOnSwap m) {
+void bubble_sort(It begin, It end, Compare c, MethodOnSwap m)
+{
     if (begin == end) {
         return;
     }

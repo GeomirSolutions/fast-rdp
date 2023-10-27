@@ -2,12 +2,17 @@
 
 #include <mapbox/geojsonvt/types.hpp>
 
-namespace mapbox {
-namespace geojsonvt {
-namespace detail {
+namespace mapbox
+{
+namespace geojsonvt
+{
+namespace detail
+{
 
 // square distance from a point to a segment
-inline double getSqSegDist(const vt_point& p, const vt_point& a, const vt_point& b) {
+inline double getSqSegDist(const vt_point &p, const vt_point &a,
+                           const vt_point &b)
+{
     double x = a.x;
     double y = a.y;
     double dx = b.x - a.x;
@@ -15,7 +20,8 @@ inline double getSqSegDist(const vt_point& p, const vt_point& a, const vt_point&
 
     if ((dx != 0.0) || (dy != 0.0)) {
 
-        const double t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy);
+        const double t =
+            ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy);
 
         if (t > 1) {
             x = b.x;
@@ -34,22 +40,25 @@ inline double getSqSegDist(const vt_point& p, const vt_point& a, const vt_point&
 }
 
 // calculate simplification data using optimized Douglas-Peucker algorithm
-inline void simplify(std::vector<vt_point>& points, size_t first, size_t last, double sqTolerance) {
+inline void simplify(std::vector<vt_point> &points, size_t first, size_t last,
+                     double sqTolerance)
+{
     double maxSqDist = sqTolerance;
     size_t index = 0;
     const int64_t mid = first + ((last - first) >> 1);
     int64_t minPosToMid = last - first;
 
     for (auto i = first + 1; i < last; i++) {
-        const double sqDist = getSqSegDist(points[i], points[first], points[last]);
+        const double sqDist =
+            getSqSegDist(points[i], points[first], points[last]);
 
         if (sqDist > maxSqDist) {
             index = i;
             maxSqDist = sqDist;
 
         } else if (sqDist == maxSqDist) {
-            // a workaround to ensure we choose a pivot close to the middle of the list,
-            // reducing recursion depth, for certain degenerate inputs
+            // a workaround to ensure we choose a pivot close to the middle of
+            // the list, reducing recursion depth, for certain degenerate inputs
             // https://github.com/mapbox/geojson-vt/issues/104
             auto posToMid = std::abs(static_cast<int64_t>(i) - mid);
             if (posToMid < minPosToMid) {
@@ -69,7 +78,8 @@ inline void simplify(std::vector<vt_point>& points, size_t first, size_t last, d
     }
 }
 
-inline void simplify(std::vector<vt_point>& points, double tolerance) {
+inline void simplify(std::vector<vt_point> &points, double tolerance)
+{
     const size_t len = points.size();
 
     // always retain the endpoints (1 is the max value)

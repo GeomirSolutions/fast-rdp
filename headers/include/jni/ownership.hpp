@@ -5,221 +5,209 @@
 #include <jni/typed_methods.hpp>
 
 namespace jni
-   {
-    struct LocalFrameDeleter
-       {
-        void operator()(JNIEnv* env) const
-           {
-            if (env)
-               {
-                env->PopLocalFrame(nullptr);
-               }
-           }
-       };
+{
+struct LocalFrameDeleter
+{
+    void operator()(JNIEnv *env) const
+    {
+        if (env) {
+            env->PopLocalFrame(nullptr);
+        }
+    }
+};
 
-    using UniqueLocalFrame = std::unique_ptr< JNIEnv, LocalFrameDeleter >;
+using UniqueLocalFrame = std::unique_ptr<JNIEnv, LocalFrameDeleter>;
 
+using RefDeletionMethod = void (JNIEnv::*)(::jobject);
 
-    using RefDeletionMethod = void (JNIEnv::*)(::jobject);
+template <RefDeletionMethod DeleteRef> class DefaultRefDeleter
+{
+  private:
+    JNIEnv *env = nullptr;
 
-    template < RefDeletionMethod DeleteRef >
-    class DefaultRefDeleter
-       {
-        private:
-            JNIEnv* env = nullptr;
+  public:
+    DefaultRefDeleter() = default;
+    DefaultRefDeleter(JNIEnv &e) : env(&e) {}
 
-        public:
-            DefaultRefDeleter() = default;
-            DefaultRefDeleter(JNIEnv& e) : env(&e) {}
+    void operator()(jobject *p) const
+    {
+        if (p) {
+            assert(env);
+            (env->*DeleteRef)(Unwrap(p));
+        }
+    }
+};
 
-            void operator()(jobject* p) const
-               {
-                if (p)
-                   {
-                    assert(env);
-                    (env->*DeleteRef)(Unwrap(p));
-                   }
-               }
-       };
+template <class T,
+          template <RefDeletionMethod> class Deleter = DefaultRefDeleter>
+using UniqueGlobalRef = std::unique_ptr<T, Deleter<&JNIEnv::DeleteGlobalRef>>;
 
+template <class T,
+          template <RefDeletionMethod> class Deleter = DefaultRefDeleter>
+using UniqueWeakGlobalRef =
+    std::unique_ptr<T, Deleter<&JNIEnv::DeleteWeakGlobalRef>>;
 
-    template < class T, template < RefDeletionMethod > class Deleter = DefaultRefDeleter >
-    using UniqueGlobalRef = std::unique_ptr< T, Deleter<&JNIEnv::DeleteGlobalRef> >;
+// Not parameterized by Deleter because local references should be short-lived
+// enough that DefaultRefDeleter suffices in all cases.
+template <class T>
+using UniqueLocalRef =
+    std::unique_ptr<T, DefaultRefDeleter<&JNIEnv::DeleteLocalRef>>;
 
-    template < class T, template < RefDeletionMethod > class Deleter = DefaultRefDeleter >
-    using UniqueWeakGlobalRef = std::unique_ptr< T, Deleter<&JNIEnv::DeleteWeakGlobalRef> >;
+class StringCharsDeleter
+{
+  private:
+    JNIEnv *env = nullptr;
+    jstring *string = nullptr;
 
-    // Not parameterized by Deleter because local references should be short-lived enough
-    // that DefaultRefDeleter suffices in all cases.
-    template < class T >
-    using UniqueLocalRef = std::unique_ptr< T, DefaultRefDeleter<&JNIEnv::DeleteLocalRef> >;
+  public:
+    StringCharsDeleter() = default;
+    StringCharsDeleter(JNIEnv &e, jstring &s) : env(&e), string(&s) {}
 
+    void operator()(const char16_t *p) const
+    {
+        if (p) {
+            assert(env);
+            assert(string);
+            env->ReleaseStringChars(Unwrap(string), Unwrap(p));
+        }
+    }
+};
 
-    class StringCharsDeleter
-       {
-        private:
-            JNIEnv* env = nullptr;
-            jstring* string = nullptr;
+using UniqueStringChars = std::unique_ptr<const char16_t, StringCharsDeleter>;
 
-        public:
-            StringCharsDeleter() = default;
-            StringCharsDeleter(JNIEnv& e, jstring& s) : env(&e), string(&s) {}
+class StringUTFCharsDeleter
+{
+  private:
+    JNIEnv *env = nullptr;
+    jstring *string = nullptr;
 
-            void operator()(const char16_t* p) const
-               {
-                if (p)
-                   {
-                    assert(env);
-                    assert(string);
-                    env->ReleaseStringChars(Unwrap(string), Unwrap(p));
-                   }
-               }
-       };
+  public:
+    StringUTFCharsDeleter() = default;
+    StringUTFCharsDeleter(JNIEnv &e, jstring &s) : env(&e), string(&s) {}
 
-    using UniqueStringChars = std::unique_ptr< const char16_t, StringCharsDeleter >;
+    void operator()(const char *p) const
+    {
+        if (p) {
+            assert(env);
+            assert(string);
+            env->ReleaseStringUTFChars(Unwrap(string), p);
+        }
+    }
+};
 
+using UniqueStringUTFChars = std::unique_ptr<const char, StringUTFCharsDeleter>;
 
-    class StringUTFCharsDeleter
-       {
-        private:
-            JNIEnv* env = nullptr;
-            jstring* string = nullptr;
+class StringCriticalDeleter
+{
+  private:
+    JNIEnv *env = nullptr;
+    jstring *string = nullptr;
 
-        public:
-            StringUTFCharsDeleter() = default;
-            StringUTFCharsDeleter(JNIEnv& e, jstring& s) : env(&e), string(&s) {}
+  public:
+    StringCriticalDeleter() = default;
+    StringCriticalDeleter(JNIEnv &e, jstring &s) : env(&e), string(&s) {}
 
-            void operator()(const char* p) const
-               {
-                if (p)
-                   {
-                    assert(env);
-                    assert(string);
-                    env->ReleaseStringUTFChars(Unwrap(string), p);
-                   }
-               }
-       };
+    void operator()(const char16_t *p) const
+    {
+        if (p) {
+            assert(env);
+            assert(string);
+            env->ReleaseStringCritical(Unwrap(string), Unwrap(p));
+        }
+    }
+};
 
-    using UniqueStringUTFChars = std::unique_ptr< const char, StringUTFCharsDeleter >;
+using UniqueStringCritical =
+    std::unique_ptr<const char16_t, StringCriticalDeleter>;
 
+template <class E> class ArrayElementsDeleter
+{
+  private:
+    JNIEnv *env = nullptr;
+    jarray<E> *array = nullptr;
 
-    class StringCriticalDeleter
-       {
-        private:
-            JNIEnv* env = nullptr;
-            jstring* string = nullptr;
+  public:
+    ArrayElementsDeleter() = default;
+    ArrayElementsDeleter(JNIEnv &e, jarray<E> &a) : env(&e), array(&a) {}
 
-        public:
-            StringCriticalDeleter() = default;
-            StringCriticalDeleter(JNIEnv& e, jstring& s) : env(&e), string(&s) {}
+    void operator()(E *p) const
+    {
+        if (p) {
+            assert(env);
+            assert(array);
+            (env->*(TypedMethods<E>::ReleaseArrayElements))(Unwrap(array), p,
+                                                            JNI_ABORT);
+        }
+    }
+};
 
-            void operator()(const char16_t* p) const
-               {
-                if (p)
-                   {
-                    assert(env);
-                    assert(string);
-                    env->ReleaseStringCritical(Unwrap(string), Unwrap(p));
-                   }
-               }
-       };
+template <class E>
+using UniqueArrayElements = std::unique_ptr<E, ArrayElementsDeleter<E>>;
 
-    using UniqueStringCritical = std::unique_ptr< const char16_t, StringCriticalDeleter >;
+template <class E> class PrimitiveArrayCriticalDeleter
+{
+  private:
+    JNIEnv *env = nullptr;
+    jarray<E> *array = nullptr;
 
+  public:
+    PrimitiveArrayCriticalDeleter() = default;
+    PrimitiveArrayCriticalDeleter(JNIEnv &e, jarray<E> &a) : env(&e), array(&a)
+    {
+    }
 
-    template < class E >
-    class ArrayElementsDeleter
-       {
-        private:
-            JNIEnv* env = nullptr;
-            jarray<E>* array = nullptr;
+    void operator()(void *p) const
+    {
+        if (p) {
+            assert(env);
+            assert(array);
+            env->ReleasePrimitiveArrayCritical(Unwrap(array), p, JNI_ABORT);
+        }
+    }
+};
 
-        public:
-            ArrayElementsDeleter() = default;
-            ArrayElementsDeleter(JNIEnv& e, jarray<E>& a) : env(&e), array(&a) {}
+template <class E>
+using UniquePrimitiveArrayCritical =
+    std::unique_ptr<void, PrimitiveArrayCriticalDeleter<E>>;
 
-            void operator()(E* p) const
-               {
-                if (p)
-                   {
-                    assert(env);
-                    assert(array);
-                    (env->*(TypedMethods<E>::ReleaseArrayElements))(Unwrap(array), p, JNI_ABORT);
-                   }
-               }
-       };
+class MonitorDeleter
+{
+  private:
+    JNIEnv *env = nullptr;
 
-    template < class E >
-    using UniqueArrayElements = std::unique_ptr< E, ArrayElementsDeleter<E> >;
+  public:
+    MonitorDeleter() = default;
+    MonitorDeleter(JNIEnv &e) : env(&e) {}
 
+    void operator()(jobject *p) const
+    {
+        if (p) {
+            assert(env);
+            env->MonitorExit(Unwrap(p));
+        }
+    }
+};
 
-    template < class E >
-    class PrimitiveArrayCriticalDeleter
-       {
-        private:
-            JNIEnv* env = nullptr;
-            jarray<E>* array = nullptr;
+using UniqueMonitor = std::unique_ptr<jobject, MonitorDeleter>;
 
-        public:
-            PrimitiveArrayCriticalDeleter() = default;
-            PrimitiveArrayCriticalDeleter(JNIEnv& e, jarray<E>& a) : env(&e), array(&a) {}
+class JNIEnvDeleter
+{
+  private:
+    JavaVM *vm = nullptr;
+    bool detach = true;
 
-            void operator()(void* p) const
-               {
-                if (p)
-                   {
-                    assert(env);
-                    assert(array);
-                    env->ReleasePrimitiveArrayCritical(Unwrap(array), p, JNI_ABORT);
-                   }
-               }
-       };
+  public:
+    JNIEnvDeleter() = default;
+    JNIEnvDeleter(JavaVM &v, bool d = true) : vm(&v), detach{d} {}
 
-    template < class E >
-    using UniquePrimitiveArrayCritical = std::unique_ptr< void, PrimitiveArrayCriticalDeleter<E> >;
+    void operator()(JNIEnv *p) const
+    {
+        if (p && detach) {
+            assert(vm);
+            vm->DetachCurrentThread();
+        }
+    }
+};
 
-
-    class MonitorDeleter
-       {
-        private:
-            JNIEnv* env = nullptr;
-
-        public:
-            MonitorDeleter() = default;
-            MonitorDeleter(JNIEnv& e) : env(&e) {}
-
-            void operator()(jobject* p) const
-               {
-                if (p)
-                   {
-                    assert(env);
-                    env->MonitorExit(Unwrap(p));
-                   }
-               }
-       };
-
-    using UniqueMonitor = std::unique_ptr< jobject, MonitorDeleter >;
-
-
-    class JNIEnvDeleter
-       {
-        private:
-            JavaVM* vm = nullptr;
-            bool detach = true;
-        
-        public:
-            JNIEnvDeleter() = default;
-            JNIEnvDeleter(JavaVM& v, bool d = true) : vm(&v), detach{d} {}
-
-            void operator()(JNIEnv* p) const
-               {
-                if (p && detach)
-                   {
-                    assert(vm);
-                    vm->DetachCurrentThread();
-                   }
-               }
-       };
-
-    using UniqueEnv = std::unique_ptr< JNIEnv, JNIEnvDeleter >;
-   }
+using UniqueEnv = std::unique_ptr<JNIEnv, JNIEnvDeleter>;
+} // namespace jni

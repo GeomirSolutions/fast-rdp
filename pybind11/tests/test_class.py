@@ -1,6 +1,5 @@
-import pytest
-
 import env
+import pytest
 from pybind11_tests import ConstructorStats, UserType
 from pybind11_tests import class_ as m
 

@@ -7,25 +7,24 @@
 #include <jni/tagging.hpp>
 
 namespace jni
-   {
-    template < class TheTag, class >
-    class Method;
+{
+template <class TheTag, class> class Method;
 
-    template < class TheTag, class R, class... Args >
-    class Method< TheTag, R (Args...) >
-       {
-        private:
-            jmethodID& method;
+template <class TheTag, class R, class... Args> class Method<TheTag, R(Args...)>
+{
+  private:
+    jmethodID &method;
 
-        public:
-            using TagType = TheTag;
-            using MethodType = R (Args...);
-            using ReturnType = R;
+  public:
+    using TagType = TheTag;
+    using MethodType = R(Args...);
+    using ReturnType = R;
 
-            Method(JNIEnv& env, const Class<TagType>& clazz, const char* name)
-              : method(GetMethodID(env, *clazz, name, TypeSignature<R (Args...)>()()))
-               {}
+    Method(JNIEnv &env, const Class<TagType> &clazz, const char *name)
+        : method(GetMethodID(env, *clazz, name, TypeSignature<R(Args...)>()()))
+    {
+    }
 
-            operator jmethodID&() const { return method; }
-       };
-   }
+    operator jmethodID &() const { return method; }
+};
+} // namespace jni

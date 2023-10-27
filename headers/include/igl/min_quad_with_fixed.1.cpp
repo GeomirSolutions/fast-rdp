@@ -8,5 +8,61 @@
 #include "min_quad_with_fixed.impl.h"
 
 #ifdef IGL_STATIC_LIBRARY
-template Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> igl::min_quad_with_fixed<double, -1, -1, true>(Eigen::Matrix<double, -1, -1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)1) : ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, -1> const&, Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&, Eigen::Array<bool, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&, Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&, Eigen::Matrix<double, -1, -1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)1) : ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, -1> const&, Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&);
+template Eigen::Matrix<double, -1, 1,
+                       ((Eigen::StorageOptions)0) |
+                           ((((-1) == (1)) && ((1) != (1)))
+                                ? ((Eigen::StorageOptions)1)
+                                : ((((1) == (1)) && ((-1) != (1)))
+                                       ? ((Eigen::StorageOptions)0)
+                                       : ((Eigen::StorageOptions)0))),
+                       -1, 1>
+igl::min_quad_with_fixed<double, -1, -1, true>(
+    Eigen::Matrix<double, -1, -1,
+                  ((Eigen::StorageOptions)0) |
+                      ((((-1) == (1)) && ((-1) != (1)))
+                           ? ((Eigen::StorageOptions)1)
+                           : ((((-1) == (1)) && ((-1) != (1)))
+                                  ? ((Eigen::StorageOptions)0)
+                                  : ((Eigen::StorageOptions)0))),
+                  -1, -1> const &,
+    Eigen::Matrix<double, -1, 1,
+                  ((Eigen::StorageOptions)0) |
+                      ((((-1) == (1)) && ((1) != (1)))
+                           ? ((Eigen::StorageOptions)1)
+                           : ((((1) == (1)) && ((-1) != (1)))
+                                  ? ((Eigen::StorageOptions)0)
+                                  : ((Eigen::StorageOptions)0))),
+                  -1, 1> const &,
+    Eigen::Array<bool, -1, 1,
+                 ((Eigen::StorageOptions)0) |
+                     ((((-1) == (1)) && ((1) != (1)))
+                          ? ((Eigen::StorageOptions)1)
+                          : ((((1) == (1)) && ((-1) != (1)))
+                                 ? ((Eigen::StorageOptions)0)
+                                 : ((Eigen::StorageOptions)0))),
+                 -1, 1> const &,
+    Eigen::Matrix<double, -1, 1,
+                  ((Eigen::StorageOptions)0) |
+                      ((((-1) == (1)) && ((1) != (1)))
+                           ? ((Eigen::StorageOptions)1)
+                           : ((((1) == (1)) && ((-1) != (1)))
+                                  ? ((Eigen::StorageOptions)0)
+                                  : ((Eigen::StorageOptions)0))),
+                  -1, 1> const &,
+    Eigen::Matrix<double, -1, -1,
+                  ((Eigen::StorageOptions)0) |
+                      ((((-1) == (1)) && ((-1) != (1)))
+                           ? ((Eigen::StorageOptions)1)
+                           : ((((-1) == (1)) && ((-1) != (1)))
+                                  ? ((Eigen::StorageOptions)0)
+                                  : ((Eigen::StorageOptions)0))),
+                  -1, -1> const &,
+    Eigen::Matrix<double, -1, 1,
+                  ((Eigen::StorageOptions)0) |
+                      ((((-1) == (1)) && ((1) != (1)))
+                           ? ((Eigen::StorageOptions)1)
+                           : ((((1) == (1)) && ((-1) != (1)))
+                                  ? ((Eigen::StorageOptions)0)
+                                  : ((Eigen::StorageOptions)0))),
+                  -1, 1> const &);
 #endif

@@ -7,7 +7,8 @@
 @brief flow builder include file
 */
 
-namespace tf {
+namespace tf
+{
 
 /**
 @class FlowBuilder
@@ -18,16 +19,16 @@ The class provides essential methods to construct a task dependency graph
 from which tf::Taskflow and tf::Subflow are derived.
 
 */
-class FlowBuilder {
+class FlowBuilder
+{
 
-  friend class Executor;
+    friend class Executor;
 
   public:
-
     /**
     @brief constructs a flow builder with a graph
     */
-    FlowBuilder(Graph& graph);
+    FlowBuilder(Graph &graph);
 
     /**
     @brief creates a static task
@@ -47,9 +48,8 @@ class FlowBuilder {
     Please refer to @ref StaticTasking for details.
     */
     template <typename C,
-      std::enable_if_t<is_static_task_v<C>, void>* = nullptr
-    >
-    Task emplace(C&& callable);
+              std::enable_if_t<is_static_task_v<C>, void> * = nullptr>
+    Task emplace(C &&callable);
 
     /**
     @brief creates a dynamic task
@@ -73,9 +73,8 @@ class FlowBuilder {
     Please refer to @ref DynamicTasking for details.
     */
     template <typename C,
-      std::enable_if_t<is_dynamic_task_v<C>, void>* = nullptr
-    >
-    Task emplace(C&& callable);
+              std::enable_if_t<is_dynamic_task_v<C>, void> * = nullptr>
+    Task emplace(C &&callable);
 
     /**
     @brief creates a condition task
@@ -107,9 +106,8 @@ class FlowBuilder {
     Please refer to @ref ConditionalTasking for details.
     */
     template <typename C,
-      std::enable_if_t<is_condition_task_v<C>, void>* = nullptr
-    >
-    Task emplace(C&& callable);
+              std::enable_if_t<is_condition_task_v<C>, void> * = nullptr>
+    Task emplace(C &&callable);
 
     /**
     @brief creates a multi-condition task
@@ -143,16 +141,16 @@ class FlowBuilder {
     Please refer to @ref ConditionalTasking for details.
     */
     template <typename C,
-      std::enable_if_t<is_multi_condition_task_v<C>, void>* = nullptr
-    >
-    Task emplace(C&& callable);
+              std::enable_if_t<is_multi_condition_task_v<C>, void> * = nullptr>
+    Task emplace(C &&callable);
 
     /**
     @brief creates multiple tasks from a list of callable objects
 
     @tparam C callable types
 
-    @param callables one or multiple callable objects constructible from each task category
+    @param callables one or multiple callable objects constructible from each
+    task category
 
     @return a tf::Task handle
 
@@ -171,8 +169,9 @@ class FlowBuilder {
     );
     @endcode
     */
-    template <typename... C, std::enable_if_t<(sizeof...(C)>1), void>* = nullptr>
-    auto emplace(C&&... callables);
+    template <typename... C,
+              std::enable_if_t<(sizeof...(C) > 1), void> * = nullptr>
+    auto emplace(C &&...callables);
 
     /**
     @brief removes a task from a taskflow
@@ -247,8 +246,7 @@ class FlowBuilder {
 
     Please refer to @ref ComposableTasking for details.
     */
-    template <typename T>
-    Task composed_of(T& object);
+    template <typename T> Task composed_of(T &object);
 
     /**
     @brief creates a placeholder task
@@ -279,13 +277,14 @@ class FlowBuilder {
     /**
     @brief creates a %cudaFlow task on the caller's GPU device context
 
-    @tparam C callable type constructible from @c std::function<void(tf::cudaFlow&)>
+    @tparam C callable type constructible from @c
+    std::function<void(tf::cudaFlow&)>
 
     @return a tf::Task handle
 
-    This method is equivalent to calling tf::FlowBuilder::emplace_on(callable, d)
-    where @c d is the caller's device context.
-    The following example creates a %cudaFlow of two kernel tasks, @c task1 and
+    This method is equivalent to calling tf::FlowBuilder::emplace_on(callable,
+    d) where @c d is the caller's device context. The following example creates
+    a %cudaFlow of two kernel tasks, @c task1 and
     @c task2, where @c task1 runs before @c task2.
 
     @code{.cpp}
@@ -303,14 +302,14 @@ class FlowBuilder {
     for details.
     */
     template <typename C,
-      std::enable_if_t<is_cudaflow_task_v<C>, void>* = nullptr
-    >
-    Task emplace(C&& callable);
+              std::enable_if_t<is_cudaflow_task_v<C>, void> * = nullptr>
+    Task emplace(C &&callable);
 
     /**
     @brief creates a %cudaFlow task on the given device
 
-    @tparam C callable type constructible from std::function<void(tf::cudaFlow&)>
+    @tparam C callable type constructible from
+    std::function<void(tf::cudaFlow&)>
     @tparam D device type, either @c int or @c std::ref<int> (stateful)
 
     @return a tf::Task handle
@@ -330,21 +329,22 @@ class FlowBuilder {
     @endcode
     */
     template <typename C, typename D,
-      std::enable_if_t<is_cudaflow_task_v<C>, void>* = nullptr
-    >
-    Task emplace_on(C&& callable, D&& device);
+              std::enable_if_t<is_cudaflow_task_v<C>, void> * = nullptr>
+    Task emplace_on(C &&callable, D &&device);
 
     /**
     @brief creates a %syclFlow task on the default queue
 
-    @tparam C callable type constructible from std::function<void(tf::syclFlow&)>
+    @tparam C callable type constructible from
+    std::function<void(tf::syclFlow&)>
 
     @param callable a callable that takes a referenced tf::syclFlow object
 
     @return a tf::Task handle
 
     The following example creates a %syclFlow on the default queue to submit
-    two kernel tasks, @c task1 and @c task2, where @c task1 runs before @c task2.
+    two kernel tasks, @c task1 and @c task2, where @c task1 runs before @c
+    task2.
 
     @code{.cpp}
     taskflow.emplace([&](tf::syclFlow& cf){
@@ -357,13 +357,15 @@ class FlowBuilder {
     });
     @endcode
     */
-    template <typename C, std::enable_if_t<is_syclflow_task_v<C>, void>* = nullptr>
-    Task emplace(C&& callable);
+    template <typename C,
+              std::enable_if_t<is_syclflow_task_v<C>, void> * = nullptr>
+    Task emplace(C &&callable);
 
     /**
     @brief creates a %syclFlow task on the given queue
 
-    @tparam C callable type constructible from std::function<void(tf::syclFlow&)>
+    @tparam C callable type constructible from
+    std::function<void(tf::syclFlow&)>
     @tparam Q queue type
 
     @param callable a callable that takes a referenced tf::syclFlow object
@@ -372,7 +374,8 @@ class FlowBuilder {
     @return a tf::Task handle
 
     The following example creates a %syclFlow on the given queue to submit
-    two kernel tasks, @c task1 and @c task2, where @c task1 runs before @c task2.
+    two kernel tasks, @c task1 and @c task2, where @c task1 runs before @c
+    task2.
 
     @code{.cpp}
     taskflow.emplace_on([&](tf::syclFlow& cf){
@@ -386,9 +389,8 @@ class FlowBuilder {
     @endcode
     */
     template <typename C, typename Q,
-      std::enable_if_t<is_syclflow_task_v<C>, void>* = nullptr
-    >
-    Task emplace_on(C&& callable, Q&& queue);
+              std::enable_if_t<is_syclflow_task_v<C>, void> * = nullptr>
+    Task emplace_on(C &&callable, Q &&queue);
 
     /**
     @brief creates a runtime task
@@ -412,9 +414,8 @@ class FlowBuilder {
     Please refer to @ref RuntimeTasking for details.
     */
     template <typename C,
-      std::enable_if_t<is_runtime_task_v<C>, void>* = nullptr
-    >
-    Task emplace(C&& callable);
+              std::enable_if_t<is_runtime_task_v<C>, void> * = nullptr>
+    Task emplace(C &&callable);
 
     /**
     @brief adds adjacent dependency links to a linear list of tasks
@@ -433,7 +434,7 @@ class FlowBuilder {
     @endcode
 
     */
-    void linearize(std::vector<Task>& tasks);
+    void linearize(std::vector<Task> &tasks);
 
     /**
     @brief adds adjacent dependency links to a linear list of tasks
@@ -470,8 +471,9 @@ class FlowBuilder {
     @return a tf::Task handle
 
     The task spawns a subflow that applies the callable object to each object
-    obtained by dereferencing every iterator in the range <tt>[first, last)</tt>.
-    This method is equivalent to the parallel execution of the following loop:
+    obtained by dereferencing every iterator in the range <tt>[first,
+    last)</tt>. This method is equivalent to the parallel execution of the
+    following loop:
 
     @code{.cpp}
     for(auto itr=first; itr!=last; itr++) {
@@ -519,8 +521,9 @@ class FlowBuilder {
     }
     @endcode
 
-    Arguments are templated to enable stateful range using std::reference_wrapper.
-    The callable needs to take a single argument of the integral index type.
+    Arguments are templated to enable stateful range using
+    std::reference_wrapper. The callable needs to take a single argument of the
+    integral index type.
 
     Please refer to @ref ParallelIterations for details.
     */
@@ -556,9 +559,9 @@ class FlowBuilder {
     }
     @endcode
 
-    Arguments are templated to enable stateful range using std::reference_wrapper.
-    The callable needs to take a single argument of the dereferenced
-    iterator type.
+    Arguments are templated to enable stateful range using
+    std::reference_wrapper. The callable needs to take a single argument of the
+    dereferenced iterator type.
     */
     template <typename B, typename E, typename O, typename C>
     Task transform(B first1, E last1, O d_first, C c);
@@ -590,9 +593,9 @@ class FlowBuilder {
     }
     @endcode
 
-    Arguments are templated to enable stateful range using std::reference_wrapper.
-    The callable needs to take two arguments of dereferenced elements
-    from the two input ranges.
+    Arguments are templated to enable stateful range using
+    std::reference_wrapper. The callable needs to take two arguments of
+    dereferenced elements from the two input ranges.
     */
     template <typename B1, typename E1, typename B2, typename O, typename C>
     Task transform(B1 first1, E1 last1, B2 first2, O d_first, C c);
@@ -611,7 +614,8 @@ class FlowBuilder {
 
     @param first iterator to the beginning (inclusive)
     @param last iterator to the end (exclusive)
-    @param init initial value of the reduction and the storage for the reduced result
+    @param init initial value of the reduction and the storage for the reduced
+    result
     @param bop binary operator that will be applied
 
     @return a tf::Task handle
@@ -627,12 +631,13 @@ class FlowBuilder {
     }
     @endcode
 
-    Arguments are templated to enable stateful range using std::reference_wrapper.
+    Arguments are templated to enable stateful range using
+    std::reference_wrapper.
 
     Please refer to @ref ParallelReduction for details.
     */
     template <typename B, typename E, typename T, typename O>
-    Task reduce(B first, E last, T& init, O bop);
+    Task reduce(B first, E last, T &init, O bop);
 
     // ------------------------------------------------------------------------
     // transfrom and reduction
@@ -649,9 +654,12 @@ class FlowBuilder {
 
     @param first iterator to the beginning (inclusive)
     @param last iterator to the end (exclusive)
-    @param init initial value of the reduction and the storage for the reduced result
-    @param bop binary operator that will be applied in unspecified order to the results of @c uop
-    @param uop unary operator that will be applied to transform each element in the range to the result type
+    @param init initial value of the reduction and the storage for the reduced
+    result
+    @param bop binary operator that will be applied in unspecified order to the
+    results of @c uop
+    @param uop unary operator that will be applied to transform each element in
+    the range to the result type
 
     @return a tf::Task handle
 
@@ -666,12 +674,13 @@ class FlowBuilder {
     }
     @endcode
 
-    Arguments are templated to enable stateful range using std::reference_wrapper.
+    Arguments are templated to enable stateful range using
+    std::reference_wrapper.
 
     Please refer to @ref ParallelReduction for details.
     */
     template <typename B, typename E, typename T, typename BOP, typename UOP>
-    Task transform_reduce(B first, E last, T& init, BOP bop, UOP uop);
+    Task transform_reduce(B first, E last, T &init, BOP bop, UOP uop);
 
     // ------------------------------------------------------------------------
     // sort
@@ -691,7 +700,8 @@ class FlowBuilder {
     The task spawns a subflow to parallelly sort elements in the range
     <tt>[first, last)</tt>.
 
-    Arguments are templated to enable stateful range using std::reference_wrapper.
+    Arguments are templated to enable stateful range using
+    std::reference_wrapper.
 
     Please refer to @ref ParallelSort for details.
     */
@@ -712,142 +722,141 @@ class FlowBuilder {
     <tt>[first, last)</tt> using the @c std::less<T> comparator,
     where @c T is the dereferenced iterator type.
 
-    Arguments are templated to enable stateful range using std::reference_wrapper.
+    Arguments are templated to enable stateful range using
+    std::reference_wrapper.
 
     Please refer to @ref ParallelSort for details.
      */
-    template <typename B, typename E>
-    Task sort(B first, E last);
+    template <typename B, typename E> Task sort(B first, E last);
 
   protected:
-
     /**
     @brief associated graph object
     */
-    Graph& _graph;
+    Graph &_graph;
 
   private:
-
-    template <typename L>
-    void _linearize(L&);
+    template <typename L> void _linearize(L &);
 };
 
 // Constructor
-inline FlowBuilder::FlowBuilder(Graph& graph) :
-  _graph {graph} {
+inline FlowBuilder::FlowBuilder(Graph &graph) : _graph{graph} {}
+
+// Function: emplace
+template <typename C, std::enable_if_t<is_static_task_v<C>, void> *>
+Task FlowBuilder::emplace(C &&c)
+{
+    return Task(_graph._emplace_back(std::in_place_type_t<Node::Static>{},
+                                     std::forward<C>(c)));
 }
 
 // Function: emplace
-template <typename C, std::enable_if_t<is_static_task_v<C>, void>*>
-Task FlowBuilder::emplace(C&& c) {
-  return Task(_graph._emplace_back(
-    std::in_place_type_t<Node::Static>{}, std::forward<C>(c)
-  ));
+template <typename C, std::enable_if_t<is_dynamic_task_v<C>, void> *>
+Task FlowBuilder::emplace(C &&c)
+{
+    return Task(_graph._emplace_back(std::in_place_type_t<Node::Dynamic>{},
+                                     std::forward<C>(c)));
 }
 
 // Function: emplace
-template <typename C, std::enable_if_t<is_dynamic_task_v<C>, void>*>
-Task FlowBuilder::emplace(C&& c) {
-  return Task(_graph._emplace_back(
-    std::in_place_type_t<Node::Dynamic>{}, std::forward<C>(c)
-  ));
+template <typename C, std::enable_if_t<is_condition_task_v<C>, void> *>
+Task FlowBuilder::emplace(C &&c)
+{
+    return Task(_graph._emplace_back(std::in_place_type_t<Node::Condition>{},
+                                     std::forward<C>(c)));
 }
 
 // Function: emplace
-template <typename C, std::enable_if_t<is_condition_task_v<C>, void>*>
-Task FlowBuilder::emplace(C&& c) {
-  return Task(_graph._emplace_back(
-    std::in_place_type_t<Node::Condition>{}, std::forward<C>(c)
-  ));
+template <typename C, std::enable_if_t<is_multi_condition_task_v<C>, void> *>
+Task FlowBuilder::emplace(C &&c)
+{
+    return Task(_graph._emplace_back(
+        std::in_place_type_t<Node::MultiCondition>{}, std::forward<C>(c)));
 }
 
 // Function: emplace
-template <typename C, std::enable_if_t<is_multi_condition_task_v<C>, void>*>
-Task FlowBuilder::emplace(C&& c) {
-  return Task(_graph._emplace_back(
-    std::in_place_type_t<Node::MultiCondition>{}, std::forward<C>(c)
-  ));
+template <typename C, std::enable_if_t<is_runtime_task_v<C>, void> *>
+Task FlowBuilder::emplace(C &&c)
+{
+    return Task(_graph._emplace_back(std::in_place_type_t<Node::Runtime>{},
+                                     std::forward<C>(c)));
 }
 
 // Function: emplace
-template <typename C, std::enable_if_t<is_runtime_task_v<C>, void>*>
-Task FlowBuilder::emplace(C&& c) {
-  return Task(_graph._emplace_back(
-    std::in_place_type_t<Node::Runtime>{}, std::forward<C>(c)
-  ));
-}
-
-// Function: emplace
-template <typename... C, std::enable_if_t<(sizeof...(C)>1), void>*>
-auto FlowBuilder::emplace(C&&... cs) {
-  return std::make_tuple(emplace(std::forward<C>(cs))...);
+template <typename... C, std::enable_if_t<(sizeof...(C) > 1), void> *>
+auto FlowBuilder::emplace(C &&...cs)
+{
+    return std::make_tuple(emplace(std::forward<C>(cs))...);
 }
 
 // Function: erase
-inline void FlowBuilder::erase(Task task) {
+inline void FlowBuilder::erase(Task task)
+{
 
-  if (!task._node) {
-    return;
-  }
-
-  task.for_each_dependent([&] (Task dependent) {
-    auto& S = dependent._node->_successors;
-    if(auto I = std::find(S.begin(), S.end(), task._node); I != S.end()) {
-      S.erase(I);
+    if (!task._node) {
+        return;
     }
-  });
 
-  task.for_each_successor([&] (Task dependent) {
-    auto& D = dependent._node->_dependents;
-    if(auto I = std::find(D.begin(), D.end(), task._node); I != D.end()) {
-      D.erase(I);
-    }
-  });
+    task.for_each_dependent([&](Task dependent) {
+        auto &S = dependent._node->_successors;
+        if (auto I = std::find(S.begin(), S.end(), task._node); I != S.end()) {
+            S.erase(I);
+        }
+    });
 
-  _graph._erase(task._node);
+    task.for_each_successor([&](Task dependent) {
+        auto &D = dependent._node->_dependents;
+        if (auto I = std::find(D.begin(), D.end(), task._node); I != D.end()) {
+            D.erase(I);
+        }
+    });
+
+    _graph._erase(task._node);
 }
 
 // Function: composed_of
-template <typename T>
-Task FlowBuilder::composed_of(T& object) {
-  auto node = _graph._emplace_back(
-    std::in_place_type_t<Node::Module>{}, object
-  );
-  return Task(node);
+template <typename T> Task FlowBuilder::composed_of(T &object)
+{
+    auto node =
+        _graph._emplace_back(std::in_place_type_t<Node::Module>{}, object);
+    return Task(node);
 }
 
 // Function: placeholder
-inline Task FlowBuilder::placeholder() {
-  auto node = _graph._emplace_back();
-  return Task(node);
+inline Task FlowBuilder::placeholder()
+{
+    auto node = _graph._emplace_back();
+    return Task(node);
 }
 
 // Procedure: _linearize
-template <typename L>
-void FlowBuilder::_linearize(L& keys) {
+template <typename L> void FlowBuilder::_linearize(L &keys)
+{
 
-  auto itr = keys.begin();
-  auto end = keys.end();
+    auto itr = keys.begin();
+    auto end = keys.end();
 
-  if(itr == end) {
-    return;
-  }
+    if (itr == end) {
+        return;
+    }
 
-  auto nxt = itr;
+    auto nxt = itr;
 
-  for(++nxt; nxt != end; ++nxt, ++itr) {
-    itr->_node->_precede(nxt->_node);
-  }
+    for (++nxt; nxt != end; ++nxt, ++itr) {
+        itr->_node->_precede(nxt->_node);
+    }
 }
 
 // Procedure: linearize
-inline void FlowBuilder::linearize(std::vector<Task>& keys) {
-  _linearize(keys);
+inline void FlowBuilder::linearize(std::vector<Task> &keys)
+{
+    _linearize(keys);
 }
 
 // Procedure: linearize
-inline void FlowBuilder::linearize(std::initializer_list<Task> keys) {
-  _linearize(keys);
+inline void FlowBuilder::linearize(std::initializer_list<Task> keys)
+{
+    _linearize(keys);
 }
 
 // ----------------------------------------------------------------------------
@@ -886,19 +895,20 @@ C.precede(D);  // D runs after C
 @endcode
 
 */
-class Subflow : public FlowBuilder {
+class Subflow : public FlowBuilder
+{
 
-  friend class Executor;
-  friend class FlowBuilder;
-  friend class Runtime;
+    friend class Executor;
+    friend class FlowBuilder;
+    friend class Runtime;
 
   public:
-
     /**
     @brief enables the subflow to join its parent task
 
-    Performs an immediate action to join the subflow. Once the subflow is joined,
-    it is considered finished and you may not modify the subflow anymore.
+    Performs an immediate action to join the subflow. Once the subflow is
+    joined, it is considered finished and you may not modify the subflow
+    anymore.
 
     @code{.cpp}
     taskflow.emplace([](tf::Subflow& sf){
@@ -914,8 +924,9 @@ class Subflow : public FlowBuilder {
     /**
     @brief enables the subflow to detach from its parent task
 
-    Performs an immediate action to detach the subflow. Once the subflow is detached,
-    it is considered finished and you may not modify the subflow anymore.
+    Performs an immediate action to detach the subflow. Once the subflow is
+    detached, it is considered finished and you may not modify the subflow
+    anymore.
 
     @code{.cpp}
     taskflow.emplace([](tf::Subflow& sf){
@@ -931,9 +942,10 @@ class Subflow : public FlowBuilder {
     /**
     @brief resets the subflow to a joinable state
 
-    @param clear_graph specifies whether to clear the associated graph (default @c true)
+    @param clear_graph specifies whether to clear the associated graph (default
+    @c true)
 
-    Clears the underlying task graph depending on the 
+    Clears the underlying task graph depending on the
     given variable @c clear_graph (default @c true) and then
     updates the subflow to a joinable state.
     */
@@ -993,8 +1005,7 @@ class Subflow : public FlowBuilder {
     You cannot create asynchronous tasks from a detached subflow.
     Doing this results in undefined behavior.
     */
-    template <typename F, typename... ArgsT>
-    auto async(F&& f, ArgsT&&... args);
+    template <typename F, typename... ArgsT> auto async(F &&f, ArgsT &&...args);
 
     /**
     @brief runs the given function asynchronously and assigns the task a name
@@ -1010,11 +1021,10 @@ class Subflow : public FlowBuilder {
 
     The method creates a named asynchronous task to launch the given
     function on the given arguments.
-    The difference from tf::Executor::async is that the created asynchronous task
-    pertains to the subflow.
-    When the subflow joins, all asynchronous tasks created from the subflow
-    are guaranteed to finish before the join.
-    For example:
+    The difference from tf::Executor::async is that the created asynchronous
+    task pertains to the subflow. When the subflow joins, all asynchronous tasks
+    created from the subflow are guaranteed to finish before the join. For
+    example:
 
     @code{.cpp}
     std::atomic<int> counter(0);
@@ -1035,7 +1045,7 @@ class Subflow : public FlowBuilder {
     Doing this results in undefined behavior.
     */
     template <typename F, typename... ArgsT>
-    auto named_async(const std::string& name, F&& f, ArgsT&&... args);
+    auto named_async(const std::string &name, F &&f, ArgsT &&...args);
 
     /**
     @brief similar to tf::Subflow::async but does not return a future object
@@ -1056,10 +1066,11 @@ class Subflow : public FlowBuilder {
     This member function is thread-safe.
     */
     template <typename F, typename... ArgsT>
-    void silent_async(F&& f, ArgsT&&... args);
+    void silent_async(F &&f, ArgsT &&...args);
 
     /**
-    @brief similar to tf::Subflow::named_async but does not return a future object
+    @brief similar to tf::Subflow::named_async but does not return a future
+    object
 
     This member function is more efficient than tf::Subflow::named_async
     and is encouraged to use when there is no data returned.
@@ -1077,66 +1088,51 @@ class Subflow : public FlowBuilder {
     This member function is thread-safe.
     */
     template <typename F, typename... ArgsT>
-    void named_silent_async(const std::string& name, F&& f, ArgsT&&... args);
+    void named_silent_async(const std::string &name, F &&f, ArgsT &&...args);
 
     /**
     @brief returns the executor that runs this subflow
     */
-    inline Executor& executor();
+    inline Executor &executor();
 
   private:
+    Executor &_executor;
+    Worker &_worker;
+    Node *_parent;
+    bool _joinable{true};
 
-    Executor& _executor;
-    Worker& _worker;
-    Node* _parent;
-    bool _joinable {true};
-
-    Subflow(Executor&, Worker&, Node*, Graph&);
-
-    template <typename F, typename... ArgsT>
-    auto _named_async(Worker& w, const std::string& name, F&& f, ArgsT&&... args);
+    Subflow(Executor &, Worker &, Node *, Graph &);
 
     template <typename F, typename... ArgsT>
-    void _named_silent_async(Worker& w, const std::string& name, F&& f, ArgsT&&... args);
+    auto _named_async(Worker &w, const std::string &name, F &&f,
+                      ArgsT &&...args);
+
+    template <typename F, typename... ArgsT>
+    void _named_silent_async(Worker &w, const std::string &name, F &&f,
+                             ArgsT &&...args);
 };
 
 // Constructor
-inline Subflow::Subflow(
-  Executor& executor, Worker& worker, Node* parent, Graph& graph
-) :
-  FlowBuilder {graph},
-  _executor   {executor},
-  _worker     {worker},
-  _parent     {parent} {
-  // assert(_parent != nullptr);
+inline Subflow::Subflow(Executor &executor, Worker &worker, Node *parent,
+                        Graph &graph)
+    : FlowBuilder{graph}, _executor{executor}, _worker{worker}, _parent{parent}
+{
+    // assert(_parent != nullptr);
 }
 
 // Function: joined
-inline bool Subflow::joinable() const noexcept {
-  return _joinable;
-}
+inline bool Subflow::joinable() const noexcept { return _joinable; }
 
 // Function: executor
-inline Executor& Subflow::executor() {
-  return _executor;
-}
+inline Executor &Subflow::executor() { return _executor; }
 
 // Procedure: reset
-inline void Subflow::reset(bool clear_graph) {
-  if(clear_graph) {
-    _graph._clear();
-  }
-  _joinable = true;
+inline void Subflow::reset(bool clear_graph)
+{
+    if (clear_graph) {
+        _graph._clear();
+    }
+    _joinable = true;
 }
 
-}  // end of namespace tf. ---------------------------------------------------
-
-
-
-
-
-
-
-
-
-
+} // namespace tf

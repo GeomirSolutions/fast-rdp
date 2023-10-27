@@ -5,22 +5,23 @@
 /// License
 /// Copyright 2018-2022 David Pilger
 ///
-/// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-/// software and associated documentation files(the "Software"), to deal in the Software
-/// without restriction, including without limitation the rights to use, copy, modify,
-/// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-/// permit persons to whom the Software is furnished to do so, subject to the following
-/// conditions :
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files(the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions :
 ///
-/// The above copyright notice and this permission notice shall be included in all copies
-/// or substantial portions of the Software.
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
 ///
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-/// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-/// PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-/// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-/// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-/// DEALINGS IN THE SOFTWARE.
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+/// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+/// IN THE SOFTWARE.
 ///
 /// Description
 /// Constant boundary
@@ -36,50 +37,50 @@
 
 namespace nc
 {
-    namespace filter
-    {
-        namespace boundary
-        {
-            //============================================================================
-            // Method Description:
-            /// Constant boundary
-            ///
-            /// @param inImage
-            /// @param inBoundarySize
-            /// @param inConstantValue
-            /// @return NdArray
-            ///
-            template<typename dtype>
-            NdArray<dtype> constant2d(const NdArray<dtype>& inImage, uint32 inBoundarySize, dtype inConstantValue)
-            {
-                STATIC_ASSERT_ARITHMETIC(dtype);
+namespace filter
+{
+namespace boundary
+{
+//============================================================================
+// Method Description:
+/// Constant boundary
+///
+/// @param inImage
+/// @param inBoundarySize
+/// @param inConstantValue
+/// @return NdArray
+///
+template <typename dtype>
+NdArray<dtype> constant2d(const NdArray<dtype> &inImage, uint32 inBoundarySize,
+                          dtype inConstantValue)
+{
+    STATIC_ASSERT_ARITHMETIC(dtype);
 
-                const Shape inShape = inImage.shape();
-                Shape       outShape(inShape);
-                outShape.rows += inBoundarySize * 2;
-                outShape.cols += inBoundarySize * 2;
+    const Shape inShape = inImage.shape();
+    Shape outShape(inShape);
+    outShape.rows += inBoundarySize * 2;
+    outShape.cols += inBoundarySize * 2;
 
-                NdArray<dtype> outArray(outShape);
-                outArray.put(Slice(inBoundarySize, inBoundarySize + inShape.rows),
-                             Slice(inBoundarySize, inBoundarySize + inShape.cols),
-                             inImage);
-                fillCorners(outArray, inBoundarySize, inConstantValue);
+    NdArray<dtype> outArray(outShape);
+    outArray.put(Slice(inBoundarySize, inBoundarySize + inShape.rows),
+                 Slice(inBoundarySize, inBoundarySize + inShape.cols), inImage);
+    fillCorners(outArray, inBoundarySize, inConstantValue);
 
-                outArray.put(Slice(0, inBoundarySize),
-                             Slice(inBoundarySize, inBoundarySize + inShape.cols),
-                             inConstantValue); /// bottom
-                outArray.put(Slice(outShape.rows - inBoundarySize, outShape.rows),
-                             Slice(inBoundarySize, inBoundarySize + inShape.cols),
-                             inConstantValue); /// top
-                outArray.put(Slice(inBoundarySize, inBoundarySize + inShape.rows),
-                             Slice(0, inBoundarySize),
-                             inConstantValue); /// left
-                outArray.put(Slice(inBoundarySize, inBoundarySize + inShape.rows),
-                             Slice(outShape.cols - inBoundarySize, outShape.cols),
-                             inConstantValue); /// right
+    outArray.put(Slice(0, inBoundarySize),
+                 Slice(inBoundarySize, inBoundarySize + inShape.cols),
+                 inConstantValue); /// bottom
+    outArray.put(Slice(outShape.rows - inBoundarySize, outShape.rows),
+                 Slice(inBoundarySize, inBoundarySize + inShape.cols),
+                 inConstantValue); /// top
+    outArray.put(Slice(inBoundarySize, inBoundarySize + inShape.rows),
+                 Slice(0, inBoundarySize),
+                 inConstantValue); /// left
+    outArray.put(Slice(inBoundarySize, inBoundarySize + inShape.rows),
+                 Slice(outShape.cols - inBoundarySize, outShape.cols),
+                 inConstantValue); /// right
 
-                return outArray;
-            }
-        } // namespace boundary
-    }     // namespace filter
+    return outArray;
+}
+} // namespace boundary
+} // namespace filter
 } // namespace nc

@@ -8,34 +8,33 @@
 #include "cista/equal_to.h"
 #include "cista/hashing.h"
 
-namespace cista {
+namespace cista
+{
 
-struct get_first {
-  template <typename T>
-  auto&& operator()(T&& t) noexcept {
-    return t.first;
-  }
+struct get_first
+{
+    template <typename T> auto &&operator()(T &&t) noexcept { return t.first; }
 };
 
-struct get_second {
-  template <typename T>
-  auto&& operator()(T&& t) noexcept {
-    return t.second;
-  }
+struct get_second
+{
+    template <typename T> auto &&operator()(T &&t) noexcept { return t.second; }
 };
 
-namespace raw {
+namespace raw
+{
 template <typename Key, typename Value, typename Hash = hashing<Key>,
           typename Eq = equal_to<Key>>
 using hash_map =
     hash_storage<pair<Key, Value>, ptr, get_first, get_second, Hash, Eq>;
-}  // namespace raw
+} // namespace raw
 
-namespace offset {
+namespace offset
+{
 template <typename Key, typename Value, typename Hash = hashing<Key>,
           typename Eq = equal_to<Key>>
 using hash_map =
     hash_storage<pair<Key, Value>, ptr, get_first, get_second, Hash, Eq>;
-}  // namespace offset
+} // namespace offset
 
-}  // namespace cista
+} // namespace cista

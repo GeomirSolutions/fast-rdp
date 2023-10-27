@@ -8,14 +8,19 @@
 #include <mapbox/geometry/wagyu/edge.hpp>
 #include <mapbox/geometry/wagyu/util.hpp>
 
-namespace mapbox {
-namespace geometry {
-namespace wagyu {
+namespace mapbox
+{
+namespace geometry
+{
+namespace wagyu
+{
 
 template <typename T>
-bool point_2_is_between_point_1_and_point_3(mapbox::geometry::point<T> const& pt1,
-                                            mapbox::geometry::point<T> const& pt2,
-                                            mapbox::geometry::point<T> const& pt3) {
+bool point_2_is_between_point_1_and_point_3(
+    mapbox::geometry::point<T> const &pt1,
+    mapbox::geometry::point<T> const &pt2,
+    mapbox::geometry::point<T> const &pt3)
+{
     if ((pt1 == pt3) || (pt1 == pt2) || (pt3 == pt2)) {
         return false;
     } else if (pt1.x != pt3.x) {
@@ -26,7 +31,9 @@ bool point_2_is_between_point_1_and_point_3(mapbox::geometry::point<T> const& pt
 }
 
 template <typename T1, typename T2>
-bool build_edge_list(mapbox::geometry::linear_ring<T2> const& path_geometry, edge_list<T1>& edges) {
+bool build_edge_list(mapbox::geometry::linear_ring<T2> const &path_geometry,
+                     edge_list<T1> &edges)
+{
 
     if (path_geometry.size() < 3) {
         return false;
@@ -84,12 +91,17 @@ bool build_edge_list(mapbox::geometry::linear_ring<T2> const& path_geometry, edg
                 edges.pop_back(); // remove previous edge (pt1)
             }
             if (!edges.empty()) {
-                auto const& back_top = edges.back().top;
-                if (static_cast<T1>(back_pt.x) == back_top.x && static_cast<T1>(back_pt.y) == back_top.y) {
-                    auto const& back_bot = edges.back().bot;
-                    pt1 = mapbox::geometry::point<T2>(static_cast<T2>(back_bot.x), static_cast<T2>(back_bot.y));
+                auto const &back_top = edges.back().top;
+                if (static_cast<T1>(back_pt.x) == back_top.x &&
+                    static_cast<T1>(back_pt.y) == back_top.y) {
+                    auto const &back_bot = edges.back().bot;
+                    pt1 = mapbox::geometry::point<T2>(
+                        static_cast<T2>(back_bot.x),
+                        static_cast<T2>(back_bot.y));
                 } else {
-                    pt1 = mapbox::geometry::point<T2>(static_cast<T2>(back_top.x), static_cast<T2>(back_top.y));
+                    pt1 = mapbox::geometry::point<T2>(
+                        static_cast<T2>(back_top.x),
+                        static_cast<T2>(back_top.y));
                 }
                 back_pt = pt1;
             } else {
@@ -134,8 +146,8 @@ bool build_edge_list(mapbox::geometry::linear_ring<T2> const& path_geometry, edg
         if (edges.size() < 3) {
             return false;
         }
-        auto& f = edges.front();
-        auto& b = edges.back();
+        auto &f = edges.front();
+        auto &b = edges.back();
         if (slopes_equal(f, b)) {
             if (f.bot == b.top) {
                 if (f.top == b.bot) {
@@ -155,7 +167,8 @@ bool build_edge_list(mapbox::geometry::linear_ring<T2> const& path_geometry, edg
                 edges.erase(edges.begin());
                 modified = true;
             } else if (f.top == b.top) {
-                if (point_2_is_between_point_1_and_point_3(f.top, f.bot, b.bot)) {
+                if (point_2_is_between_point_1_and_point_3(f.top, f.bot,
+                                                           b.bot)) {
                     b.top = f.bot;
                     edges.erase(edges.begin());
                 } else {
@@ -164,7 +177,8 @@ bool build_edge_list(mapbox::geometry::linear_ring<T2> const& path_geometry, edg
                 }
                 modified = true;
             } else if (f.bot == b.bot) {
-                if (point_2_is_between_point_1_and_point_3(f.bot, f.top, b.top)) {
+                if (point_2_is_between_point_1_and_point_3(f.bot, f.top,
+                                                           b.top)) {
                     b.bot = f.top;
                     edges.erase(edges.begin());
                 } else {

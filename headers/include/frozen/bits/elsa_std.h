@@ -10,16 +10,21 @@
 #endif
 #include <string>
 
-namespace frozen {
+namespace frozen
+{
 
 #ifdef FROZEN_LETITGO_HAS_STRING_VIEW
 
 template <typename CharT> struct elsa<std::basic_string_view<CharT>>
 {
-    constexpr std::size_t operator()(const std::basic_string_view<CharT>& value) const {
+    constexpr std::size_t
+    operator()(const std::basic_string_view<CharT> &value) const
+    {
         return hash_string(value);
     }
-    constexpr std::size_t operator()(const std::basic_string_view<CharT>& value, std::size_t seed) const {
+    constexpr std::size_t operator()(const std::basic_string_view<CharT> &value,
+                                     std::size_t seed) const
+    {
         return hash_string(value, seed);
     }
 };
@@ -28,10 +33,14 @@ template <typename CharT> struct elsa<std::basic_string_view<CharT>>
 
 template <typename CharT> struct elsa<std::basic_string<CharT>>
 {
-    constexpr std::size_t operator()(const std::basic_string<CharT>& value) const {
+    constexpr std::size_t
+    operator()(const std::basic_string<CharT> &value) const
+    {
         return hash_string(value);
     }
-    constexpr std::size_t operator()(const std::basic_string<CharT>& value, std::size_t seed) const {
+    constexpr std::size_t operator()(const std::basic_string<CharT> &value,
+                                     std::size_t seed) const
+    {
         return hash_string(value, seed);
     }
 };

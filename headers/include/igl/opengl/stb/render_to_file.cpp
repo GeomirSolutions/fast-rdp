@@ -11,33 +11,23 @@
 
 #include "../gl.h"
 
-IGL_INLINE bool igl::opengl::stb::render_to_file(
-  const std::string filename,
-  const int width,
-  const int height,
-  const bool alpha)
+IGL_INLINE bool igl::opengl::stb::render_to_file(const std::string filename,
+                                                 const int width,
+                                                 const int height,
+                                                 const bool alpha)
 {
-  unsigned char * data = new unsigned char[4*width*height];
-  glReadPixels(
-    0,
-    0,
-    width,
-    height,
-    GL_RGBA,
-    GL_UNSIGNED_BYTE,
-    data);
-  //img->flip();
-  if(!alpha)
-  {
-    for(int i = 0;i<width;i++)
-    for(int j = 0;j<height;j++)
-    {
-      data[4*(i+j*width)+3] = 255;
+    unsigned char *data = new unsigned char[4 * width * height];
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    // img->flip();
+    if (!alpha) {
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++) {
+                data[4 * (i + j * width) + 3] = 255;
+            }
     }
-  }
-  const bool ret = igl::stb::write_image(filename,width,height,data);
-  delete [] data;
-  return ret;
+    const bool ret = igl::stb::write_image(filename, width, height, data);
+    delete[] data;
+    return ret;
 }
 
 #ifdef IGL_STATIC_LIBRARY

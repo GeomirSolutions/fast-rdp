@@ -6,19 +6,18 @@
 #include <iostream>
 #include <string>
 
-namespace mapbox {
-namespace geometry {
-
-std::ostream& operator<<(std::ostream& os, const empty&)
+namespace mapbox
 {
-    return os << "[]";
-}
+namespace geometry
+{
+
+std::ostream &operator<<(std::ostream &os, const empty &) { return os << "[]"; }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const point<T>& point)
+std::ostream &operator<<(std::ostream &os, const point<T> &point)
 {
     os << "[" << point.x << "," << point.y << "," << point.z << "]";
     return os;
@@ -27,14 +26,12 @@ std::ostream& operator<<(std::ostream& os, const point<T>& point)
 #pragma GCC diagnostic pop
 
 template <typename T, template <class, class...> class C, class... Args>
-std::ostream& operator<<(std::ostream& os, const C<T, Args...>& cont)
+std::ostream &operator<<(std::ostream &os, const C<T, Args...> &cont)
 {
     os << "[";
-    for (auto it = cont.cbegin();;)
-    {
+    for (auto it = cont.cbegin();;) {
         os << *it;
-        if (++it == cont.cend())
-        {
+        if (++it == cont.cend()) {
             break;
         }
         os << ",";
@@ -43,59 +40,62 @@ std::ostream& operator<<(std::ostream& os, const C<T, Args...>& cont)
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const line_string<T>& geom)
+std::ostream &operator<<(std::ostream &os, const line_string<T> &geom)
 {
     return os << static_cast<typename line_string<T>::container_type>(geom);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const linear_ring<T>& geom)
+std::ostream &operator<<(std::ostream &os, const linear_ring<T> &geom)
 {
     return os << static_cast<typename linear_ring<T>::container_type>(geom);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const polygon<T>& geom)
+std::ostream &operator<<(std::ostream &os, const polygon<T> &geom)
 {
     return os << static_cast<typename polygon<T>::container_type>(geom);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const multi_point<T>& geom)
+std::ostream &operator<<(std::ostream &os, const multi_point<T> &geom)
 {
     return os << static_cast<typename multi_point<T>::container_type>(geom);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const multi_line_string<T>& geom)
+std::ostream &operator<<(std::ostream &os, const multi_line_string<T> &geom)
 {
-    return os << static_cast<typename multi_line_string<T>::container_type>(geom);
+    return os << static_cast<typename multi_line_string<T>::container_type>(
+               geom);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const multi_polygon<T>& geom)
+std::ostream &operator<<(std::ostream &os, const multi_polygon<T> &geom)
 {
     return os << static_cast<typename multi_polygon<T>::container_type>(geom);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const geometry<T>& geom)
+std::ostream &operator<<(std::ostream &os, const geometry<T> &geom)
 {
-    geometry<T>::visit(geom, [&](const auto& g) { os << g; });
+    geometry<T>::visit(geom, [&](const auto &g) { os << g; });
     return os;
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const geometry_collection<T>& geom)
+std::ostream &operator<<(std::ostream &os, const geometry_collection<T> &geom)
 {
-    return os << static_cast<typename geometry_collection<T>::container_type>(geom);
+    return os << static_cast<typename geometry_collection<T>::container_type>(
+               geom);
 }
 
 } // namespace geometry
 
-namespace feature {
+namespace feature
+{
 
-std::ostream& operator<<(std::ostream& os, const null_value_t&)
+std::ostream &operator<<(std::ostream &os, const null_value_t &)
 {
     return os << "[]";
 }

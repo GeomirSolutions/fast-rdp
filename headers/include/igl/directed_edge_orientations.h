@@ -16,22 +16,21 @@
 
 namespace igl
 {
-  /// Determine rotations that take each edge from the x-axis to its given rest
-  /// orientation.
-  ///
-  /// @param[in] C  #C by 3 list of edge vertex positions
-  /// @param[in] E  #E by 2 list of directed edges
-  /// @param[out] Q  #E list of quaternions
-  ///
-  template <typename DerivedC, typename DerivedE>
-  IGL_INLINE void directed_edge_orientations(
-    const Eigen::MatrixBase<DerivedC> & C,
-    const Eigen::MatrixBase<DerivedE> & E,
-    std::vector<
-      Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & Q);
-}
+/// Determine rotations that take each edge from the x-axis to its given rest
+/// orientation.
+///
+/// @param[in] C  #C by 3 list of edge vertex positions
+/// @param[in] E  #E by 2 list of directed edges
+/// @param[out] Q  #E list of quaternions
+///
+template <typename DerivedC, typename DerivedE>
+IGL_INLINE void directed_edge_orientations(
+    const Eigen::MatrixBase<DerivedC> &C, const Eigen::MatrixBase<DerivedE> &E,
+    std::vector<Eigen::Quaterniond,
+                Eigen::aligned_allocator<Eigen::Quaterniond>> &Q);
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "directed_edge_orientations.cpp"
+#include "directed_edge_orientations.cpp"
 #endif
 #endif

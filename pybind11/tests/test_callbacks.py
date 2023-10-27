@@ -1,9 +1,8 @@
 import time
 from threading import Thread
 
-import pytest
-
 import env  # noqa: F401
+import pytest
 from pybind11_tests import callbacks as m
 from pybind11_tests import detailed_error_messages_enabled
 

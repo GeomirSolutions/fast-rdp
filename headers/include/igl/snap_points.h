@@ -13,53 +13,36 @@
 
 namespace igl
 {
-  /// Snap list of points C to closest of another list of points V
-  ///
-  /// @param[in] C  #C by dim list of query point positions
-  /// @param[in] V  #V by dim list of data point positions
-  /// @param[out] I  #C list of indices into V of closest points to C
-  /// @param[out] minD  #C list of squared (^p) distances to closest points
-  /// @param[out] VI  #C by dim list of new point positions, VI = V(I,:)
-  template <
-    typename DerivedC,
-    typename DerivedV,
-    typename DerivedI,
-    typename DerivedminD,
-    typename DerivedVI>
-  IGL_INLINE void snap_points(
-    const Eigen::MatrixBase<DerivedC > & C,
-    const Eigen::MatrixBase<DerivedV > & V,
-    Eigen::PlainObjectBase<DerivedI > & I,
-    Eigen::PlainObjectBase<DerivedminD > & minD,
-    Eigen::PlainObjectBase<DerivedVI > & VI);
-  /// \overload
-  template <
-    typename DerivedC,
-    typename DerivedV,
-    typename DerivedI,
-    typename DerivedminD>
-  IGL_INLINE void snap_points(
-    const Eigen::MatrixBase<DerivedC > & C,
-    const Eigen::MatrixBase<DerivedV > & V,
-    Eigen::PlainObjectBase<DerivedI > & I,
-    Eigen::PlainObjectBase<DerivedminD > & minD);
-  /// \overload
-  template <
-    typename DerivedC,
-    typename DerivedV,
-    typename DerivedI >
-  IGL_INLINE void snap_points(
-    const Eigen::MatrixBase<DerivedC > & C,
-    const Eigen::MatrixBase<DerivedV > & V,
-    Eigen::PlainObjectBase<DerivedI > & I);
-}
+/// Snap list of points C to closest of another list of points V
+///
+/// @param[in] C  #C by dim list of query point positions
+/// @param[in] V  #V by dim list of data point positions
+/// @param[out] I  #C list of indices into V of closest points to C
+/// @param[out] minD  #C list of squared (^p) distances to closest points
+/// @param[out] VI  #C by dim list of new point positions, VI = V(I,:)
+template <typename DerivedC, typename DerivedV, typename DerivedI,
+          typename DerivedminD, typename DerivedVI>
+IGL_INLINE void snap_points(const Eigen::MatrixBase<DerivedC> &C,
+                            const Eigen::MatrixBase<DerivedV> &V,
+                            Eigen::PlainObjectBase<DerivedI> &I,
+                            Eigen::PlainObjectBase<DerivedminD> &minD,
+                            Eigen::PlainObjectBase<DerivedVI> &VI);
+/// \overload
+template <typename DerivedC, typename DerivedV, typename DerivedI,
+          typename DerivedminD>
+IGL_INLINE void snap_points(const Eigen::MatrixBase<DerivedC> &C,
+                            const Eigen::MatrixBase<DerivedV> &V,
+                            Eigen::PlainObjectBase<DerivedI> &I,
+                            Eigen::PlainObjectBase<DerivedminD> &minD);
+/// \overload
+template <typename DerivedC, typename DerivedV, typename DerivedI>
+IGL_INLINE void snap_points(const Eigen::MatrixBase<DerivedC> &C,
+                            const Eigen::MatrixBase<DerivedV> &V,
+                            Eigen::PlainObjectBase<DerivedI> &I);
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "snap_points.cpp"
+#include "snap_points.cpp"
 #endif
 
 #endif
-
-
-
-

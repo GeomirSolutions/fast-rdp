@@ -21,7 +21,8 @@ documentation.
 
 #include <type_traits>
 
-namespace protozero {
+namespace protozero
+{
 
 /**
  * The basic_pbf_builder is used to write PBF formatted messages into a buffer.
@@ -38,13 +39,15 @@ namespace protozero {
  * want to use the pbf_builder class which uses a std::string as buffer type.
  */
 template <typename TBuffer, typename T>
-class basic_pbf_builder : public basic_pbf_writer<TBuffer> {
+class basic_pbf_builder : public basic_pbf_writer<TBuffer>
+{
 
-    static_assert(std::is_same<pbf_tag_type, typename std::underlying_type<T>::type>::value,
-                  "T must be enum with underlying type protozero::pbf_tag_type");
+    static_assert(
+        std::is_same<pbf_tag_type,
+                     typename std::underlying_type<T>::type>::value,
+        "T must be enum with underlying type protozero::pbf_tag_type");
 
-public:
-
+  public:
     /// The type of messages this class will build.
     using enum_type = T;
 
@@ -55,8 +58,9 @@ public:
      * stores a reference to that string and adds all data to it. The string
      * doesn't have to be empty. The pbf_message object will just append data.
      */
-    explicit basic_pbf_builder(TBuffer& data) noexcept :
-        basic_pbf_writer<TBuffer>{data} {
+    explicit basic_pbf_builder(TBuffer &data) noexcept
+        : basic_pbf_writer<TBuffer>{data}
+    {
     }
 
     /**
@@ -67,14 +71,16 @@ public:
      * @param tag Tag of the field that will be written
      */
     template <typename P>
-    basic_pbf_builder(basic_pbf_writer<TBuffer>& parent_writer, P tag) noexcept :
-        basic_pbf_writer<TBuffer>{parent_writer, pbf_tag_type(tag)} {
+    basic_pbf_builder(basic_pbf_writer<TBuffer> &parent_writer, P tag) noexcept
+        : basic_pbf_writer<TBuffer>{parent_writer, pbf_tag_type(tag)}
+    {
     }
 
 /// @cond INTERNAL
-#define PROTOZERO_WRITER_WRAP_ADD_SCALAR(name, type) \
-    void add_##name(T tag, type value) { \
-        basic_pbf_writer<TBuffer>::add_##name(pbf_tag_type(tag), value); \
+#define PROTOZERO_WRITER_WRAP_ADD_SCALAR(name, type)                           \
+    void add_##name(T tag, type value)                                         \
+    {                                                                          \
+        basic_pbf_writer<TBuffer>::add_##name(pbf_tag_type(tag), value);       \
     }
 
     PROTOZERO_WRITER_WRAP_ADD_SCALAR(bool, bool)
@@ -93,7 +99,7 @@ public:
     PROTOZERO_WRITER_WRAP_ADD_SCALAR(double, double)
 
 #undef PROTOZERO_WRITER_WRAP_ADD_SCALAR
-/// @endcond
+    /// @endcond
 
     /**
      * Add "bytes" field to data.
@@ -102,7 +108,8 @@ public:
      * @param value Pointer to value to be written
      * @param size Number of bytes to be written
      */
-    void add_bytes(T tag, const char* value, std::size_t size) {
+    void add_bytes(T tag, const char *value, std::size_t size)
+    {
         basic_pbf_writer<TBuffer>::add_bytes(pbf_tag_type(tag), value, size);
     }
 
@@ -112,7 +119,8 @@ public:
      * @param tag Tag of the field
      * @param value Value to be written
      */
-    void add_bytes(T tag, const data_view& value) {
+    void add_bytes(T tag, const data_view &value)
+    {
         basic_pbf_writer<TBuffer>::add_bytes(pbf_tag_type(tag), value);
     }
 
@@ -122,7 +130,8 @@ public:
      * @param tag Tag of the field
      * @param value Value to be written
      */
-    void add_bytes(T tag, const std::string& value) {
+    void add_bytes(T tag, const std::string &value)
+    {
         basic_pbf_writer<TBuffer>::add_bytes(pbf_tag_type(tag), value);
     }
 
@@ -133,7 +142,8 @@ public:
      * @param tag Tag of the field
      * @param value Pointer to zero-delimited value to be written
      */
-    void add_bytes(T tag, const char* value) {
+    void add_bytes(T tag, const char *value)
+    {
         basic_pbf_writer<TBuffer>::add_bytes(pbf_tag_type(tag), value);
     }
 
@@ -156,9 +166,10 @@ public:
      * @param tag Tag of the field
      * @param values List of objects of types Ts with data to be appended.
      */
-    template <typename... Ts>
-    void add_bytes_vectored(T tag, Ts&&... values) {
-        basic_pbf_writer<TBuffer>::add_bytes_vectored(pbf_tag_type(tag), std::forward<Ts>(values)...);
+    template <typename... Ts> void add_bytes_vectored(T tag, Ts &&...values)
+    {
+        basic_pbf_writer<TBuffer>::add_bytes_vectored(
+            pbf_tag_type(tag), std::forward<Ts>(values)...);
     }
 
     /**
@@ -168,7 +179,8 @@ public:
      * @param value Pointer to value to be written
      * @param size Number of bytes to be written
      */
-    void add_string(T tag, const char* value, std::size_t size) {
+    void add_string(T tag, const char *value, std::size_t size)
+    {
         basic_pbf_writer<TBuffer>::add_string(pbf_tag_type(tag), value, size);
     }
 
@@ -178,7 +190,8 @@ public:
      * @param tag Tag of the field
      * @param value Value to be written
      */
-    void add_string(T tag, const data_view& value) {
+    void add_string(T tag, const data_view &value)
+    {
         basic_pbf_writer<TBuffer>::add_string(pbf_tag_type(tag), value);
     }
 
@@ -188,7 +201,8 @@ public:
      * @param tag Tag of the field
      * @param value Value to be written
      */
-    void add_string(T tag, const std::string& value) {
+    void add_string(T tag, const std::string &value)
+    {
         basic_pbf_writer<TBuffer>::add_string(pbf_tag_type(tag), value);
     }
 
@@ -199,7 +213,8 @@ public:
      * @param tag Tag of the field
      * @param value Pointer to value to be written
      */
-    void add_string(T tag, const char* value) {
+    void add_string(T tag, const char *value)
+    {
         basic_pbf_writer<TBuffer>::add_string(pbf_tag_type(tag), value);
     }
 
@@ -210,7 +225,8 @@ public:
      * @param value Pointer to message to be written
      * @param size Length of the message
      */
-    void add_message(T tag, const char* value, std::size_t size) {
+    void add_message(T tag, const char *value, std::size_t size)
+    {
         basic_pbf_writer<TBuffer>::add_message(pbf_tag_type(tag), value, size);
     }
 
@@ -220,7 +236,8 @@ public:
      * @param tag Tag of the field
      * @param value Value to be written. The value must be a complete message.
      */
-    void add_message(T tag, const data_view& value) {
+    void add_message(T tag, const data_view &value)
+    {
         basic_pbf_writer<TBuffer>::add_message(pbf_tag_type(tag), value);
     }
 
@@ -230,15 +247,18 @@ public:
      * @param tag Tag of the field
      * @param value Value to be written. The value must be a complete message.
      */
-    void add_message(T tag, const std::string& value) {
+    void add_message(T tag, const std::string &value)
+    {
         basic_pbf_writer<TBuffer>::add_message(pbf_tag_type(tag), value);
     }
 
 /// @cond INTERNAL
-#define PROTOZERO_WRITER_WRAP_ADD_PACKED(name) \
-    template <typename InputIterator> \
-    void add_packed_##name(T tag, InputIterator first, InputIterator last) { \
-        basic_pbf_writer<TBuffer>::add_packed_##name(pbf_tag_type(tag), first, last); \
+#define PROTOZERO_WRITER_WRAP_ADD_PACKED(name)                                 \
+    template <typename InputIterator>                                          \
+    void add_packed_##name(T tag, InputIterator first, InputIterator last)     \
+    {                                                                          \
+        basic_pbf_writer<TBuffer>::add_packed_##name(pbf_tag_type(tag), first, \
+                                                     last);                    \
     }
 
     PROTOZERO_WRITER_WRAP_ADD_PACKED(bool)
@@ -257,7 +277,7 @@ public:
     PROTOZERO_WRITER_WRAP_ADD_PACKED(double)
 
 #undef PROTOZERO_WRITER_WRAP_ADD_PACKED
-/// @endcond
+    /// @endcond
 
 }; // class basic_pbf_builder
 

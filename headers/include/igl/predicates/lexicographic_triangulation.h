@@ -14,25 +14,21 @@
 
 namespace igl
 {
-  namespace predicates
-  {
-    /// Given a set of points in 2D, return a lexicographic triangulation of
-    /// these points using predicates.
-    ///
-    /// @param[in] V  #V by 2 list of vertex positions
-    /// @param[out] F  #F by 3 of faces in Delaunay triangulation.
-    template<
-      typename DerivedV,
-      typename DerivedF
-      >
-    IGL_INLINE void lexicographic_triangulation(
-        const Eigen::MatrixBase<DerivedV>& V,
-        Eigen::PlainObjectBase<DerivedF>& F);
-  }
-}
+namespace predicates
+{
+/// Given a set of points in 2D, return a lexicographic triangulation of
+/// these points using predicates.
+///
+/// @param[in] V  #V by 2 list of vertex positions
+/// @param[out] F  #F by 3 of faces in Delaunay triangulation.
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE void
+lexicographic_triangulation(const Eigen::MatrixBase<DerivedV> &V,
+                            Eigen::PlainObjectBase<DerivedF> &F);
+} // namespace predicates
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "lexicographic_triangulation.cpp"
+#include "lexicographic_triangulation.cpp"
 #endif
 #endif
-

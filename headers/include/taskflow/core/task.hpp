@@ -7,7 +7,8 @@
 @brief task include file
 */
 
-namespace tf {
+namespace tf
+{
 
 // ----------------------------------------------------------------------------
 // Task Types
@@ -18,27 +19,28 @@ namespace tf {
 
 @brief enumeration of all task types
 */
-enum class TaskType : int {
-  /** @brief placeholder task type */
-  PLACEHOLDER = 0,
-  /** @brief cudaFlow task type */
-  CUDAFLOW,
-  /** @brief syclFlow task type */
-  SYCLFLOW,
-  /** @brief static task type */
-  STATIC,
-  /** @brief dynamic (subflow) task type */
-  DYNAMIC,
-  /** @brief condition task type */
-  CONDITION,
-  /** @brief module task type */
-  MODULE,
-  /** @brief asynchronous task type */
-  ASYNC,
-  /** @brief runtime task type */
-  RUNTIME,
-  /** @brief undefined task type (for internal use only) */
-  UNDEFINED
+enum class TaskType : int
+{
+    /** @brief placeholder task type */
+    PLACEHOLDER = 0,
+    /** @brief cudaFlow task type */
+    CUDAFLOW,
+    /** @brief syclFlow task type */
+    SYCLFLOW,
+    /** @brief static task type */
+    STATIC,
+    /** @brief dynamic (subflow) task type */
+    DYNAMIC,
+    /** @brief condition task type */
+    CONDITION,
+    /** @brief module task type */
+    MODULE,
+    /** @brief asynchronous task type */
+    ASYNC,
+    /** @brief runtime task type */
+    RUNTIME,
+    /** @brief undefined task type (for internal use only) */
+    UNDEFINED
 };
 
 /**
@@ -46,16 +48,9 @@ enum class TaskType : int {
 @brief array of all task types (used for iterating task types)
 */
 inline constexpr std::array<TaskType, 9> TASK_TYPES = {
-  TaskType::PLACEHOLDER,
-  TaskType::CUDAFLOW,
-  TaskType::SYCLFLOW,
-  TaskType::STATIC,
-  TaskType::DYNAMIC,
-  TaskType::CONDITION,
-  TaskType::MODULE,
-  TaskType::ASYNC,
-  TaskType::RUNTIME
-};
+    TaskType::PLACEHOLDER, TaskType::CUDAFLOW, TaskType::SYCLFLOW,
+    TaskType::STATIC,      TaskType::DYNAMIC,  TaskType::CONDITION,
+    TaskType::MODULE,      TaskType::ASYNC,    TaskType::RUNTIME};
 
 /**
 @brief convert a task type to a human-readable string
@@ -74,24 +69,45 @@ TaskType::ASYNC           ->  "async"
 TaskType::RUNTIME         ->  "runtime"
 @endcode
 */
-inline const char* to_string(TaskType type) {
+inline const char *to_string(TaskType type)
+{
 
-  const char* val;
+    const char *val;
 
-  switch(type) {
-    case TaskType::PLACEHOLDER:      val = "placeholder";     break;
-    case TaskType::CUDAFLOW:         val = "cudaflow";        break;
-    case TaskType::SYCLFLOW:         val = "syclflow";        break;
-    case TaskType::STATIC:           val = "static";          break;
-    case TaskType::DYNAMIC:          val = "subflow";         break;
-    case TaskType::CONDITION:        val = "condition";       break;
-    case TaskType::MODULE:           val = "module";          break;
-    case TaskType::ASYNC:            val = "async";           break;
-    case TaskType::RUNTIME:          val = "runtime";         break;
-    default:                         val = "undefined";       break;
-  }
+    switch (type) {
+    case TaskType::PLACEHOLDER:
+        val = "placeholder";
+        break;
+    case TaskType::CUDAFLOW:
+        val = "cudaflow";
+        break;
+    case TaskType::SYCLFLOW:
+        val = "syclflow";
+        break;
+    case TaskType::STATIC:
+        val = "static";
+        break;
+    case TaskType::DYNAMIC:
+        val = "subflow";
+        break;
+    case TaskType::CONDITION:
+        val = "condition";
+        break;
+    case TaskType::MODULE:
+        val = "module";
+        break;
+    case TaskType::ASYNC:
+        val = "async";
+        break;
+    case TaskType::RUNTIME:
+        val = "runtime";
+        break;
+    default:
+        val = "undefined";
+        break;
+    }
 
-  return val;
+    return val;
 }
 
 // ----------------------------------------------------------------------------
@@ -105,17 +121,17 @@ A static task is a callable object constructible from std::function<void()>.
 */
 template <typename C>
 constexpr bool is_static_task_v =
-  std::is_invocable_r_v<void, C> &&
-  !std::is_invocable_r_v<int, C> &&
-  !std::is_invocable_r_v<tf::SmallVector<int>, C>;
+    std::is_invocable_r_v<void, C> && !std::is_invocable_r_v<int, C> &&
+    !std::is_invocable_r_v<tf::SmallVector<int>, C>;
 
 /**
 @brief determines if a callable is a dynamic task
 
-A dynamic task is a callable object constructible from std::function<void(Subflow&)>.
+A dynamic task is a callable object constructible from
+std::function<void(Subflow&)>.
 */
 template <typename C>
-constexpr bool is_dynamic_task_v = std::is_invocable_r_v<void, C, Subflow&>;
+constexpr bool is_dynamic_task_v = std::is_invocable_r_v<void, C, Subflow &>;
 
 /**
 @brief determines if a callable is a condition task
@@ -133,17 +149,19 @@ std::function<tf::SmallVector<int>()>.
 */
 template <typename C>
 constexpr bool is_multi_condition_task_v =
-  std::is_invocable_r_v<SmallVector<int>, C>;
+    std::is_invocable_r_v<SmallVector<int>, C>;
 
 /**
 @brief determines if a callable is a %cudaFlow task
 
 A cudaFlow task is a callable object constructible from
-std::function<void(tf::cudaFlow&)> or std::function<void(tf::cudaFlowCapturer&)>.
+std::function<void(tf::cudaFlow&)> or
+std::function<void(tf::cudaFlowCapturer&)>.
 */
 template <typename C>
-constexpr bool is_cudaflow_task_v = std::is_invocable_r_v<void, C, cudaFlow&> ||
-                                    std::is_invocable_r_v<void, C, cudaFlowCapturer&>;
+constexpr bool is_cudaflow_task_v =
+    std::is_invocable_r_v<void, C, cudaFlow &> ||
+    std::is_invocable_r_v<void, C, cudaFlowCapturer &>;
 
 /**
 @brief determines if a callable is a %syclFlow task
@@ -152,7 +170,7 @@ A syclFlow task is a callable object constructible from
 std::function<void(tf::syclFlow&)>.
 */
 template <typename C>
-constexpr bool is_syclflow_task_v = std::is_invocable_r_v<void, C, syclFlow&>;
+constexpr bool is_syclflow_task_v = std::is_invocable_r_v<void, C, syclFlow &>;
 
 /**
 @brief determines if a callable is a runtime task
@@ -161,7 +179,7 @@ A runtime task is a callable object constructible from
 std::function<void(tf::Runtime&)>.
 */
 template <typename C>
-constexpr bool is_runtime_task_v = std::is_invocable_r_v<void, C, Runtime&>;
+constexpr bool is_runtime_task_v = std::is_invocable_r_v<void, C, Runtime &>;
 
 // ----------------------------------------------------------------------------
 // Task
@@ -179,16 +197,16 @@ A task is very lightweight object (i.e., only storing a node pointer) that
 can be trivially copied around,
 and it does not own the lifetime of the associated node.
 */
-class Task {
+class Task
+{
 
-  friend class FlowBuilder;
-  friend class Runtime;
-  friend class Taskflow;
-  friend class TaskView;
-  friend class Executor;
+    friend class FlowBuilder;
+    friend class Runtime;
+    friend class Taskflow;
+    friend class TaskView;
+    friend class Executor;
 
   public:
-
     /**
     @brief constructs an empty task
     */
@@ -197,32 +215,32 @@ class Task {
     /**
     @brief constructs the task with the copy of the other task
     */
-    Task(const Task& other);
+    Task(const Task &other);
 
     /**
     @brief replaces the contents with a copy of the other task
     */
-    Task& operator = (const Task&);
+    Task &operator=(const Task &);
 
     /**
     @brief replaces the contents with a null pointer
     */
-    Task& operator = (std::nullptr_t);
+    Task &operator=(std::nullptr_t);
 
     /**
     @brief compares if two tasks are associated with the same graph node
     */
-    bool operator == (const Task& rhs) const;
+    bool operator==(const Task &rhs) const;
 
     /**
     @brief compares if two tasks are not associated with the same graph node
     */
-    bool operator != (const Task& rhs) const;
+    bool operator!=(const Task &rhs) const;
 
     /**
     @brief queries the name of the task
     */
-    const std::string& name() const;
+    const std::string &name() const;
 
     /**
     @brief queries the number of successors of the task
@@ -251,7 +269,7 @@ class Task {
 
     @return @c *this
     */
-    Task& name(const std::string& name);
+    Task &name(const std::string &name);
 
     /**
     @brief assigns a callable
@@ -263,8 +281,7 @@ class Task {
 
     @return @c *this
     */
-    template <typename C>
-    Task& work(C&& callable);
+    template <typename C> Task &work(C &&callable);
 
     /**
     @brief creates a module task from a taskflow
@@ -274,8 +291,7 @@ class Task {
 
     @return @c *this
     */
-    template <typename T>
-    Task& composed_of(T& object);
+    template <typename T> Task &composed_of(T &object);
 
     /**
     @brief adds precedence links from this to other tasks
@@ -286,8 +302,7 @@ class Task {
 
     @return @c *this
     */
-    template <typename... Ts>
-    Task& precede(Ts&&... tasks);
+    template <typename... Ts> Task &precede(Ts &&...tasks);
 
     /**
     @brief adds precedence links from other tasks to this
@@ -298,18 +313,17 @@ class Task {
 
     @return @c *this
     */
-    template <typename... Ts>
-    Task& succeed(Ts&&... tasks);
+    template <typename... Ts> Task &succeed(Ts &&...tasks);
 
     /**
     @brief makes the task release this semaphore
     */
-    Task& release(Semaphore& semaphore);
+    Task &release(Semaphore &semaphore);
 
     /**
     @brief makes the task acquire this semaphore
     */
-    Task& acquire(Semaphore& semaphore);
+    Task &acquire(Semaphore &semaphore);
 
     /**
     @brief assigns pointer to user data
@@ -340,19 +354,19 @@ class Task {
 
     @return @c *this
     */
-    Task& data(void* data);
-      
+    Task &data(void *data);
+
     /**
     @brief assigns a priority value to the task
 
-    A priority value can be one of the following three levels, 
+    A priority value can be one of the following three levels,
     tf::TaskPriority::HIGH (numerically equivalent to 0),
     tf::TaskPriority::NORMAL (numerically equivalent to 1), and
     tf::TaskPriority::LOW (numerically equivalent to 2).
     The smaller the priority value, the higher the priority.
     */
-    Task& priority(TaskPriority p);
-    
+    Task &priority(TaskPriority p);
+
     /**
     @brief queries the priority value of the task
     */
@@ -381,14 +395,12 @@ class Task {
     /**
     @brief applies an visitor callable to each successor of the task
     */
-    template <typename V>
-    void for_each_successor(V&& visitor) const;
+    template <typename V> void for_each_successor(V &&visitor) const;
 
     /**
     @brief applies an visitor callable to each dependents of the task
     */
-    template <typename V>
-    void for_each_dependent(V&& visitor) const;
+    template <typename V> void for_each_dependent(V &&visitor) const;
 
     /**
     @brief obtains a hash value of the underlying node
@@ -403,239 +415,242 @@ class Task {
     /**
     @brief dumps the task through an output stream
     */
-    void dump(std::ostream& ostream) const;
+    void dump(std::ostream &ostream) const;
 
     /**
     @brief queries pointer to user data
     */
-    void* data() const;
-
+    void *data() const;
 
   private:
+    Task(Node *);
 
-    Task(Node*);
-
-    Node* _node {nullptr};
+    Node *_node{nullptr};
 };
 
 // Constructor
-inline Task::Task(Node* node) : _node {node} {
-}
+inline Task::Task(Node *node) : _node{node} {}
 
 // Constructor
-inline Task::Task(const Task& rhs) : _node {rhs._node} {
-}
+inline Task::Task(const Task &rhs) : _node{rhs._node} {}
 
 // Function: precede
-template <typename... Ts>
-Task& Task::precede(Ts&&... tasks) {
-  (_node->_precede(tasks._node), ...);
-  //_precede(std::forward<Ts>(tasks)...);
-  return *this;
+template <typename... Ts> Task &Task::precede(Ts &&...tasks)
+{
+    (_node->_precede(tasks._node), ...);
+    //_precede(std::forward<Ts>(tasks)...);
+    return *this;
 }
 
 // Function: succeed
-template <typename... Ts>
-Task& Task::succeed(Ts&&... tasks) {
-  (tasks._node->_precede(_node), ...);
-  //_succeed(std::forward<Ts>(tasks)...);
-  return *this;
+template <typename... Ts> Task &Task::succeed(Ts &&...tasks)
+{
+    (tasks._node->_precede(_node), ...);
+    //_succeed(std::forward<Ts>(tasks)...);
+    return *this;
 }
 
 // Function: composed_of
-template <typename T>
-Task& Task::composed_of(T& object) {
-  _node->_handle.emplace<Node::Module>(object);
-  return *this;
+template <typename T> Task &Task::composed_of(T &object)
+{
+    _node->_handle.emplace<Node::Module>(object);
+    return *this;
 }
 
 // Operator =
-inline Task& Task::operator = (const Task& rhs) {
-  _node = rhs._node;
-  return *this;
+inline Task &Task::operator=(const Task &rhs)
+{
+    _node = rhs._node;
+    return *this;
 }
 
 // Operator =
-inline Task& Task::operator = (std::nullptr_t ptr) {
-  _node = ptr;
-  return *this;
+inline Task &Task::operator=(std::nullptr_t ptr)
+{
+    _node = ptr;
+    return *this;
 }
 
 // Operator ==
-inline bool Task::operator == (const Task& rhs) const {
-  return _node == rhs._node;
+inline bool Task::operator==(const Task &rhs) const
+{
+    return _node == rhs._node;
 }
 
 // Operator !=
-inline bool Task::operator != (const Task& rhs) const {
-  return _node != rhs._node;
+inline bool Task::operator!=(const Task &rhs) const
+{
+    return _node != rhs._node;
 }
 
 // Function: name
-inline Task& Task::name(const std::string& name) {
-  _node->_name = name;
-  return *this;
+inline Task &Task::name(const std::string &name)
+{
+    _node->_name = name;
+    return *this;
 }
 
 // Function: acquire
-inline Task& Task::acquire(Semaphore& s) {
-  if(!_node->_semaphores) {
-    _node->_semaphores = std::make_unique<Node::Semaphores>();
-  }
-  _node->_semaphores->to_acquire.push_back(&s);
-  return *this;
+inline Task &Task::acquire(Semaphore &s)
+{
+    if (!_node->_semaphores) {
+        _node->_semaphores = std::make_unique<Node::Semaphores>();
+    }
+    _node->_semaphores->to_acquire.push_back(&s);
+    return *this;
 }
 
 // Function: release
-inline Task& Task::release(Semaphore& s) {
-  if(!_node->_semaphores) {
-    //_node->_semaphores.emplace();
-    _node->_semaphores = std::make_unique<Node::Semaphores>();
-  }
-  _node->_semaphores->to_release.push_back(&s);
-  return *this;
+inline Task &Task::release(Semaphore &s)
+{
+    if (!_node->_semaphores) {
+        //_node->_semaphores.emplace();
+        _node->_semaphores = std::make_unique<Node::Semaphores>();
+    }
+    _node->_semaphores->to_release.push_back(&s);
+    return *this;
 }
 
 // Procedure: reset
-inline void Task::reset() {
-  _node = nullptr;
-}
+inline void Task::reset() { _node = nullptr; }
 
 // Procedure: reset_work
-inline void Task::reset_work() {
-  _node->_handle.emplace<std::monostate>();
-}
+inline void Task::reset_work() { _node->_handle.emplace<std::monostate>(); }
 
 // Function: name
-inline const std::string& Task::name() const {
-  return _node->_name;
-}
+inline const std::string &Task::name() const { return _node->_name; }
 
 // Function: num_dependents
-inline size_t Task::num_dependents() const {
-  return _node->num_dependents();
-}
+inline size_t Task::num_dependents() const { return _node->num_dependents(); }
 
 // Function: num_strong_dependents
-inline size_t Task::num_strong_dependents() const {
-  return _node->num_strong_dependents();
+inline size_t Task::num_strong_dependents() const
+{
+    return _node->num_strong_dependents();
 }
 
 // Function: num_weak_dependents
-inline size_t Task::num_weak_dependents() const {
-  return _node->num_weak_dependents();
+inline size_t Task::num_weak_dependents() const
+{
+    return _node->num_weak_dependents();
 }
 
 // Function: num_successors
-inline size_t Task::num_successors() const {
-  return _node->num_successors();
-}
+inline size_t Task::num_successors() const { return _node->num_successors(); }
 
 // Function: empty
-inline bool Task::empty() const {
-  return _node == nullptr;
-}
+inline bool Task::empty() const { return _node == nullptr; }
 
 // Function: has_work
-inline bool Task::has_work() const {
-  return _node ? _node->_handle.index() != 0 : false;
+inline bool Task::has_work() const
+{
+    return _node ? _node->_handle.index() != 0 : false;
 }
 
 // Function: task_type
-inline TaskType Task::type() const {
-  switch(_node->_handle.index()) {
-    case Node::PLACEHOLDER:     return TaskType::PLACEHOLDER;
-    case Node::STATIC:          return TaskType::STATIC;
-    case Node::DYNAMIC:         return TaskType::DYNAMIC;
-    case Node::CONDITION:       return TaskType::CONDITION;
-    case Node::MULTI_CONDITION: return TaskType::CONDITION;
-    case Node::MODULE:          return TaskType::MODULE;
-    case Node::ASYNC:           return TaskType::ASYNC;
-    case Node::SILENT_ASYNC:    return TaskType::ASYNC;
-    case Node::CUDAFLOW:        return TaskType::CUDAFLOW;
-    case Node::SYCLFLOW:        return TaskType::SYCLFLOW;
-    case Node::RUNTIME:         return TaskType::RUNTIME;
-    default:                    return TaskType::UNDEFINED;
-  }
+inline TaskType Task::type() const
+{
+    switch (_node->_handle.index()) {
+    case Node::PLACEHOLDER:
+        return TaskType::PLACEHOLDER;
+    case Node::STATIC:
+        return TaskType::STATIC;
+    case Node::DYNAMIC:
+        return TaskType::DYNAMIC;
+    case Node::CONDITION:
+        return TaskType::CONDITION;
+    case Node::MULTI_CONDITION:
+        return TaskType::CONDITION;
+    case Node::MODULE:
+        return TaskType::MODULE;
+    case Node::ASYNC:
+        return TaskType::ASYNC;
+    case Node::SILENT_ASYNC:
+        return TaskType::ASYNC;
+    case Node::CUDAFLOW:
+        return TaskType::CUDAFLOW;
+    case Node::SYCLFLOW:
+        return TaskType::SYCLFLOW;
+    case Node::RUNTIME:
+        return TaskType::RUNTIME;
+    default:
+        return TaskType::UNDEFINED;
+    }
 }
 
 // Function: for_each_successor
-template <typename V>
-void Task::for_each_successor(V&& visitor) const {
-  for(size_t i=0; i<_node->_successors.size(); ++i) {
-    visitor(Task(_node->_successors[i]));
-  }
+template <typename V> void Task::for_each_successor(V &&visitor) const
+{
+    for (size_t i = 0; i < _node->_successors.size(); ++i) {
+        visitor(Task(_node->_successors[i]));
+    }
 }
 
 // Function: for_each_dependent
-template <typename V>
-void Task::for_each_dependent(V&& visitor) const {
-  for(size_t i=0; i<_node->_dependents.size(); ++i) {
-    visitor(Task(_node->_dependents[i]));
-  }
+template <typename V> void Task::for_each_dependent(V &&visitor) const
+{
+    for (size_t i = 0; i < _node->_dependents.size(); ++i) {
+        visitor(Task(_node->_dependents[i]));
+    }
 }
 
 // Function: hash_value
-inline size_t Task::hash_value() const {
-  return std::hash<Node*>{}(_node);
-}
+inline size_t Task::hash_value() const { return std::hash<Node *>{}(_node); }
 
 // Procedure: dump
-inline void Task::dump(std::ostream& os) const {
-  os << "task ";
-  if(name().empty()) os << _node;
-  else os << name();
-  os << " [type=" << to_string(type()) << ']';
+inline void Task::dump(std::ostream &os) const
+{
+    os << "task ";
+    if (name().empty())
+        os << _node;
+    else
+        os << name();
+    os << " [type=" << to_string(type()) << ']';
 }
 
 // Function: work
-template <typename C>
-Task& Task::work(C&& c) {
+template <typename C> Task &Task::work(C &&c)
+{
 
-  if constexpr(is_static_task_v<C>) {
-    _node->_handle.emplace<Node::Static>(std::forward<C>(c));
-  }
-  else if constexpr(is_dynamic_task_v<C>) {
-    _node->_handle.emplace<Node::Dynamic>(std::forward<C>(c));
-  }
-  else if constexpr(is_condition_task_v<C>) {
-    _node->_handle.emplace<Node::Condition>(std::forward<C>(c));
-  }
-  else if constexpr(is_multi_condition_task_v<C>) {
-    _node->_handle.emplace<Node::MultiCondition>(std::forward<C>(c));
-  }
-  else if constexpr(is_cudaflow_task_v<C>) {
-    _node->_handle.emplace<Node::cudaFlow>(std::forward<C>(c));
-  }
-  else if constexpr(is_runtime_task_v<C>) {
-    _node->_handle.emplace<Node::Runtime>(std::forward<C>(c));
-  }
-  else {
-    static_assert(dependent_false_v<C>, "invalid task callable");
-  }
-  return *this;
+    if constexpr (is_static_task_v<C>) {
+        _node->_handle.emplace<Node::Static>(std::forward<C>(c));
+    } else if constexpr (is_dynamic_task_v<C>) {
+        _node->_handle.emplace<Node::Dynamic>(std::forward<C>(c));
+    } else if constexpr (is_condition_task_v<C>) {
+        _node->_handle.emplace<Node::Condition>(std::forward<C>(c));
+    } else if constexpr (is_multi_condition_task_v<C>) {
+        _node->_handle.emplace<Node::MultiCondition>(std::forward<C>(c));
+    } else if constexpr (is_cudaflow_task_v<C>) {
+        _node->_handle.emplace<Node::cudaFlow>(std::forward<C>(c));
+    } else if constexpr (is_runtime_task_v<C>) {
+        _node->_handle.emplace<Node::Runtime>(std::forward<C>(c));
+    } else {
+        static_assert(dependent_false_v<C>, "invalid task callable");
+    }
+    return *this;
 }
 
 // Function: data
-inline void* Task::data() const {
-  return _node->_data;
-}
+inline void *Task::data() const { return _node->_data; }
 
 // Function: data
-inline Task& Task::data(void* data) {
-  _node->_data = data;
-  return *this;
+inline Task &Task::data(void *data)
+{
+    _node->_data = data;
+    return *this;
 }
 
 // Function: priority
-inline Task& Task::priority(TaskPriority p) {
-  _node->_priority = static_cast<unsigned>(p);
-  return *this;
+inline Task &Task::priority(TaskPriority p)
+{
+    _node->_priority = static_cast<unsigned>(p);
+    return *this;
 }
 
 // Function: priority
-inline TaskPriority Task::priority() const {
-  return static_cast<TaskPriority>(_node->_priority);
+inline TaskPriority Task::priority() const
+{
+    return static_cast<TaskPriority>(_node->_priority);
 }
 
 // ----------------------------------------------------------------------------
@@ -645,9 +660,10 @@ inline TaskPriority Task::priority() const {
 /**
 @brief overload of ostream inserter operator for cudaTask
 */
-inline std::ostream& operator << (std::ostream& os, const Task& task) {
-  task.dump(os);
-  return os;
+inline std::ostream &operator<<(std::ostream &os, const Task &task)
+{
+    task.dump(os);
+    return os;
 }
 
 // ----------------------------------------------------------------------------
@@ -657,16 +673,16 @@ inline std::ostream& operator << (std::ostream& os, const Task& task) {
 
 @brief class to access task information from the observer interface
 */
-class TaskView {
+class TaskView
+{
 
-  friend class Executor;
+    friend class Executor;
 
   public:
-
     /**
     @brief queries the name of the task
     */
-    const std::string& name() const;
+    const std::string &name() const;
 
     /**
     @brief queries the number of successors of the task
@@ -691,14 +707,12 @@ class TaskView {
     /**
     @brief applies an visitor callable to each successor of the task
     */
-    template <typename V>
-    void for_each_successor(V&& visitor) const;
+    template <typename V> void for_each_successor(V &&visitor) const;
 
     /**
     @brief applies an visitor callable to each dependents of the task
     */
-    template <typename V>
-    void for_each_dependent(V&& visitor) const;
+    template <typename V> void for_each_dependent(V &&visitor) const;
 
     /**
     @brief queries the task type
@@ -711,95 +725,111 @@ class TaskView {
     size_t hash_value() const;
 
   private:
+    TaskView(const Node &);
+    TaskView(const TaskView &) = default;
 
-    TaskView(const Node&);
-    TaskView(const TaskView&) = default;
-
-    const Node& _node;
+    const Node &_node;
 };
 
 // Constructor
-inline TaskView::TaskView(const Node& node) : _node {node} {
-}
+inline TaskView::TaskView(const Node &node) : _node{node} {}
 
 // Function: name
-inline const std::string& TaskView::name() const {
-  return _node._name;
-}
+inline const std::string &TaskView::name() const { return _node._name; }
 
 // Function: num_dependents
-inline size_t TaskView::num_dependents() const {
-  return _node.num_dependents();
+inline size_t TaskView::num_dependents() const
+{
+    return _node.num_dependents();
 }
 
 // Function: num_strong_dependents
-inline size_t TaskView::num_strong_dependents() const {
-  return _node.num_strong_dependents();
+inline size_t TaskView::num_strong_dependents() const
+{
+    return _node.num_strong_dependents();
 }
 
 // Function: num_weak_dependents
-inline size_t TaskView::num_weak_dependents() const {
-  return _node.num_weak_dependents();
+inline size_t TaskView::num_weak_dependents() const
+{
+    return _node.num_weak_dependents();
 }
 
 // Function: num_successors
-inline size_t TaskView::num_successors() const {
-  return _node.num_successors();
+inline size_t TaskView::num_successors() const
+{
+    return _node.num_successors();
 }
 
 // Function: type
-inline TaskType TaskView::type() const {
-  switch(_node._handle.index()) {
-    case Node::PLACEHOLDER:     return TaskType::PLACEHOLDER;
-    case Node::STATIC:          return TaskType::STATIC;
-    case Node::DYNAMIC:         return TaskType::DYNAMIC;
-    case Node::CONDITION:       return TaskType::CONDITION;
-    case Node::MULTI_CONDITION: return TaskType::CONDITION;
-    case Node::MODULE:          return TaskType::MODULE;
-    case Node::ASYNC:           return TaskType::ASYNC;
-    case Node::SILENT_ASYNC:    return TaskType::ASYNC;
-    case Node::CUDAFLOW:        return TaskType::CUDAFLOW;
-    case Node::SYCLFLOW:        return TaskType::SYCLFLOW;
-    case Node::RUNTIME:         return TaskType::RUNTIME;
-    default:                    return TaskType::UNDEFINED;
-  }
+inline TaskType TaskView::type() const
+{
+    switch (_node._handle.index()) {
+    case Node::PLACEHOLDER:
+        return TaskType::PLACEHOLDER;
+    case Node::STATIC:
+        return TaskType::STATIC;
+    case Node::DYNAMIC:
+        return TaskType::DYNAMIC;
+    case Node::CONDITION:
+        return TaskType::CONDITION;
+    case Node::MULTI_CONDITION:
+        return TaskType::CONDITION;
+    case Node::MODULE:
+        return TaskType::MODULE;
+    case Node::ASYNC:
+        return TaskType::ASYNC;
+    case Node::SILENT_ASYNC:
+        return TaskType::ASYNC;
+    case Node::CUDAFLOW:
+        return TaskType::CUDAFLOW;
+    case Node::SYCLFLOW:
+        return TaskType::SYCLFLOW;
+    case Node::RUNTIME:
+        return TaskType::RUNTIME;
+    default:
+        return TaskType::UNDEFINED;
+    }
 }
 
 // Function: hash_value
-inline size_t TaskView::hash_value() const {
-  return std::hash<const Node*>{}(&_node);
+inline size_t TaskView::hash_value() const
+{
+    return std::hash<const Node *>{}(&_node);
 }
 
 // Function: for_each_successor
-template <typename V>
-void TaskView::for_each_successor(V&& visitor) const {
-  for(size_t i=0; i<_node._successors.size(); ++i) {
-    visitor(TaskView(_node._successors[i]));
-  }
+template <typename V> void TaskView::for_each_successor(V &&visitor) const
+{
+    for (size_t i = 0; i < _node._successors.size(); ++i) {
+        visitor(TaskView(_node._successors[i]));
+    }
 }
 
 // Function: for_each_dependent
-template <typename V>
-void TaskView::for_each_dependent(V&& visitor) const {
-  for(size_t i=0; i<_node._dependents.size(); ++i) {
-    visitor(TaskView(_node._dependents[i]));
-  }
+template <typename V> void TaskView::for_each_dependent(V &&visitor) const
+{
+    for (size_t i = 0; i < _node._dependents.size(); ++i) {
+        visitor(TaskView(_node._dependents[i]));
+    }
 }
 
-}  // end of namespace tf. ---------------------------------------------------
+} // namespace tf
 
-namespace std {
+namespace std
+{
 
 /**
 @struct hash
 
 @brief hash specialization for std::hash<tf::Task>
 */
-template <>
-struct hash<tf::Task> {
-  auto operator() (const tf::Task& task) const noexcept {
-    return task.hash_value();
-  }
+template <> struct hash<tf::Task>
+{
+    auto operator()(const tf::Task &task) const noexcept
+    {
+        return task.hash_value();
+    }
 };
 
 /**
@@ -807,14 +837,12 @@ struct hash<tf::Task> {
 
 @brief hash specialization for std::hash<tf::TaskView>
 */
-template <>
-struct hash<tf::TaskView> {
-  auto operator() (const tf::TaskView& task_view) const noexcept {
-    return task_view.hash_value();
-  }
+template <> struct hash<tf::TaskView>
+{
+    auto operator()(const tf::TaskView &task_view) const noexcept
+    {
+        return task_view.hash_value();
+    }
 };
 
-}  // end of namespace std ----------------------------------------------------
-
-
-
+} // namespace std

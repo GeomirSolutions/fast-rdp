@@ -21,26 +21,28 @@ documentation.
 /**
  * @brief All parts of the protozero header-only library are in this namespace.
  */
-namespace protozero {
+namespace protozero
+{
 
 /**
  * All exceptions explicitly thrown by the functions of the protozero library
  * derive from this exception.
  */
-struct exception : std::exception {
+struct exception : std::exception
+{
     /// Returns the explanatory string.
-    const char* what() const noexcept override {
-        return "pbf exception";
-    }
+    const char *what() const noexcept override { return "pbf exception"; }
 };
 
 /**
  * This exception is thrown when parsing a varint thats larger than allowed.
  * This should never happen unless the data is corrupted.
  */
-struct varint_too_long_exception : exception {
+struct varint_too_long_exception : exception
+{
     /// Returns the explanatory string.
-    const char* what() const noexcept override {
+    const char *what() const noexcept override
+    {
         return "varint too long exception";
     }
 };
@@ -49,9 +51,11 @@ struct varint_too_long_exception : exception {
  * This exception is thrown when the wire type of a pdf field is unknown.
  * This should never happen unless the data is corrupted.
  */
-struct unknown_pbf_wire_type_exception : exception {
+struct unknown_pbf_wire_type_exception : exception
+{
     /// Returns the explanatory string.
-    const char* what() const noexcept override {
+    const char *what() const noexcept override
+    {
         return "unknown pbf field type exception";
     }
 };
@@ -64,9 +68,11 @@ struct unknown_pbf_wire_type_exception : exception {
  * This should never happen unless the data is corrupted or you have
  * initialized the pbf_reader object with incomplete data.
  */
-struct end_of_buffer_exception : exception {
+struct end_of_buffer_exception : exception
+{
     /// Returns the explanatory string.
-    const char* what() const noexcept override {
+    const char *what() const noexcept override
+    {
         return "end of buffer exception";
     }
 };
@@ -77,9 +83,11 @@ struct end_of_buffer_exception : exception {
  * not allowed. See
  * https://developers.google.com/protocol-buffers/docs/proto#assigning-tags
  */
-struct invalid_tag_exception : exception {
+struct invalid_tag_exception : exception
+{
     /// Returns the explanatory string.
-    const char* what() const noexcept override {
+    const char *what() const noexcept override
+    {
         return "invalid tag exception";
     }
 };
@@ -89,9 +97,11 @@ struct invalid_tag_exception : exception {
  * invalid. For fixed size types the length must be a multiple of the size of
  * the type.
  */
-struct invalid_length_exception : exception {
+struct invalid_length_exception : exception
+{
     /// Returns the explanatory string.
-    const char* what() const noexcept override {
+    const char *what() const noexcept override
+    {
         return "invalid length exception";
     }
 };

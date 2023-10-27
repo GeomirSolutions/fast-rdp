@@ -8,6 +8,18 @@
 #include "min_quad_with_fixed.impl.h"
 
 #ifdef IGL_STATIC_LIBRARY
-template bool igl::min_quad_with_fixed_precompute<double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int> const&, bool, igl::min_quad_with_fixed_data<double>&);
-template bool igl::min_quad_with_fixed_precompute<double, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, bool, igl::min_quad_with_fixed_data<double>&);
+template bool
+igl::min_quad_with_fixed_precompute<double,
+                                    Eigen::Matrix<int, -1, 1, 0, -1, 1>>(
+    Eigen::SparseMatrix<double, 0, int> const &,
+    Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &,
+    Eigen::SparseMatrix<double, 0, int> const &, bool,
+    igl::min_quad_with_fixed_data<double> &);
+template bool
+igl::min_quad_with_fixed_precompute<double,
+                                    Eigen::Matrix<int, -1, -1, 0, -1, -1>>(
+    Eigen::SparseMatrix<double, 0, int> const &,
+    Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &,
+    Eigen::SparseMatrix<double, 0, int> const &, bool,
+    igl::min_quad_with_fixed_data<double> &);
 #endif

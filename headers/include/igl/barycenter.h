@@ -11,24 +11,20 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  /// Computes the barycenter of every simplex.
-  ///
-  /// @param[in] V  #V x dim matrix of vertex coordinates
-  /// @param[in] F  #F x simplex_size  matrix of indices of simplex corners into V
-  /// @param[out] BC  #F x dim matrix of 3d vertices
-  ///
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedBC>
-  IGL_INLINE void barycenter(
-      const Eigen::MatrixBase<DerivedV> & V,
-      const Eigen::MatrixBase<DerivedF> & F,
-      Eigen::PlainObjectBase<DerivedBC> & BC);
-}
+/// Computes the barycenter of every simplex.
+///
+/// @param[in] V  #V x dim matrix of vertex coordinates
+/// @param[in] F  #F x simplex_size  matrix of indices of simplex corners into V
+/// @param[out] BC  #F x dim matrix of 3d vertices
+///
+template <typename DerivedV, typename DerivedF, typename DerivedBC>
+IGL_INLINE void barycenter(const Eigen::MatrixBase<DerivedV> &V,
+                           const Eigen::MatrixBase<DerivedF> &F,
+                           Eigen::PlainObjectBase<DerivedBC> &BC);
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "barycenter.cpp"
+#include "barycenter.cpp"
 #endif
 
 #endif

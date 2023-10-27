@@ -1,10 +1,9 @@
 import sys
 
-import pytest
-
 import env
 import pybind11_cross_module_tests as cm
 import pybind11_tests  # noqa: F401
+import pytest
 from pybind11_tests import exceptions as m
 
 

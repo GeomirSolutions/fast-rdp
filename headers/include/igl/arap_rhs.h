@@ -15,27 +15,27 @@
 
 namespace igl
 {
-  /// Right-hand side constructor of global poisson solve for various Arap
-  /// energies
-  ///
-  /// @param[in] V  #V by Vdim list of initial domain positions
-  /// @param[in] F  #F by 3 list of triangle indices into V
-  /// @param[in] dim  dimension being used at solve time. For deformation usually dim =
-  ///     V.cols(), for surface parameterization V.cols() = 3 and dim = 2
-  /// @param[in] energy  igl::ARAPEnergyType enum value defining which energy is being
-  ///     used. See igl::ARAPEnergyType.h for valid options and explanations.
-  /// @param[out] K  #V*dim by #(F|V)*dim*dim matrix such that:
-  ///     b = K * reshape(permute(R,[3 1 2]),size(V|F,1)*size(V,2)*size(V,2),1);
-  ///
-  /// \see arap_linear_block
-  template<typename DerivedV, typename DerivedF, typename DerivedK>
-  IGL_INLINE void arap_rhs(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
-    const int dim,
-    const igl::ARAPEnergyType energy,
-    Eigen::SparseCompressedBase<DerivedK>& K);
-}
+/// Right-hand side constructor of global poisson solve for various Arap
+/// energies
+///
+/// @param[in] V  #V by Vdim list of initial domain positions
+/// @param[in] F  #F by 3 list of triangle indices into V
+/// @param[in] dim  dimension being used at solve time. For deformation usually
+/// dim =
+///     V.cols(), for surface parameterization V.cols() = 3 and dim = 2
+/// @param[in] energy  igl::ARAPEnergyType enum value defining which energy is
+/// being
+///     used. See igl::ARAPEnergyType.h for valid options and explanations.
+/// @param[out] K  #V*dim by #(F|V)*dim*dim matrix such that:
+///     b = K * reshape(permute(R,[3 1 2]),size(V|F,1)*size(V,2)*size(V,2),1);
+///
+/// \see arap_linear_block
+template <typename DerivedV, typename DerivedF, typename DerivedK>
+IGL_INLINE void arap_rhs(const Eigen::MatrixBase<DerivedV> &V,
+                         const Eigen::MatrixBase<DerivedF> &F, const int dim,
+                         const igl::ARAPEnergyType energy,
+                         Eigen::SparseCompressedBase<DerivedK> &K);
+} // namespace igl
 #ifndef IGL_STATIC_LIBRARY
 #include "arap_rhs.cpp"
 #endif

@@ -13,27 +13,31 @@
 #include <tuple>
 #include <utility>
 
-namespace mapbox {
-namespace cheap_ruler {
+namespace mapbox
+{
+namespace cheap_ruler
+{
 
-using box               = geometry::box<double>;
-using line_string       = geometry::line_string<double>;
-using linear_ring       = geometry::linear_ring<double>;
+using box = geometry::box<double>;
+using line_string = geometry::line_string<double>;
+using linear_ring = geometry::linear_ring<double>;
 using multi_line_string = geometry::multi_line_string<double>;
-using point             = geometry::point<double>;
-using polygon           = geometry::polygon<double>;
+using point = geometry::point<double>;
+using polygon = geometry::polygon<double>;
 
-class CheapRuler {
+class CheapRuler
+{
 
     // Values that define WGS84 ellipsoid model of the Earth
-    static constexpr double RE = 6378.137; // equatorial radius
+    static constexpr double RE = 6378.137;            // equatorial radius
     static constexpr double FE = 1.0 / 298.257223563; // flattening
 
     static constexpr double E2 = FE * (2 - FE);
     static constexpr double RAD = M_PI / 180.0;
 
-public:
-    enum Unit {
+  public:
+    enum Unit
+    {
         Kilometers,
         Miles,
         NauticalMiles,
@@ -48,16 +52,15 @@ public:
     // delta(lon) * kx -> delta east/west in your metric/unit (e.g. meters)
     // delta(lat) * ky -> delta north/south in your metric/unit (e.g. meters)
     // delta(alt) * kz -> delta up/down in your metric/unit (e.g. meters)
-    std::array<double, 3> k() const {
-        return { kx, ky, kz };
-    }
+    std::array<double, 3> k() const { return {kx, ky, kz}; }
 
     //
-    // A collection of very fast approximations to common geodesic measurements. Useful
-    // for performance-sensitive code that measures things on a city scale. Point coordinates
-    // are in the [x = longitude, y = latitude] form.
+    // A collection of very fast approximations to common geodesic measurements.
+    // Useful for performance-sensitive code that measures things on a city
+    // scale. Point coordinates are in the [x = longitude, y = latitude] form.
     //
-    explicit CheapRuler(double latitude, Unit unit = Kilometers) {
+    explicit CheapRuler(double latitude, Unit unit = Kilometers)
+    {
         double m = 0.;
 
         switch (unit) {
@@ -84,19 +87,22 @@ public:
             break;
         }
 
-        // Curvature formulas from https://en.wikipedia.org/wiki/Earth_radius#Meridional
+        // Curvature formulas from
+        // https://en.wikipedia.org/wiki/Earth_radius#Meridional
         double mul = RAD * RE * m;
         double coslat = std::cos(latitude * RAD);
         double w2 = 1 / (1 - E2 * (1 - coslat * coslat));
         double w = std::sqrt(w2);
 
-        // multipliers for converting longitude and latitude degrees into distance
+        // multipliers for converting longitude and latitude degrees into
+        // distance
         kx = mul * w * coslat;        // based on normal radius of curvature
         ky = mul * w * w2 * (1 - E2); // based on meridonal radius of curvature
         kz = m / 1000.0;              // altitute always in meter
     }
 
-    static CheapRuler fromTile(uint32_t y, uint32_t z) {
+    static CheapRuler fromTile(uint32_t y, uint32_t z)
+    {
         assert(z < 32);
         double n = M_PI * (1. - 2. * (y + 0.5) / double(uint32_t(1) << z));
         double latitude = std::atan(std::sinh(n)) / RAD;
@@ -104,14 +110,16 @@ public:
         return CheapRuler(latitude);
     }
 
-    point delta(point lla0, point lla1) const {
+    point delta(point lla0, point lla1) const
+    {
         auto dx = longDiff(lla1.x, lla0.x) * kx;
         auto dy = (lla1.y - lla0.y) * ky;
         auto dz = (lla1.z - lla0.z) * kz;
         return point(dx, dy, dz);
     }
 
-    double squareDistance(point a, point b) const {
+    double squareDistance(point a, point b) const
+    {
         auto dx = longDiff(a.x, b.x) * kx;
         auto dy = (a.y - b.y) * ky;
         auto dz = (a.z - b.z) * kz;
@@ -119,9 +127,11 @@ public:
     }
 
     //
-    // Given two points of the form [x = longitude, y = latitude], returns the distance.
+    // Given two points of the form [x = longitude, y = latitude], returns the
+    // distance.
     //
-    double distance(point a, point b) const {
+    double distance(point a, point b) const
+    {
         return std::sqrt(squareDistance(a, b));
     }
 
@@ -132,7 +142,8 @@ public:
     // -90              90
     // -135         135
     //       180
-    double bearing(point a, point b) const {
+    double bearing(point a, point b) const
+    {
         auto dx = longDiff(b.x, a.x) * kx;
         auto dy = (b.y - a.y) * ky;
 
@@ -142,23 +153,28 @@ public:
     //
     // Returns a new point given distance and bearing from the starting point.
     //
-    point destination(point origin, double dist, double bearing_) const {
+    point destination(point origin, double dist, double bearing_) const
+    {
         auto a = bearing_ * RAD;
 
         return offset(origin, std::sin(a) * dist, std::cos(a) * dist);
     }
 
     //
-    // Returns a new point given easting and northing offsets from the starting point.
+    // Returns a new point given easting and northing offsets from the starting
+    // point.
     //
-    point offset(point origin, double dx, double dy, double dz = 0) const {
-        return point(origin.x + dx / kx, origin.y + dy / ky, origin.z + dz / kz);
+    point offset(point origin, double dx, double dy, double dz = 0) const
+    {
+        return point(origin.x + dx / kx, origin.y + dy / ky,
+                     origin.z + dz / kz);
     }
 
     //
     // Given a line (an array of points), returns the total line distance.
     //
-    double lineDistance(const line_string& points) {
+    double lineDistance(const line_string &points)
+    {
         double total = 0.;
 
         for (size_t i = 1; i < points.size(); ++i) {
@@ -169,18 +185,20 @@ public:
     }
 
     //
-    // Given a polygon (an array of rings, where each ring is an array of points),
-    // returns the area.
+    // Given a polygon (an array of rings, where each ring is an array of
+    // points), returns the area.
     //
-    double area(polygon poly) const {
+    double area(polygon poly) const
+    {
         double sum = 0.;
 
         for (unsigned i = 0; i < poly.size(); ++i) {
-            auto& ring = poly[i];
+            auto &ring = poly[i];
 
-            for (unsigned j = 0, len = ring.size(), k = len - 1; j < len; k = j++) {
+            for (unsigned j = 0, len = ring.size(), k = len - 1; j < len;
+                 k = j++) {
                 sum += longDiff(ring[j].x, ring[k].x) *
-                  (ring[j].y + ring[k].y) * (i ? -1. : 1.);
+                       (ring[j].y + ring[k].y) * (i ? -1. : 1.);
             }
         }
 
@@ -190,7 +208,8 @@ public:
     //
     // Returns the point at a specified distance along the line.
     //
-    point along(const line_string& line, double dist) const {
+    point along(const line_string &line, double dist) const
+    {
         double sum = 0.;
 
         if (line.empty()) {
@@ -219,7 +238,9 @@ public:
     //
     // Returns the distance from a point `p` to a line segment `a` to `b`.
     //
-  double pointToSegmentDistance(const point& p, const point& a, const point& b) const {
+    double pointToSegmentDistance(const point &p, const point &a,
+                                  const point &b) const
+    {
         auto t = 0.0;
         auto x = a.x;
         auto y = a.y;
@@ -230,7 +251,8 @@ public:
 
         if (dx != 0.0 || dy != 0.0 || dz != 0.0) {
             // t = DOT(ap, ab)
-            t = (longDiff(p.x, x) * kx * dx + (p.y - y) * ky * dy + (p.z - z) * kz * dz) /
+            t = (longDiff(p.x, x) * kx * dx + (p.y - y) * ky * dy +
+                 (p.z - z) * kz * dz) /
                 (dx * dx + dy * dy + dz * dz);
             if (t > 1.0) {
                 x = b.x;
@@ -242,15 +264,18 @@ public:
                 z += (dz / kz) * t;
             }
         }
-        return distance(p, { x, y, z});
+        return distance(p, {x, y, z});
     }
 
     //
-    // Returns a tuple of the form <point, index, t> where point is closest point on the line
-    // from the given point, index is the start index of the segment with the closest point,
-    // and t is a parameter from 0 to 1 that indicates where the closest point is on that segment.
+    // Returns a tuple of the form <point, index, t> where point is closest
+    // point on the line from the given point, index is the start index of the
+    // segment with the closest point, and t is a parameter from 0 to 1 that
+    // indicates where the closest point is on that segment.
     //
-    std::tuple<point, unsigned, double> pointOnLine(const line_string& line, point p) const {
+    std::tuple<point, unsigned, double> pointOnLine(const line_string &line,
+                                                    point p) const
+    {
         double minDist = std::numeric_limits<double>::infinity();
         double minX = 0., minY = 0., minZ = 0, minI = 0., minT = 0.;
 
@@ -269,7 +294,8 @@ public:
 
             if (dx != 0. || dy != 0. || dz != 0.) {
                 // t = DOT(ap, ab)
-                t = (longDiff(p.x, x) * kx * dx + (p.y - y) * ky * dy + (p.z - z) * kz * dz) /
+                t = (longDiff(p.x, x) * kx * dx + (p.y - y) * ky * dy +
+                     (p.z - z) * kz * dz) /
                     (dx * dx + dy * dy + dz * dz);
                 if (t > 1) {
                     x = line[i + 1].x;
@@ -294,29 +320,32 @@ public:
             }
         }
 
-        return std::make_tuple(
-                point(minX, minY, minZ), minI, ::fmax(0., ::fmin(1., minT)));
+        return std::make_tuple(point(minX, minY, minZ), minI,
+                               ::fmax(0., ::fmin(1., minT)));
     }
 
     //
-    // Returns a part of the given line between the start and the stop points (or their closest
-    // points on the line).
+    // Returns a part of the given line between the start and the stop points
+    // (or their closest points on the line).
     //
-    line_string lineSlice(point start, point stop, const line_string& line) const {
+    line_string lineSlice(point start, point stop,
+                          const line_string &line) const
+    {
         auto getPoint = [](auto tuple) { return std::get<0>(tuple); };
         auto getIndex = [](auto tuple) { return std::get<1>(tuple); };
-        auto getT     = [](auto tuple) { return std::get<2>(tuple); };
+        auto getT = [](auto tuple) { return std::get<2>(tuple); };
 
         auto p1 = pointOnLine(line, start);
         auto p2 = pointOnLine(line, stop);
 
-        if (getIndex(p1) > getIndex(p2) || (getIndex(p1) == getIndex(p2) && getT(p1) > getT(p2))) {
+        if (getIndex(p1) > getIndex(p2) ||
+            (getIndex(p1) == getIndex(p2) && getT(p1) > getT(p2))) {
             auto tmp = p1;
             p1 = p2;
             p2 = tmp;
         }
 
-        line_string slice = { getPoint(p1) };
+        line_string slice = {getPoint(p1)};
 
         auto l = getIndex(p1) + 1;
         auto r = getIndex(p2);
@@ -340,7 +369,9 @@ public:
     // Returns a part of the given line between the start and the stop points
     // indicated by distance along the line.
     //
-    line_string lineSliceAlong(double start, double stop, const line_string& line) const {
+    line_string lineSliceAlong(double start, double stop,
+                               const line_string &line) const
+    {
         double sum = 0.;
         line_string slice;
 
@@ -372,46 +403,46 @@ public:
     // Given a point, returns a bounding box object ([w, s, e, n])
     // created from the given point buffered by a given distance.
     //
-    box bufferPoint(point p, double buffer) const {
+    box bufferPoint(point p, double buffer) const
+    {
         auto v = buffer / ky;
         auto h = buffer / kx;
         auto e = buffer / kz;
 
-        return box(
-            point(p.x - h, p.y - v, p.z - e),
-            point(p.x + h, p.y + v, p.z + e)
-        );
+        return box(point(p.x - h, p.y - v, p.z - e),
+                   point(p.x + h, p.y + v, p.z + e));
     }
 
     //
     // Given a bounding box, returns the box buffered by a given distance.
     //
-    box bufferBBox(box bbox, double buffer) const {
+    box bufferBBox(box bbox, double buffer) const
+    {
         auto v = buffer / ky;
         auto h = buffer / kx;
         auto e = buffer / kz;
 
-        return box(
-            point(bbox.min.x - h, bbox.min.y - v, bbox.min.z - e),
-            point(bbox.max.x + h, bbox.max.y + v, bbox.max.z + e)
-        );
+        return box(point(bbox.min.x - h, bbox.min.y - v, bbox.min.z - e),
+                   point(bbox.max.x + h, bbox.max.y + v, bbox.max.z + e));
     }
 
     //
-    // Returns true if the given point is inside in the given bounding box, otherwise false.
+    // Returns true if the given point is inside in the given bounding box,
+    // otherwise false.
     //
-    static bool insideBBox(point p, box bbox, bool check_z = false) {
-        bool inside2d = p.y >= bbox.min.y &&
-               p.y <= bbox.max.y &&
-               longDiff(p.x, bbox.min.x) >= 0 &&
-               longDiff(p.x, bbox.max.x) <= 0;
+    static bool insideBBox(point p, box bbox, bool check_z = false)
+    {
+        bool inside2d = p.y >= bbox.min.y && p.y <= bbox.max.y &&
+                        longDiff(p.x, bbox.min.x) >= 0 &&
+                        longDiff(p.x, bbox.max.x) <= 0;
         if (!check_z) {
             return inside2d;
         }
         return inside2d && bbox.min.z <= p.z && p.z <= bbox.max.z;
     }
 
-    static point interpolate(point a, point b, double t) {
+    static point interpolate(point a, point b, double t)
+    {
         double dx = longDiff(b.x, a.x);
         double dy = b.y - a.y;
         double dz = b.z - a.z;
@@ -419,11 +450,12 @@ public:
         return point(a.x + dx * t, a.y + dy * t, a.z + dz * t);
     }
 
-private:
+  private:
     double ky;
     double kx;
     double kz;
-    static double longDiff(double a, double b) {
+    static double longDiff(double a, double b)
+    {
         return std::remainder(a - b, 360);
     }
 };

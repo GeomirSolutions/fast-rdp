@@ -19,7 +19,7 @@ pip install -U fast-rdp
 
 ```bash
 git clone --recursive https://github.com/GeomirSolutions/fast-rdp
-pip install ./fastrdp
+pip install ./fast-rdp
 ```
 
 или

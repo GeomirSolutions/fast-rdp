@@ -14,18 +14,22 @@
 // https://stackoverflow.com/questions/35463646/arity-of-aggregate-in-logarithmic-time
 // https://stackoverflow.com/questions/38393302/returning-variadic-aggregates-struct-and-syntax-for-c17-variadic-template-c
 
-namespace cista {
+namespace cista
+{
 
-namespace detail {
+namespace detail
+{
 
-struct instance {
-  template <typename Type>
-  operator Type() const;
+struct instance
+{
+    template <typename Type> operator Type() const;
 };
 
 template <typename Aggregate, typename IndexSequence = std::index_sequence<>,
           typename = void>
-struct arity_impl : IndexSequence {};
+struct arity_impl : IndexSequence
+{
+};
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -37,18 +41,19 @@ struct arity_impl<Aggregate, std::index_sequence<Indices...>,
                   std::void_t<decltype(Aggregate{
                       (static_cast<void>(Indices), std::declval<instance>())...,
                       std::declval<instance>()})>>
-    : arity_impl<Aggregate,
-                 std::index_sequence<Indices..., sizeof...(Indices)>> {};
+    : arity_impl<Aggregate, std::index_sequence<Indices..., sizeof...(Indices)>>
+{
+};
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
-}  // namespace detail
+} // namespace detail
 
-template <typename T>
-constexpr std::size_t arity() {
-  return detail::arity_impl<decay_t<T>>().size();
+template <typename T> constexpr std::size_t arity()
+{
+    return detail::arity_impl<decay_t<T>>().size();
 }
 
-}  // namespace cista
+} // namespace cista

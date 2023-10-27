@@ -9,7 +9,8 @@
 @brief worker include file
 */
 
-namespace tf {
+namespace tf
+{
 
 // ----------------------------------------------------------------------------
 // Class Definition: Worker
@@ -25,13 +26,13 @@ Users can access a worker object and alter its property
 (e.g., changing the thread affinity in a POSIX-like system)
 using tf::WorkerInterface.
 */
-class Worker {
+class Worker
+{
 
-  friend class Executor;
-  friend class WorkerView;
+    friend class Executor;
+    friend class WorkerView;
 
   public:
-
     /**
     @brief queries the worker id associated with its parent executor
 
@@ -44,28 +45,30 @@ class Worker {
     /**
     @brief acquires a pointer access to the underlying thread
     */
-    inline std::thread* thread() const { return _thread; }
+    inline std::thread *thread() const { return _thread; }
 
     /**
     @brief queries the size of the queue (i.e., number of enqueued tasks to
            run) associated with the worker
     */
     inline size_t queue_size() const { return _wsq.size(); }
-    
+
     /**
     @brief queries the current capacity of the queue
     */
-    inline size_t queue_capacity() const { return static_cast<size_t>(_wsq.capacity()); }
+    inline size_t queue_capacity() const
+    {
+        return static_cast<size_t>(_wsq.capacity());
+    }
 
   private:
-
     size_t _id;
     size_t _vtm;
-    Executor* _executor;
-    std::thread* _thread;
-    Notifier::Waiter* _waiter;
-    std::default_random_engine _rdgen { std::random_device{}() };
-    TaskQueue<Node*> _wsq;
+    Executor *_executor;
+    std::thread *_thread;
+    Notifier::Waiter *_waiter;
+    std::default_random_engine _rdgen{std::random_device{}()};
+    TaskQueue<Node *> _wsq;
 };
 
 // ----------------------------------------------------------------------------
@@ -75,27 +78,26 @@ class Worker {
 /**
 @private
 */
-//struct PerThreadWorker {
+// struct PerThreadWorker {
 //
-//  Worker* worker;
+//   Worker* worker;
 //
-//  PerThreadWorker() : worker {nullptr} {}
+//   PerThreadWorker() : worker {nullptr} {}
 //
-//  PerThreadWorker(const PerThreadWorker&) = delete;
-//  PerThreadWorker(PerThreadWorker&&) = delete;
+//   PerThreadWorker(const PerThreadWorker&) = delete;
+//   PerThreadWorker(PerThreadWorker&&) = delete;
 //
-//  PerThreadWorker& operator = (const PerThreadWorker&) = delete;
-//  PerThreadWorker& operator = (PerThreadWorker&&) = delete;
-//};
+//   PerThreadWorker& operator = (const PerThreadWorker&) = delete;
+//   PerThreadWorker& operator = (PerThreadWorker&&) = delete;
+// };
 
 /**
 @private
 */
-//inline PerThreadWorker& this_worker() {
-//  thread_local PerThreadWorker worker;
-//  return worker;
-//}
-
+// inline PerThreadWorker& this_worker() {
+//   thread_local PerThreadWorker worker;
+//   return worker;
+// }
 
 // ----------------------------------------------------------------------------
 // Class Definition: WorkerView
@@ -111,12 +113,12 @@ A worker view provides users an immutable interface to observe
 when a worker runs a task, and the view object is only accessible
 from an observer derived from tf::ObserverInterface.
 */
-class WorkerView {
+class WorkerView
+{
 
-  friend class Executor;
+    friend class Executor;
 
   public:
-
     /**
     @brief queries the worker id associated with its parent executor
 
@@ -138,33 +140,26 @@ class WorkerView {
     size_t queue_capacity() const;
 
   private:
+    WorkerView(const Worker &);
+    WorkerView(const WorkerView &) = default;
 
-    WorkerView(const Worker&);
-    WorkerView(const WorkerView&) = default;
-
-    const Worker& _worker;
-
+    const Worker &_worker;
 };
 
 // Constructor
-inline WorkerView::WorkerView(const Worker& w) : _worker{w} {
-}
+inline WorkerView::WorkerView(const Worker &w) : _worker{w} {}
 
 // function: id
-inline size_t WorkerView::id() const {
-  return _worker._id;
-}
+inline size_t WorkerView::id() const { return _worker._id; }
 
 // Function: queue_size
-inline size_t WorkerView::queue_size() const {
-  return _worker._wsq.size();
-}
+inline size_t WorkerView::queue_size() const { return _worker._wsq.size(); }
 
 // Function: queue_capacity
-inline size_t WorkerView::queue_capacity() const {
-  return static_cast<size_t>(_worker._wsq.capacity());
+inline size_t WorkerView::queue_capacity() const
+{
+    return static_cast<size_t>(_worker._wsq.capacity());
 }
-
 
 // ----------------------------------------------------------------------------
 // Class Definition: WorkerInterface
@@ -185,20 +180,20 @@ the following:
 
 for(size_t n=0; n<num_workers; n++) {
   create_thread([](Worker& worker)
-  
+
     // pre-processing executor-specific worker information
     // ...
-  
+
     // enter the scheduling loop
     // Here, WorkerInterface::scheduler_prologue is invoked, if any
-    
+
     while(1) {
       perform_work_stealing_algorithm();
       if(stop) {
-        break; 
+        break;
       }
     }
-  
+
     // leaves the scheduling loop and joins this worker thread
     // Here, WorkerInterface::scheduler_epilogue is invoked, if any
   );
@@ -209,36 +204,31 @@ Methods defined in tf::WorkerInterface are not thread-safe and may be
 be invoked by multiple workers concurrently.
 
 */
-class WorkerInterface {
+class WorkerInterface
+{
 
   public:
-  
-  /**
-  @brief default destructor
-  */
-  virtual ~WorkerInterface() = default;
-  
-  /**
-  @brief method to call before a worker enters the scheduling loop
-  @param worker a reference to the worker
+    /**
+    @brief default destructor
+    */
+    virtual ~WorkerInterface() = default;
 
-  The method is called by the constructor of an executor.
-  */
-  virtual void scheduler_prologue(Worker& worker) = 0;
-  
-  /**
-  @brief method to call after a worker leaves the scheduling loop
-  @param worker a reference to the worker
-  @param ptr an pointer to the exception thrown by the scheduling loop
+    /**
+    @brief method to call before a worker enters the scheduling loop
+    @param worker a reference to the worker
 
-  The method is called by the constructor of an executor.
-  */
-  virtual void scheduler_epilogue(Worker& worker, std::exception_ptr ptr) = 0;
+    The method is called by the constructor of an executor.
+    */
+    virtual void scheduler_prologue(Worker &worker) = 0;
 
+    /**
+    @brief method to call after a worker leaves the scheduling loop
+    @param worker a reference to the worker
+    @param ptr an pointer to the exception thrown by the scheduling loop
 
+    The method is called by the constructor of an executor.
+    */
+    virtual void scheduler_epilogue(Worker &worker, std::exception_ptr ptr) = 0;
 };
 
-
-}  // end of namespact tf -----------------------------------------------------
-
-
+} // namespace tf

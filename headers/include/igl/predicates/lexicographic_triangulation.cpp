@@ -10,25 +10,25 @@
 #include "../lexicographic_triangulation.h"
 #include "predicates.h"
 
-template<
-  typename DerivedV,
-  typename DerivedF
-  >
+template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::predicates::lexicographic_triangulation(
-    const Eigen::MatrixBase<DerivedV>& V,
-    Eigen::PlainObjectBase<DerivedF>& F)
+    const Eigen::MatrixBase<DerivedV> &V, Eigen::PlainObjectBase<DerivedF> &F)
 {
-  const auto orient2d = 
-    [](const double *pa, const double *pb, const double *pc) 
-  {
-    Eigen::Vector2d pav; pav << pa[0], pa[1];
-    Eigen::Vector2d pbv; pbv << pb[0], pb[1];
-    Eigen::Vector2d pcv; pcv << pc[0], pc[1];
-    return int(igl::predicates::orient2d(pav, pbv, pcv));
-  };
-  igl::lexicographic_triangulation(V, orient2d, F);
+    const auto orient2d = [](const double *pa, const double *pb,
+                             const double *pc) {
+        Eigen::Vector2d pav;
+        pav << pa[0], pa[1];
+        Eigen::Vector2d pbv;
+        pbv << pb[0], pb[1];
+        Eigen::Vector2d pcv;
+        pcv << pc[0], pc[1];
+        return int(igl::predicates::orient2d(pav, pbv, pcv));
+    };
+    igl::lexicographic_triangulation(V, orient2d, F);
 }
 
 #ifdef STATIC_LIBRARY
-template igl::predicates::lexicographic_triangulation<Eigen::MatrixXd,Eigen::MatrixXi>(const Eigen::MatrixXd &, Eigen::MatrixXi &);
+template igl::predicates::lexicographic_triangulation<
+    Eigen::MatrixXd, Eigen::MatrixXi>(const Eigen::MatrixXd &,
+                                      Eigen::MatrixXi &);
 #endif

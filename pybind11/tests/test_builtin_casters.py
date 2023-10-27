@@ -1,8 +1,7 @@
 import sys
 
-import pytest
-
 import env
+import pytest
 from pybind11_tests import IncType, UserType
 from pybind11_tests import builtin_casters as m
 

@@ -10,44 +10,35 @@
 #include "../gl.h"
 #include <stb_image_write.h>
 
-static IGL_INLINE bool render_to_file_async_helper(
-  unsigned char * img, int width, int height,
-  const std::string filename,
-  const bool alpha)
+static IGL_INLINE bool render_to_file_async_helper(unsigned char *img,
+                                                   int width, int height,
+                                                   const std::string filename,
+                                                   const bool alpha)
 {
-  //img->flip();
-  if(!alpha)
-  {
-    for(int i = 0;i<width;i++)
-    for(int j = 0;j<height;j++)
-    {
-      img[4*(i+j*width)+3] = 255;
+    // img->flip();
+    if (!alpha) {
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++) {
+                img[4 * (i + j * width) + 3] = 255;
+            }
     }
-  }
 
-  const bool ret = igl::stb::write_image(filename,width,height,img);
-  delete [] img;
-  return ret;
+    const bool ret = igl::stb::write_image(filename, width, height, img);
+    delete[] img;
+    return ret;
 }
 
-IGL_INLINE std::thread igl::opengl::stb::render_to_file_async(
-  const std::string filename,
-  const int width,
-  const int height,
-  const bool alpha)
+IGL_INLINE std::thread
+igl::opengl::stb::render_to_file_async(const std::string filename,
+                                       const int width, const int height,
+                                       const bool alpha)
 {
-  // Part that should serial
-  unsigned char * data = new unsigned char[width*height];
-  glReadPixels(
-    0,
-    0,
-    width,
-    height,
-    GL_RGBA,
-    GL_UNSIGNED_BYTE,
-    data);
-  // Part that should be asynchronous
-  std::thread t(render_to_file_async_helper,data,width,height,filename,alpha);
-  t.detach();
-  return t;
+    // Part that should serial
+    unsigned char *data = new unsigned char[width * height];
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    // Part that should be asynchronous
+    std::thread t(render_to_file_async_helper, data, width, height, filename,
+                  alpha);
+    t.detach();
+    return t;
 }

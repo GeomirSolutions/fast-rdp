@@ -2,9 +2,8 @@ import ctypes
 import io
 import struct
 
-import pytest
-
 import env
+import pytest
 from pybind11_tests import ConstructorStats
 from pybind11_tests import buffers as m
 

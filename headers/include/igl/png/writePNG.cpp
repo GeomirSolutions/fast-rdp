@@ -10,34 +10,38 @@
 #include <vector>
 
 IGL_INLINE bool igl::png::writePNG(
-  const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-  const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-  const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-  const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A,
-  const std::string png_file
-)
+    const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &R,
+    const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &G,
+    const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &B,
+    const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &A,
+    const std::string png_file)
 {
-  assert((R.rows() == G.rows()) && (G.rows() == B.rows()) && (B.rows() == A.rows()));
-  assert((R.cols() == G.cols()) && (G.cols() == B.cols()) && (B.cols() == A.cols()));
+    assert((R.rows() == G.rows()) && (G.rows() == B.rows()) &&
+           (B.rows() == A.rows()));
+    assert((R.cols() == G.cols()) && (G.cols() == B.cols()) &&
+           (B.cols() == A.cols()));
 
-  const int comp = 4;                                  // 4 Channels Red, Green, Blue, Alpha
-  const int stride_in_bytes = R.rows()*comp;           // Length of one row in bytes
-  std::vector<unsigned char> data(R.size()*comp,0);     // The image itself;
+    const int comp = 4; // 4 Channels Red, Green, Blue, Alpha
+    const int stride_in_bytes = R.rows() * comp; // Length of one row in bytes
+    std::vector<unsigned char> data(R.size() * comp, 0); // The image itself;
 
-  for (unsigned i = 0; i<R.rows();++i)
-  {
-    for (unsigned j = 0; j < R.cols(); ++j)
-    {
-        data[(j * R.rows() * comp) + (i * comp) + 0] = R(i,R.cols()-1-j);
-        data[(j * R.rows() * comp) + (i * comp) + 1] = G(i,R.cols()-1-j);
-        data[(j * R.rows() * comp) + (i * comp) + 2] = B(i,R.cols()-1-j);
-        data[(j * R.rows() * comp) + (i * comp) + 3] = A(i,R.cols()-1-j);
+    for (unsigned i = 0; i < R.rows(); ++i) {
+        for (unsigned j = 0; j < R.cols(); ++j) {
+            data[(j * R.rows() * comp) + (i * comp) + 0] =
+                R(i, R.cols() - 1 - j);
+            data[(j * R.rows() * comp) + (i * comp) + 1] =
+                G(i, R.cols() - 1 - j);
+            data[(j * R.rows() * comp) + (i * comp) + 2] =
+                B(i, R.cols() - 1 - j);
+            data[(j * R.rows() * comp) + (i * comp) + 3] =
+                A(i, R.cols() - 1 - j);
+        }
     }
-  }
 
-  stbi_write_png(png_file.c_str(), R.rows(), R.cols(), comp, data.data(), stride_in_bytes);
+    stbi_write_png(png_file.c_str(), R.rows(), R.cols(), comp, data.data(),
+                   stride_in_bytes);
 
-  return true;
+    return true;
 }
 
 #ifdef IGL_STATIC_LIBRARY

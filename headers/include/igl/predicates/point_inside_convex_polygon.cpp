@@ -10,24 +10,27 @@
 
 template <typename DerivedP, typename DerivedQ>
 IGL_INLINE bool igl::predicates::point_inside_convex_polygon(
-  const Eigen::MatrixBase<DerivedP>& P,
-  const Eigen::MatrixBase<DerivedQ>& q
-){
-  EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(DerivedP, Eigen::Dynamic, 2);
-  EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(DerivedQ, 1, 2);
-  typedef typename DerivedP::Scalar Scalar;
-  for(int i=0;i<P.rows();i++){
-    int i_1 = (i+1) % P.rows();
-    Eigen::Matrix<Scalar,1,2> a = P.row(i);
-    Eigen::Matrix<Scalar,1,2> b = P.row(i_1);
-    auto r = igl::predicates::orient2d(a,b,q);
-    if(r == igl::predicates::Orientation::COLLINEAR || 
-       r == igl::predicates::Orientation::NEGATIVE)
-      return false;
-  }
-  return true;
+    const Eigen::MatrixBase<DerivedP> &P, const Eigen::MatrixBase<DerivedQ> &q)
+{
+    EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(DerivedP, Eigen::Dynamic, 2);
+    EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(DerivedQ, 1, 2);
+    typedef typename DerivedP::Scalar Scalar;
+    for (int i = 0; i < P.rows(); i++) {
+        int i_1 = (i + 1) % P.rows();
+        Eigen::Matrix<Scalar, 1, 2> a = P.row(i);
+        Eigen::Matrix<Scalar, 1, 2> b = P.row(i_1);
+        auto r = igl::predicates::orient2d(a, b, q);
+        if (r == igl::predicates::Orientation::COLLINEAR ||
+            r == igl::predicates::Orientation::NEGATIVE)
+            return false;
+    }
+    return true;
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template bool igl::predicates::point_inside_convex_polygon<Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&);
+template bool igl::predicates::point_inside_convex_polygon<
+    Eigen::Matrix<double, -1, 2, 0, -1, 2>,
+    Eigen::Matrix<double, 1, 2, 1, 1, 2>>(
+    Eigen::MatrixBase<Eigen::Matrix<double, -1, 2, 0, -1, 2>> const &,
+    Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const &);
 #endif

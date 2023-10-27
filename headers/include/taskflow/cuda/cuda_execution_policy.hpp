@@ -7,7 +7,8 @@
 @brief CUDA execution policy include file
 */
 
-namespace tf {
+namespace tf
+{
 
 /**
 @class cudaExecutionPolicy
@@ -25,45 +26,46 @@ is recommended to be an odd number to avoid bank conflict.
 
 Details can be referred to @ref CUDASTDExecutionPolicy.
 */
-template<unsigned NT, unsigned VT>
-class cudaExecutionPolicy {
+template <unsigned NT, unsigned VT> class cudaExecutionPolicy
+{
 
-  static_assert(is_pow2(NT), "max # threads per block must be a power of two");
+    static_assert(is_pow2(NT),
+                  "max # threads per block must be a power of two");
 
   public:
+    /** @brief static constant for getting the number of threads per block */
+    const static unsigned nt = NT;
 
-  /** @brief static constant for getting the number of threads per block */
-  const static unsigned nt = NT;
+    /** @brief static constant for getting the number of work units per thread
+     */
+    const static unsigned vt = VT;
 
-  /** @brief static constant for getting the number of work units per thread */
-  const static unsigned vt = VT;
+    /** @brief static constant for getting the number of elements to process per
+     * block */
+    const static unsigned nv = NT * VT;
 
-  /** @brief static constant for getting the number of elements to process per block */
-  const static unsigned nv = NT*VT;
+    /**
+    @brief constructs an execution policy object with default stream
+     */
+    cudaExecutionPolicy() = default;
 
-  /**
-  @brief constructs an execution policy object with default stream
-   */
-  cudaExecutionPolicy() = default;
+    /**
+    @brief constructs an execution policy object with the given stream
+     */
+    explicit cudaExecutionPolicy(cudaStream_t s) : _stream{s} {}
 
-  /**
-  @brief constructs an execution policy object with the given stream
-   */
-  explicit cudaExecutionPolicy(cudaStream_t s) : _stream{s} {}
-  
-  /**
-  @brief queries the associated stream
-   */
-  cudaStream_t stream() noexcept { return _stream; };
+    /**
+    @brief queries the associated stream
+     */
+    cudaStream_t stream() noexcept { return _stream; };
 
-  /**
-  @brief assigns a stream
-   */
-  void stream(cudaStream_t stream) noexcept { _stream = stream; }
+    /**
+    @brief assigns a stream
+     */
+    void stream(cudaStream_t stream) noexcept { _stream = stream; }
 
   private:
-
-  cudaStream_t _stream {0};
+    cudaStream_t _stream{0};
 };
 
 /**
@@ -71,7 +73,4 @@ class cudaExecutionPolicy {
  */
 using cudaDefaultExecutionPolicy = cudaExecutionPolicy<512, 9>;
 
-}  // end of namespace tf -----------------------------------------------------
-
-
-
+} // namespace tf

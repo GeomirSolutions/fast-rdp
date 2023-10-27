@@ -24,7 +24,8 @@ documentation.
 #include <string>
 #include <utility>
 
-namespace protozero {
+namespace protozero
+{
 
 #ifdef PROTOZERO_USE_VIEW
 using data_view = PROTOZERO_USE_VIEW;
@@ -36,13 +37,13 @@ using data_view = PROTOZERO_USE_VIEW;
  * This class is supposed to be compatible with the std::string_view
  * that will be available in C++17.
  */
-class data_view {
+class data_view
+{
 
-    const char* m_data = nullptr;
+    const char *m_data = nullptr;
     std::size_t m_size = 0;
 
-public:
-
+  public:
     /**
      * Default constructor. Construct an empty data_view.
      */
@@ -54,9 +55,9 @@ public:
      * @param ptr Pointer to the data.
      * @param length Length of the data.
      */
-    constexpr data_view(const char* ptr, std::size_t length) noexcept
-        : m_data{ptr},
-          m_size{length} {
+    constexpr data_view(const char *ptr, std::size_t length) noexcept
+        : m_data{ptr}, m_size{length}
+    {
     }
 
     /**
@@ -64,9 +65,11 @@ public:
      *
      * @param str String with the data.
      */
-    data_view(const std::string& str) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-        : m_data{str.data()},
-          m_size{str.size()} {
+    data_view(
+        const std::string &str) noexcept // NOLINT(google-explicit-constructor,
+                                         // hicpp-explicit-conversions)
+        : m_data{str.data()}, m_size{str.size()}
+    {
     }
 
     /**
@@ -74,9 +77,10 @@ public:
      *
      * @param ptr Pointer to the data.
      */
-    data_view(const char* ptr) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-        : m_data{ptr},
-          m_size{std::strlen(ptr)} {
+    data_view(const char *ptr) noexcept // NOLINT(google-explicit-constructor,
+                                        // hicpp-explicit-conversions)
+        : m_data{ptr}, m_size{std::strlen(ptr)}
+    {
     }
 
     /**
@@ -84,26 +88,21 @@ public:
      *
      * @param other Other object to swap data with.
      */
-    void swap(data_view& other) noexcept {
+    void swap(data_view &other) noexcept
+    {
         using std::swap;
         swap(m_data, other.m_data);
         swap(m_size, other.m_size);
     }
 
     /// Return pointer to data.
-    constexpr const char* data() const noexcept {
-        return m_data;
-    }
+    constexpr const char *data() const noexcept { return m_data; }
 
     /// Return length of data in bytes.
-    constexpr std::size_t size() const noexcept {
-        return m_size;
-    }
+    constexpr std::size_t size() const noexcept { return m_size; }
 
     /// Returns true if size is 0.
-    constexpr bool empty() const noexcept {
-        return m_size == 0;
-    }
+    constexpr bool empty() const noexcept { return m_size == 0; }
 
 #ifndef PROTOZERO_STRICT_API
     /**
@@ -115,7 +114,8 @@ public:
      *             should not be used to make conversion to that class easier
      *             in the future.
      */
-    std::string to_string() const {
+    std::string to_string() const
+    {
         protozero_assert(m_data);
         return {m_data, m_size};
     }
@@ -126,7 +126,8 @@ public:
      *
      * @pre Must not be default constructed data_view.
      */
-    explicit operator std::string() const {
+    explicit operator std::string() const
+    {
         protozero_assert(m_data);
         return {m_data, m_size};
     }
@@ -141,10 +142,11 @@ public:
      *
      * @pre Must not be default constructed data_view.
      */
-    int compare(data_view other) const noexcept {
+    int compare(data_view other) const noexcept
+    {
         assert(m_data && other.m_data);
-        const int cmp = std::memcmp(data(), other.data(),
-                                    std::min(size(), other.size()));
+        const int cmp =
+            std::memcmp(data(), other.data(), std::min(size(), other.size()));
         if (cmp == 0) {
             if (size() == other.size()) {
                 return 0;
@@ -162,9 +164,7 @@ public:
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline void swap(data_view& lhs, data_view& rhs) noexcept {
-    lhs.swap(rhs);
-}
+inline void swap(data_view &lhs, data_view &rhs) noexcept { lhs.swap(rhs); }
 
 /**
  * Two data_view instances are equal if they have the same size and the
@@ -173,7 +173,9 @@ inline void swap(data_view& lhs, data_view& rhs) noexcept {
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline constexpr bool operator==(const data_view lhs, const data_view rhs) noexcept {
+inline constexpr bool operator==(const data_view lhs,
+                                 const data_view rhs) noexcept
+{
     return lhs.size() == rhs.size() &&
            std::equal(lhs.data(), lhs.data() + lhs.size(), rhs.data());
 }
@@ -185,7 +187,9 @@ inline constexpr bool operator==(const data_view lhs, const data_view rhs) noexc
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline constexpr bool operator!=(const data_view lhs, const data_view rhs) noexcept {
+inline constexpr bool operator!=(const data_view lhs,
+                                 const data_view rhs) noexcept
+{
     return !(lhs == rhs);
 }
 
@@ -195,7 +199,8 @@ inline constexpr bool operator!=(const data_view lhs, const data_view rhs) noexc
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline bool operator<(const data_view lhs, const data_view rhs) noexcept {
+inline bool operator<(const data_view lhs, const data_view rhs) noexcept
+{
     return lhs.compare(rhs) < 0;
 }
 
@@ -205,7 +210,8 @@ inline bool operator<(const data_view lhs, const data_view rhs) noexcept {
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline bool operator<=(const data_view lhs, const data_view rhs) noexcept {
+inline bool operator<=(const data_view lhs, const data_view rhs) noexcept
+{
     return lhs.compare(rhs) <= 0;
 }
 
@@ -215,7 +221,8 @@ inline bool operator<=(const data_view lhs, const data_view rhs) noexcept {
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline bool operator>(const data_view lhs, const data_view rhs) noexcept {
+inline bool operator>(const data_view lhs, const data_view rhs) noexcept
+{
     return lhs.compare(rhs) > 0;
 }
 
@@ -225,7 +232,8 @@ inline bool operator>(const data_view lhs, const data_view rhs) noexcept {
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline bool operator>=(const data_view lhs, const data_view rhs) noexcept {
+inline bool operator>=(const data_view lhs, const data_view rhs) noexcept
+{
     return lhs.compare(rhs) >= 0;
 }
 

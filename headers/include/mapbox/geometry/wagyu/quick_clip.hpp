@@ -5,49 +5,61 @@
 #include <mapbox/geometry/polygon.hpp>
 #include <mapbox/geometry/wagyu/wagyu.hpp>
 
-namespace mapbox {
-namespace geometry {
-namespace wagyu {
-namespace quick_clip {
+namespace mapbox
+{
+namespace geometry
+{
+namespace wagyu
+{
+namespace quick_clip
+{
 
 template <typename T>
 mapbox::geometry::point<T> intersect(mapbox::geometry::point<T> a,
-                                     mapbox::geometry::point<T> b,
-                                     size_t edge,
-                                     mapbox::geometry::box<T> const& box) {
+                                     mapbox::geometry::point<T> b, size_t edge,
+                                     mapbox::geometry::box<T> const &box)
+{
     switch (edge) {
     case 0:
         return mapbox::geometry::point<T>(
-            mapbox::geometry::wagyu::wround<T>(static_cast<double>(a.x) + static_cast<double>(b.x - a.x) *
-                                                                              static_cast<double>(box.min.y - a.y) /
-                                                                              static_cast<double>(b.y - a.y)),
+            mapbox::geometry::wagyu::wround<T>(
+                static_cast<double>(a.x) +
+                static_cast<double>(b.x - a.x) *
+                    static_cast<double>(box.min.y - a.y) /
+                    static_cast<double>(b.y - a.y)),
             box.min.y);
 
     case 1:
         return mapbox::geometry::point<T>(
-            box.max.x,
-            mapbox::geometry::wagyu::wround<T>(static_cast<double>(a.y) + static_cast<double>(b.y - a.y) *
-                                                                              static_cast<double>(box.max.x - a.x) /
-                                                                              static_cast<double>(b.x - a.x)));
+            box.max.x, mapbox::geometry::wagyu::wround<T>(
+                           static_cast<double>(a.y) +
+                           static_cast<double>(b.y - a.y) *
+                               static_cast<double>(box.max.x - a.x) /
+                               static_cast<double>(b.x - a.x)));
 
     case 2:
         return mapbox::geometry::point<T>(
-            mapbox::geometry::wagyu::wround<T>(static_cast<double>(a.x) + static_cast<double>(b.x - a.x) *
-                                                                              static_cast<double>(box.max.y - a.y) /
-                                                                              static_cast<double>(b.y - a.y)),
+            mapbox::geometry::wagyu::wround<T>(
+                static_cast<double>(a.x) +
+                static_cast<double>(b.x - a.x) *
+                    static_cast<double>(box.max.y - a.y) /
+                    static_cast<double>(b.y - a.y)),
             box.max.y);
 
     default: // case 3
         return mapbox::geometry::point<T>(
-            box.min.x,
-            mapbox::geometry::wagyu::wround<T>(static_cast<double>(a.y) + static_cast<double>(b.y - a.y) *
-                                                                              static_cast<double>(box.min.x - a.x) /
-                                                                              static_cast<double>(b.x - a.x)));
+            box.min.x, mapbox::geometry::wagyu::wround<T>(
+                           static_cast<double>(a.y) +
+                           static_cast<double>(b.y - a.y) *
+                               static_cast<double>(box.min.x - a.x) /
+                               static_cast<double>(b.x - a.x)));
     }
 }
 
 template <typename T>
-bool inside(mapbox::geometry::point<T> p, size_t edge, mapbox::geometry::box<T> const& b) {
+bool inside(mapbox::geometry::point<T> p, size_t edge,
+            mapbox::geometry::box<T> const &b)
+{
     switch (edge) {
     case 0:
         return p.y > b.min.y;
@@ -64,8 +76,10 @@ bool inside(mapbox::geometry::point<T> p, size_t edge, mapbox::geometry::box<T> 
 }
 
 template <typename T>
-mapbox::geometry::linear_ring<T> quick_lr_clip(mapbox::geometry::linear_ring<T> const& ring,
-                                               mapbox::geometry::box<T> const& b) {
+mapbox::geometry::linear_ring<T>
+quick_lr_clip(mapbox::geometry::linear_ring<T> const &ring,
+              mapbox::geometry::box<T> const &b)
+{
     mapbox::geometry::linear_ring<T> out = ring;
 
     for (size_t edge = 0; edge < 4; edge++) {
@@ -105,33 +119,39 @@ mapbox::geometry::linear_ring<T> quick_lr_clip(mapbox::geometry::linear_ring<T> 
 
 template <typename T>
 mapbox::geometry::multi_polygon<T>
-clip(mapbox::geometry::polygon<T> const& poly, mapbox::geometry::box<T> const& b, fill_type subject_fill_type) {
+clip(mapbox::geometry::polygon<T> const &poly,
+     mapbox::geometry::box<T> const &b, fill_type subject_fill_type)
+{
     mapbox::geometry::multi_polygon<T> result;
     wagyu<T> clipper;
-    for (auto const& lr : poly) {
+    for (auto const &lr : poly) {
         auto new_lr = quick_clip::quick_lr_clip(lr, b);
         if (!new_lr.empty()) {
             clipper.add_ring(new_lr, polygon_type_subject);
         }
     }
-    clipper.execute(clip_type_union, result, subject_fill_type, fill_type_even_odd);
+    clipper.execute(clip_type_union, result, subject_fill_type,
+                    fill_type_even_odd);
     return result;
 }
 
 template <typename T>
 mapbox::geometry::multi_polygon<T>
-clip(mapbox::geometry::multi_polygon<T> const& mp, mapbox::geometry::box<T> const& b, fill_type subject_fill_type) {
+clip(mapbox::geometry::multi_polygon<T> const &mp,
+     mapbox::geometry::box<T> const &b, fill_type subject_fill_type)
+{
     mapbox::geometry::multi_polygon<T> result;
     wagyu<T> clipper;
-    for (auto const& poly : mp) {
-        for (auto const& lr : poly) {
+    for (auto const &poly : mp) {
+        for (auto const &lr : poly) {
             auto new_lr = quick_clip::quick_lr_clip(lr, b);
             if (!new_lr.empty()) {
                 clipper.add_ring(new_lr, polygon_type_subject);
             }
         }
     }
-    clipper.execute(clip_type_union, result, subject_fill_type, fill_type_even_odd);
+    clipper.execute(clip_type_union, result, subject_fill_type,
+                    fill_type_even_odd);
     return result;
 }
 } // namespace wagyu

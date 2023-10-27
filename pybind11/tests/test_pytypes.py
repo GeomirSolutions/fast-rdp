@@ -2,9 +2,8 @@ import contextlib
 import sys
 import types
 
-import pytest
-
 import env
+import pytest
 from pybind11_tests import detailed_error_messages_enabled
 from pybind11_tests import pytypes as m
 

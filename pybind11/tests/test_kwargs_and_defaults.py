@@ -1,5 +1,4 @@
 import pytest
-
 from pybind11_tests import kwargs_and_defaults as m
 
 

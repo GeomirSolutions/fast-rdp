@@ -12,29 +12,22 @@
 #include <Eigen/Core>
 namespace igl
 {
-  /// Dual quaternion skinning
-  ///
-  /// @param[in] V  #V by 3 list of rest positions
-  /// @param[in] W  #W by #C list of weights
-  /// @param[in] vQ  #C list of rotation quaternions
-  /// @param[in] vT  #C list of translation vectors
-  /// @param[out] U  #V by 3 list of new positions
-  template <
-    typename DerivedV,
-    typename DerivedW,
-    typename Q,
-    typename QAlloc,
-    typename T,
-    typename DerivedU>
-  IGL_INLINE void dqs(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedW> & W,
-    const std::vector<Q,QAlloc> & vQ,
-    const std::vector<T> & vT,
-    Eigen::PlainObjectBase<DerivedU> & U);
-};
+/// Dual quaternion skinning
+///
+/// @param[in] V  #V by 3 list of rest positions
+/// @param[in] W  #W by #C list of weights
+/// @param[in] vQ  #C list of rotation quaternions
+/// @param[in] vT  #C list of translation vectors
+/// @param[out] U  #V by 3 list of new positions
+template <typename DerivedV, typename DerivedW, typename Q, typename QAlloc,
+          typename T, typename DerivedU>
+IGL_INLINE void dqs(const Eigen::MatrixBase<DerivedV> &V,
+                    const Eigen::MatrixBase<DerivedW> &W,
+                    const std::vector<Q, QAlloc> &vQ, const std::vector<T> &vT,
+                    Eigen::PlainObjectBase<DerivedU> &U);
+}; // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "dqs.cpp"
+#include "dqs.cpp"
 #endif
 #endif

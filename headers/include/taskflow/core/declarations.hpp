@@ -1,6 +1,7 @@
 #pragma once
 
-namespace tf {
+namespace tf
+{
 
 // ----------------------------------------------------------------------------
 // taskflow
@@ -25,11 +26,9 @@ class ChromeTracingObserver;
 class TFProfObserver;
 class TFProfManager;
 
-template <typename T>
-class Future;
+template <typename T> class Future;
 
-template <typename...Fs>
-class Pipeline;
+template <typename... Fs> class Pipeline;
 
 // ----------------------------------------------------------------------------
 // cudaFlow
@@ -53,9 +52,4 @@ class syclGraph;
 class syclTask;
 class syclFlow;
 
-
-}  // end of namespace tf -----------------------------------------------------
-
-
-
-
+} // namespace tf

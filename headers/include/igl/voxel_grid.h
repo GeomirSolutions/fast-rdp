@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_VOXEL_GRID_H
 #define IGL_VOXEL_GRID_H
@@ -12,39 +12,29 @@
 #include <Eigen/Geometry>
 namespace igl
 {
-  /// Construct the cell center positions of a regular voxel grid (lattice) made
-  /// of perfectly square voxels.
-  /// 
-  /// @param[in] box  bounding box to enclose by grid
-  /// @param[in] s  number of cell centers on largest side (including 2*pad_count)
-  /// @param[in] pad_count  number of cells beyond box
-  /// @param[out] GV  side(0)*side(1)*side(2) by 3 list of cell center positions
-  /// @param[out] side  1 by 3 list of dimension of voxel grid
-  template <
-    typename Scalar,
-    typename DerivedGV,
-    typename Derivedside>
-  IGL_INLINE void voxel_grid(
-    const Eigen::AlignedBox<Scalar,3> & box, 
-    const int s,
-    const int pad_count,
-    Eigen::PlainObjectBase<DerivedGV> & GV,
-    Eigen::PlainObjectBase<Derivedside> & side);
-  /// \overload
-  /// @param[in]  offset  offset to add to each cell center
-  template <
-    typename DerivedV,
-    typename DerivedGV,
-    typename Derivedside>
-  IGL_INLINE void voxel_grid(
-    const Eigen::MatrixBase<DerivedV> & V, 
-    const typename DerivedV::Scalar offset,
-    const int s,
-    const int pad_count,
-    Eigen::PlainObjectBase<DerivedGV> & GV,
-    Eigen::PlainObjectBase<Derivedside> & side);
-}
+/// Construct the cell center positions of a regular voxel grid (lattice) made
+/// of perfectly square voxels.
+///
+/// @param[in] box  bounding box to enclose by grid
+/// @param[in] s  number of cell centers on largest side (including 2*pad_count)
+/// @param[in] pad_count  number of cells beyond box
+/// @param[out] GV  side(0)*side(1)*side(2) by 3 list of cell center positions
+/// @param[out] side  1 by 3 list of dimension of voxel grid
+template <typename Scalar, typename DerivedGV, typename Derivedside>
+IGL_INLINE void voxel_grid(const Eigen::AlignedBox<Scalar, 3> &box, const int s,
+                           const int pad_count,
+                           Eigen::PlainObjectBase<DerivedGV> &GV,
+                           Eigen::PlainObjectBase<Derivedside> &side);
+/// \overload
+/// @param[in]  offset  offset to add to each cell center
+template <typename DerivedV, typename DerivedGV, typename Derivedside>
+IGL_INLINE void voxel_grid(const Eigen::MatrixBase<DerivedV> &V,
+                           const typename DerivedV::Scalar offset, const int s,
+                           const int pad_count,
+                           Eigen::PlainObjectBase<DerivedGV> &GV,
+                           Eigen::PlainObjectBase<Derivedside> &side);
+} // namespace igl
 #ifndef IGL_STATIC_LIBRARY
-#  include "voxel_grid.cpp"
+#include "voxel_grid.cpp"
 #endif
 #endif

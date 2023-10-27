@@ -36,34 +36,29 @@
 // current version: 3.5.0
 #define TF_VERSION 300500
 
-#define TF_MAJOR_VERSION TF_VERSION/100000
-#define TF_MINOR_VERSION TF_VERSION/100%1000
-#define TF_PATCH_VERSION TF_VERSION%100
+#define TF_MAJOR_VERSION TF_VERSION / 100000
+#define TF_MINOR_VERSION TF_VERSION / 100 % 1000
+#define TF_PATCH_VERSION TF_VERSION % 100
 
 /**
 @brief taskflow namespace
 */
-namespace tf {
+namespace tf
+{
 
 /**
 @private
 */
-namespace detail { }
-
+namespace detail
+{
+}
 
 /**
 @brief queries the version information in a string format @c major.minor.patch
 
-Release notes are available here: https://taskflow.github.io/taskflow/Releases.html
+Release notes are available here:
+https://taskflow.github.io/taskflow/Releases.html
 */
-constexpr const char* version() {
-  return "3.5.0";
-}
+constexpr const char *version() { return "3.5.0"; }
 
-
-}  // end of namespace tf -----------------------------------------------------
-
-
-
-
-
+} // namespace tf

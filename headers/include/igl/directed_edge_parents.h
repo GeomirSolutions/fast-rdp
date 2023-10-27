@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_DIRECTED_EDGE_PARENTS_H
 #define IGL_DIRECTED_EDGE_PARENTS_H
@@ -13,18 +13,17 @@
 
 namespace igl
 {
-  /// Recover "parents" (preceding edges) in a tree given just directed edges.
-  ///
-  /// @param[in] E  #E by 2 list of directed edges
-  /// @param[out] P  #E list of parent indices into E (-1) means root
-  ///
-  template <typename DerivedE, typename DerivedP>
-  IGL_INLINE void directed_edge_parents(
-    const Eigen::MatrixBase<DerivedE> & E,
-    Eigen::PlainObjectBase<DerivedP> & P);
-}
+/// Recover "parents" (preceding edges) in a tree given just directed edges.
+///
+/// @param[in] E  #E by 2 list of directed edges
+/// @param[out] P  #E list of parent indices into E (-1) means root
+///
+template <typename DerivedE, typename DerivedP>
+IGL_INLINE void directed_edge_parents(const Eigen::MatrixBase<DerivedE> &E,
+                                      Eigen::PlainObjectBase<DerivedP> &P);
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "directed_edge_parents.cpp"
+#include "directed_edge_parents.cpp"
 #endif
 #endif

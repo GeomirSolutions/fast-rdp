@@ -3,20 +3,26 @@
 #include <mapbox/geojsonvt/clip.hpp>
 #include <mapbox/geojsonvt/types.hpp>
 
-namespace mapbox {
-namespace geojsonvt {
-namespace detail {
+namespace mapbox
+{
+namespace geojsonvt
+{
+namespace detail
+{
 
-inline void shiftCoords(vt_features& features, double offset) {
-    for (auto& feature : features) {
-        mapbox::geometry::for_each_point(feature.geometry,
-                                         [offset](vt_point& point) { point.x += offset; });
+inline void shiftCoords(vt_features &features, double offset)
+{
+    for (auto &feature : features) {
+        mapbox::geometry::for_each_point(
+            feature.geometry, [offset](vt_point &point) { point.x += offset; });
         feature.bbox.min.x += offset;
         feature.bbox.max.x += offset;
     }
 }
 
-inline vt_features wrap(const vt_features& features, double buffer, const bool lineMetrics) {
+inline vt_features wrap(const vt_features &features, double buffer,
+                        const bool lineMetrics)
+{
     // left world copy
     auto left = clip<0>(features, -1 - buffer, buffer, -1, 2, lineMetrics);
     // right world copy

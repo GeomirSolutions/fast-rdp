@@ -12,21 +12,22 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  /// Move a scalar field defined on faces to vertices by averaging
-  ///
-  /// @param[in] V #V by 3 list of mesh vertex positions
-  /// @param[in] F #F by 3 list of mesh face indices into rows of V
-  /// @param[in] S #F by 1 scalar field defined on faces
-  /// @param[out] SV #V by 1 scalar field defined on vertices
-  template<typename DerivedV,typename DerivedF,typename DerivedS,typename DerivedSV>
-  IGL_INLINE void average_onto_vertices(const Eigen::MatrixBase<DerivedV> &V,
-    const Eigen::MatrixBase<DerivedF> &F,
-    const Eigen::MatrixBase<DerivedS> &S,
-    Eigen::PlainObjectBase<DerivedSV> &SV);
-}
+/// Move a scalar field defined on faces to vertices by averaging
+///
+/// @param[in] V #V by 3 list of mesh vertex positions
+/// @param[in] F #F by 3 list of mesh face indices into rows of V
+/// @param[in] S #F by 1 scalar field defined on faces
+/// @param[out] SV #V by 1 scalar field defined on vertices
+template <typename DerivedV, typename DerivedF, typename DerivedS,
+          typename DerivedSV>
+IGL_INLINE void average_onto_vertices(const Eigen::MatrixBase<DerivedV> &V,
+                                      const Eigen::MatrixBase<DerivedF> &F,
+                                      const Eigen::MatrixBase<DerivedS> &S,
+                                      Eigen::PlainObjectBase<DerivedSV> &SV);
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "average_onto_vertices.cpp"
+#include "average_onto_vertices.cpp"
 #endif
 
 #endif

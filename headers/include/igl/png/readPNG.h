@@ -13,27 +13,27 @@
 
 namespace igl
 {
-  namespace png
-  {
-    // Read an image from a .png file into 4 memory buffers
-    //
-    // Input:
-    //  png_file  path to .png file
-    // Output:
-    //  R,G,B,A texture channels
-    // Returns true on success, false on failure
-    //
-    IGL_INLINE bool readPNG(const std::string png_file,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A
-    );
-  }
-}
+namespace png
+{
+// Read an image from a .png file into 4 memory buffers
+//
+// Input:
+//  png_file  path to .png file
+// Output:
+//  R,G,B,A texture channels
+// Returns true on success, false on failure
+//
+IGL_INLINE bool
+readPNG(const std::string png_file,
+        Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &R,
+        Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &G,
+        Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &B,
+        Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &A);
+} // namespace png
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "readPNG.cpp"
+#include "readPNG.cpp"
 #endif
 
 #endif

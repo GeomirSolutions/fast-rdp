@@ -6,8 +6,10 @@
 // stl
 #include <vector>
 
-namespace mapbox {
-namespace geometry {
+namespace mapbox
+{
+namespace geometry
+{
 
 template <typename T, template <typename...> class Cont = std::vector>
 struct linear_ring : Cont<point<T>>
@@ -18,11 +20,13 @@ struct linear_ring : Cont<point<T>>
     using size_type = typename container_type::size_type;
 
     template <class... Args>
-    linear_ring(Args&&... args) : container_type(std::forward<Args>(args)...)
+    linear_ring(Args &&...args) : container_type(std::forward<Args>(args)...)
     {
     }
     linear_ring(std::initializer_list<point_type> args)
-        : container_type(std::move(args)) {}
+        : container_type(std::move(args))
+    {
+    }
 };
 
 template <typename T, template <typename...> class Cont = std::vector>
@@ -34,11 +38,13 @@ struct polygon : Cont<linear_ring<T>>
     using size_type = typename container_type::size_type;
 
     template <class... Args>
-    polygon(Args&&... args) : container_type(std::forward<Args>(args)...)
+    polygon(Args &&...args) : container_type(std::forward<Args>(args)...)
     {
     }
     polygon(std::initializer_list<linear_ring_type> args)
-        : container_type(std::move(args)) {}
+        : container_type(std::move(args))
+    {
+    }
 };
 
 } // namespace geometry

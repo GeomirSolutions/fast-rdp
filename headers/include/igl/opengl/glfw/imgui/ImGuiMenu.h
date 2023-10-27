@@ -16,40 +16,43 @@
 
 namespace igl
 {
-  namespace opengl
-  {
-    namespace glfw
+namespace opengl
+{
+namespace glfw
+{
+namespace imgui
+{
+/// Widget for a menu bar and a viewer window.
+class ImGuiMenu : public ImGuiWidget
+{
+  public:
+    IGL_INLINE virtual void init(Viewer *_viewer,
+                                 ImGuiPlugin *_plugin) override;
+    IGL_INLINE virtual void shutdown() override;
+    IGL_INLINE virtual void draw() override;
+    // Can be overwritten by `callback_draw_viewer_window`
+    IGL_INLINE virtual void draw_viewer_window();
+    // Can be overwritten by `callback_draw_viewer_menu`
+    IGL_INLINE virtual void draw_viewer_menu();
+    // Can be overwritten by `callback_draw_custom_window`
+    IGL_INLINE virtual void draw_custom_window() {}
+    // Customizable callbacks
+    std::function<void(void)> callback_draw_viewer_window;
+    std::function<void(void)> callback_draw_viewer_menu;
+    std::function<void(void)> callback_draw_custom_window;
+    float menu_scaling()
     {
-      namespace imgui
-      {
-        /// Widget for a menu bar and a viewer window.
-        class ImGuiMenu : public ImGuiWidget
-        {
-          public:
-            IGL_INLINE virtual void init(Viewer *_viewer, ImGuiPlugin *_plugin) override;
-            IGL_INLINE virtual void shutdown() override;
-            IGL_INLINE virtual void draw() override;
-            // Can be overwritten by `callback_draw_viewer_window`
-            IGL_INLINE virtual void draw_viewer_window();
-            // Can be overwritten by `callback_draw_viewer_menu`
-            IGL_INLINE virtual void draw_viewer_menu();
-            // Can be overwritten by `callback_draw_custom_window`
-            IGL_INLINE virtual void draw_custom_window() { }
-            // Customizable callbacks
-            std::function<void(void)> callback_draw_viewer_window;
-            std::function<void(void)> callback_draw_viewer_menu;
-            std::function<void(void)> callback_draw_custom_window;
-            float menu_scaling()
-              { return plugin->hidpi_scaling() / plugin->pixel_ratio(); }
-        };
-
-      }
+        return plugin->hidpi_scaling() / plugin->pixel_ratio();
     }
-  }
-}
+};
+
+} // namespace imgui
+} // namespace glfw
+} // namespace opengl
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "ImGuiMenu.cpp"
+#include "ImGuiMenu.cpp"
 #endif
 
 #endif

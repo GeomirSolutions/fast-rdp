@@ -6,8 +6,9 @@
 #include "cista/mmap.h"
 #include "cista/targets/buf.h"
 
-namespace cista {
+namespace cista
+{
 
 using memory_holder = std::variant<buf<mmap>, buffer, byte_buf>;
 
-}  // namespace cista
+} // namespace cista

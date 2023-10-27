@@ -12,25 +12,25 @@
 #include <Eigen/Core>
 namespace igl
 {
-  /// Rotate the vectors V by A radians on the tangent plane spanned by B1 and
-  /// B2
-  ///
-  /// @param[in] V     #V by 3 eigen Matrix of vectors
-  /// @param[in] A     #V eigen vector of rotation angles or a single angle to be applied
-  ///     to all vectors
-  /// @param[in] B1    #V by 3 eigen Matrix of base vector 1
-  /// @param[in] B2    #V by 3 eigen Matrix of base vector 2
-  /// @return the rotated vectors
-  ///
-  IGL_INLINE Eigen::MatrixXd rotate_vectors(
-    const Eigen::MatrixXd& V,
-    const Eigen::VectorXd& A,
-    const Eigen::MatrixXd& B1,
-    const Eigen::MatrixXd& B2);
-}
+/// Rotate the vectors V by A radians on the tangent plane spanned by B1 and
+/// B2
+///
+/// @param[in] V     #V by 3 eigen Matrix of vectors
+/// @param[in] A     #V eigen vector of rotation angles or a single angle to be
+/// applied
+///     to all vectors
+/// @param[in] B1    #V by 3 eigen Matrix of base vector 1
+/// @param[in] B2    #V by 3 eigen Matrix of base vector 2
+/// @return the rotated vectors
+///
+IGL_INLINE Eigen::MatrixXd rotate_vectors(const Eigen::MatrixXd &V,
+                                          const Eigen::VectorXd &A,
+                                          const Eigen::MatrixXd &B1,
+                                          const Eigen::MatrixXd &B2);
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "rotate_vectors.cpp"
+#include "rotate_vectors.cpp"
 #endif
 
 #endif

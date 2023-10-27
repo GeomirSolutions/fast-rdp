@@ -13,19 +13,18 @@
 
 namespace igl
 {
-  /// Construct a #F×#F adjacency matrix with A(i,j)>0 indicating that faces i and j
-  /// share an edge.
-  ///
-  /// @param[in] F  #F by 3 list of facets
-  /// @param[out] A  #F by #F adjacency matrix
-  template <typename DerivedF, typename Atype>
-  IGL_INLINE void facet_adjacency_matrix(
-    const Eigen::MatrixBase<DerivedF> & F,
-    Eigen::SparseMatrix<Atype> & A);
-};
+/// Construct a #F×#F adjacency matrix with A(i,j)>0 indicating that faces i and
+/// j share an edge.
+///
+/// @param[in] F  #F by 3 list of facets
+/// @param[out] A  #F by #F adjacency matrix
+template <typename DerivedF, typename Atype>
+IGL_INLINE void facet_adjacency_matrix(const Eigen::MatrixBase<DerivedF> &F,
+                                       Eigen::SparseMatrix<Atype> &A);
+}; // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "facet_adjacency_matrix.cpp"
+#include "facet_adjacency_matrix.cpp"
 #endif
 
 #endif

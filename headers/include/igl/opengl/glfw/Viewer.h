@@ -25,10 +25,10 @@
 #include <string>
 #include <cstdint>
 
-#define IGL_MOD_SHIFT           0x0001
-#define IGL_MOD_CONTROL         0x0002
-#define IGL_MOD_ALT             0x0004
-#define IGL_MOD_SUPER           0x0008
+#define IGL_MOD_SHIFT 0x0001
+#define IGL_MOD_CONTROL 0x0002
+#define IGL_MOD_ALT 0x0004
+#define IGL_MOD_SUPER 0x0008
 
 struct GLFWwindow;
 
@@ -38,15 +38,31 @@ namespace opengl
 {
 namespace glfw
 {
-  // GLFW-based mesh viewer
-  class Viewer
-  {
+// GLFW-based mesh viewer
+class Viewer
+{
   public:
     // UI Enumerations
-    enum class MouseButton {Left, Middle, Right};
-    enum class MouseMode { None, Rotation, Zoom, Pan, Translation} mouse_mode;
-    IGL_INLINE int launch     (bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
-    IGL_INLINE int launch_init(bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
+    enum class MouseButton
+    {
+        Left,
+        Middle,
+        Right
+    };
+    enum class MouseMode
+    {
+        None,
+        Rotation,
+        Zoom,
+        Pan,
+        Translation
+    } mouse_mode;
+    IGL_INLINE int launch(bool fullscreen = false,
+                          const std::string &name = "libigl viewer",
+                          int width = 0, int height = 0);
+    IGL_INLINE int launch_init(bool fullscreen = false,
+                               const std::string &name = "libigl viewer",
+                               int width = 0, int height = 0);
     IGL_INLINE bool launch_rendering(bool loop = true);
     IGL_INLINE void launch_shut();
     IGL_INLINE void init();
@@ -55,15 +71,15 @@ namespace glfw
     Viewer();
     ~Viewer();
     // Mesh IO
-    IGL_INLINE bool load_mesh_from_file(const std::string & mesh_file_name);
-    IGL_INLINE bool   save_mesh_to_file(const std::string & mesh_file_name);
+    IGL_INLINE bool load_mesh_from_file(const std::string &mesh_file_name);
+    IGL_INLINE bool save_mesh_to_file(const std::string &mesh_file_name);
     // Callbacks
-    IGL_INLINE bool key_pressed(unsigned int unicode_key,int modifier);
-    IGL_INLINE bool key_down(int key,int modifier);
-    IGL_INLINE bool key_up(int key,int modifier);
-    IGL_INLINE bool mouse_down(MouseButton button,int modifier);
-    IGL_INLINE bool mouse_up(MouseButton button,int modifier);
-    IGL_INLINE bool mouse_move(int mouse_x,int mouse_y);
+    IGL_INLINE bool key_pressed(unsigned int unicode_key, int modifier);
+    IGL_INLINE bool key_down(int key, int modifier);
+    IGL_INLINE bool key_up(int key, int modifier);
+    IGL_INLINE bool mouse_down(MouseButton button, int modifier);
+    IGL_INLINE bool mouse_up(MouseButton button, int modifier);
+    IGL_INLINE bool mouse_move(int mouse_x, int mouse_y);
     IGL_INLINE bool mouse_scroll(float delta_y);
     // Scene IO
     IGL_INLINE bool load_scene();
@@ -93,16 +109,17 @@ namespace glfw
     //
     template <typename T>
     IGL_INLINE void draw_buffer(
-      // can't be const because of writing in and out of `core.viewport`
-      /*const*/ igl::opengl::ViewerCore & core, 
-      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & R,
-      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & G,
-      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B,
-      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
-      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & D);
+        // can't be const because of writing in and out of `core.viewport`
+        /*const*/ igl::opengl::ViewerCore &core,
+        Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &R,
+        Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G,
+        Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &B,
+        Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &A,
+        Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &D);
     // OpenGL context resize
-    IGL_INLINE void resize(int w,int h); // explicitly set window size
-    IGL_INLINE void post_resize(int w,int h); // external resize due to user interaction
+    IGL_INLINE void resize(int w, int h); // explicitly set window size
+    IGL_INLINE void
+    post_resize(int w, int h); // external resize due to user interaction
     // Helper functions
     IGL_INLINE void snap_to_canonical_quaternion();
     IGL_INLINE void open_dialog_load_mesh();
@@ -112,18 +129,21 @@ namespace glfw
     // Multi-mesh methods //
     ////////////////////////
 
-    // Return the current mesh, or the mesh corresponding to a given unique identifier
+    // Return the current mesh, or the mesh corresponding to a given unique
+    // identifier
     //
     // Inputs:
-    //   mesh_id  unique identifier associated to the desired mesh (current mesh if -1)
-    IGL_INLINE ViewerData& data(int mesh_id = -1);
-    IGL_INLINE const ViewerData& data(int mesh_id = -1) const;
+    //   mesh_id  unique identifier associated to the desired mesh (current mesh
+    //   if -1)
+    IGL_INLINE ViewerData &data(int mesh_id = -1);
+    IGL_INLINE const ViewerData &data(int mesh_id = -1) const;
 
     // Append a new "slot" for a mesh (i.e., create empty entries at the end of
     // the data_list and opengl_state_list.
     //
     // Inputs:
-    //   visible  If true, the new mesh is set to be visible on all existing viewports
+    //   visible  If true, the new mesh is set to be visible on all existing
+    //   viewports
     // Returns the id of the last appended mesh
     //
     // Side Effects:
@@ -157,24 +177,29 @@ namespace glfw
     // Multi-viewport methods //
     ////////////////////////////
 
-    // Return the current viewport, or the viewport corresponding to a given unique identifier
+    // Return the current viewport, or the viewport corresponding to a given
+    // unique identifier
     //
     // Inputs:
-    //   core_id  unique identifier corresponding to the desired viewport (current viewport if 0)
-    IGL_INLINE ViewerCore& core(unsigned core_id = 0);
-    IGL_INLINE const ViewerCore& core(unsigned core_id = 0) const;
+    //   core_id  unique identifier corresponding to the desired viewport
+    //   (current viewport if 0)
+    IGL_INLINE ViewerCore &core(unsigned core_id = 0);
+    IGL_INLINE const ViewerCore &core(unsigned core_id = 0) const;
 
-    // Append a new "slot" for a viewport (i.e., copy properties of the current viewport, only
-    // changing the viewport size/position)
+    // Append a new "slot" for a viewport (i.e., copy properties of the current
+    // viewport, only changing the viewport size/position)
     //
     // Inputs:
-    //   viewport      Vector specifying the viewport origin and size in screen coordinates.
-    //   append_empty  If true, existing meshes are hidden on the new viewport.
+    //   viewport      Vector specifying the viewport origin and size in screen
+    //   coordinates. append_empty  If true, existing meshes are hidden on the
+    //   new viewport.
     //
-    // Returns the unique id of the newly inserted viewport. There can be a maximum of 31
-    //   viewports created in the same viewport. Erasing a viewport does not change the id of
-    //   other existing viewports
-    IGL_INLINE int append_core(Eigen::Vector4f viewport, bool append_empty = false);
+    // Returns the unique id of the newly inserted viewport. There can be a
+    // maximum of 31
+    //   viewports created in the same viewport. Erasing a viewport does not
+    //   change the id of other existing viewports
+    IGL_INLINE int append_core(Eigen::Vector4f viewport,
+                               bool append_empty = false);
 
     // Erase a viewport
     //
@@ -190,7 +215,7 @@ namespace glfw
     // (current_mouse_x, current_mouse_y)
     IGL_INLINE void select_hovered_core();
 
-public:
+  public:
     //////////////////////
     // Member variables //
     //////////////////////
@@ -202,7 +227,7 @@ public:
 
     size_t selected_data_index;
     int next_data_id;
-    GLFWwindow* window;
+    GLFWwindow *window;
 
     // Stores all the viewing options
     std::vector<ViewerCore> core_list;
@@ -210,7 +235,7 @@ public:
     int next_core_id;
 
     // List of registered plugins
-    std::vector<ViewerPlugin*> plugins;
+    std::vector<ViewerPlugin *> plugins;
     // Temporary data stored when the mouse button is pressed
     Eigen::Quaternionf down_rotation;
     int current_mouse_x;
@@ -226,40 +251,46 @@ public:
     // C++-style functions
     //
     // Returns **true** if action should be cancelled.
-    std::function<bool(Viewer& viewer)> callback_init;
-    std::function<bool(Viewer& viewer)> callback_pre_draw;
-    std::function<bool(Viewer& viewer)> callback_post_draw;
-    std::function<bool(Viewer& viewer, int button, int modifier)> callback_mouse_down;
-    std::function<bool(Viewer& viewer, int button, int modifier)> callback_mouse_up;
-    std::function<bool(Viewer& viewer, int mouse_x, int mouse_y)> callback_mouse_move;
-    std::function<bool(Viewer& viewer, float delta_y)> callback_mouse_scroll;
-    std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_pressed;
-    std::function<bool(Viewer& viewer, int w, int h)> callback_post_resize;
+    std::function<bool(Viewer &viewer)> callback_init;
+    std::function<bool(Viewer &viewer)> callback_pre_draw;
+    std::function<bool(Viewer &viewer)> callback_post_draw;
+    std::function<bool(Viewer &viewer, int button, int modifier)>
+        callback_mouse_down;
+    std::function<bool(Viewer &viewer, int button, int modifier)>
+        callback_mouse_up;
+    std::function<bool(Viewer &viewer, int mouse_x, int mouse_y)>
+        callback_mouse_move;
+    std::function<bool(Viewer &viewer, float delta_y)> callback_mouse_scroll;
+    std::function<bool(Viewer &viewer, unsigned int key, int modifiers)>
+        callback_key_pressed;
+    std::function<bool(Viewer &viewer, int w, int h)> callback_post_resize;
     // THESE SHOULD BE DEPRECATED:
-    std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_down;
-    std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_up;
+    std::function<bool(Viewer &viewer, unsigned int key, int modifiers)>
+        callback_key_down;
+    std::function<bool(Viewer &viewer, unsigned int key, int modifiers)>
+        callback_key_up;
     // Pointers to per-callback data
-    void* callback_init_data;
-    void* callback_pre_draw_data;
-    void* callback_post_draw_data;
-    void* callback_mouse_down_data;
-    void* callback_mouse_up_data;
-    void* callback_mouse_move_data;
-    void* callback_mouse_scroll_data;
-    void* callback_key_pressed_data;
-    void* callback_key_down_data;
-    void* callback_key_up_data;
+    void *callback_init_data;
+    void *callback_pre_draw_data;
+    void *callback_post_draw_data;
+    void *callback_mouse_down_data;
+    void *callback_mouse_up_data;
+    void *callback_mouse_move_data;
+    void *callback_mouse_scroll_data;
+    void *callback_key_pressed_data;
+    void *callback_key_down_data;
+    void *callback_key_up_data;
 
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
+};
 
-} // end namespace
-} // end namespace
-} // end namespace
+} // namespace glfw
+} // namespace opengl
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "Viewer.cpp"
+#include "Viewer.cpp"
 #endif
 
 #endif

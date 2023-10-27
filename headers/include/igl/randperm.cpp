@@ -10,28 +10,55 @@
 #include <algorithm>
 
 template <typename DerivedI, typename URBG>
-IGL_INLINE void igl::randperm(
-  const int n,
-  Eigen::PlainObjectBase<DerivedI> & I,
-  URBG && urbg)
+IGL_INLINE void igl::randperm(const int n, Eigen::PlainObjectBase<DerivedI> &I,
+                              URBG &&urbg)
 {
-  Eigen::VectorXi II;
-  igl::colon(0,1,n-1,II);
-  I = II;
+    Eigen::VectorXi II;
+    igl::colon(0, 1, n - 1, II);
+    I = II;
 
-  std::shuffle(I.data(),I.data()+n, urbg);
+    std::shuffle(I.data(), I.data() + n, urbg);
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::minstd_rand0&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, std::minstd_rand0&);
-template void igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::minstd_rand&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, std::minstd_rand&);
-template void igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::mt19937_64&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, std::mt19937_64&);
-template void igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::mt19937&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, std::mt19937&);
-template void igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::mt19937 >(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, std::mt19937&&);
-template void igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::minstd_rand0&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, std::minstd_rand0&);
-template void igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::minstd_rand&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, std::minstd_rand&);
-template void igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::mt19937_64&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, std::mt19937_64&);
-template void igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::mt19937&>(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, std::mt19937&);
-template void igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::mt19937 >(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, std::mt19937&&);
+template void
+igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::minstd_rand0 &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &,
+    std::minstd_rand0 &);
+template void
+igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::minstd_rand &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &,
+    std::minstd_rand &);
+template void
+igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::mt19937_64 &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &,
+    std::mt19937_64 &);
+template void
+igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::mt19937 &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &,
+    std::mt19937 &);
+template void
+igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::mt19937>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &,
+    std::mt19937 &&);
+template void
+igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::minstd_rand0 &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> &,
+    std::minstd_rand0 &);
+template void
+igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::minstd_rand &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> &,
+    std::minstd_rand &);
+template void
+igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::mt19937_64 &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> &,
+    std::mt19937_64 &);
+template void
+igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::mt19937 &>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> &,
+    std::mt19937 &);
+template void igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::mt19937>(
+    int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> &,
+    std::mt19937 &&);
 #endif

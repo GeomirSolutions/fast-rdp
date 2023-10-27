@@ -9,7 +9,7 @@
 #define IGL_OPENGL_GL_H
 
 #ifdef IGL_OPENGL2_GL_H
-#  error "igl/opengl2/gl.h already included"
+#error "igl/opengl2/gl.h already included"
 #endif
 
 // Always use this:

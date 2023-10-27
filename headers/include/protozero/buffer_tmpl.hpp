@@ -20,13 +20,14 @@ documentation.
 #include <iterator>
 #include <string>
 
-namespace protozero {
+namespace protozero
+{
 
 // Implementation of buffer customizations points for std::string
 
 /// @cond INTERNAL
-template <typename T>
-struct buffer_customization {
+template <typename T> struct buffer_customization
+{
 
     /**
      * Get the number of bytes currently used in the buffer.
@@ -34,7 +35,7 @@ struct buffer_customization {
      * @param buffer Pointer to the buffer.
      * @returns number of bytes used in the buffer.
      */
-    static std::size_t size(const std::string* buffer);
+    static std::size_t size(const std::string *buffer);
 
     /**
      * Append count bytes from data to the buffer.
@@ -43,7 +44,8 @@ struct buffer_customization {
      * @param data Pointer to the data.
      * @param count Number of bytes to be added to the buffer.
      */
-    static void append(std::string* buffer, const char* data, std::size_t count);
+    static void append(std::string *buffer, const char *data,
+                       std::size_t count);
 
     /**
      * Append count zero bytes to the buffer.
@@ -51,7 +53,7 @@ struct buffer_customization {
      * @param buffer Pointer to the buffer.
      * @param count Number of bytes to be added to the buffer.
      */
-    static void append_zeros(std::string* buffer, std::size_t count);
+    static void append_zeros(std::string *buffer, std::size_t count);
 
     /**
      * Shrink the buffer to the specified size. The new size will always be
@@ -62,7 +64,7 @@ struct buffer_customization {
      *
      * @pre size < current size of buffer
      */
-    static void resize(std::string* buffer, std::size_t size);
+    static void resize(std::string *buffer, std::size_t size);
 
     /**
      * Reserve an additional size bytes for use in the buffer. This is used for
@@ -72,7 +74,7 @@ struct buffer_customization {
      * @param buffer Pointer to the buffer.
      * @param size Number of bytes to reserve.
      */
-    static void reserve_additional(std::string* buffer, std::size_t size);
+    static void reserve_additional(std::string *buffer, std::size_t size);
 
     /**
      * Delete data from the buffer. This must move back the data after the
@@ -84,7 +86,8 @@ struct buffer_customization {
      *
      * @pre from, to <= size of the buffer, from < to
      */
-    static void erase_range(std::string* buffer, std::size_t from, std::size_t to);
+    static void erase_range(std::string *buffer, std::size_t from,
+                            std::size_t to);
 
     /**
      * Return a pointer to the memory at the specified position in the buffer.
@@ -95,7 +98,7 @@ struct buffer_customization {
      *
      * @pre pos <= size of the buffer
      */
-    static char* at_pos(std::string* buffer, std::size_t pos);
+    static char *at_pos(std::string *buffer, std::size_t pos);
 
     /**
      * Add a char to the buffer incrementing the number of chars in the buffer.
@@ -103,8 +106,7 @@ struct buffer_customization {
      * @param buffer Pointer to the buffer.
      * @param ch The character to add.
      */
-    static void push_back(std::string* buffer, char ch);
-
+    static void push_back(std::string *buffer, char ch);
 };
 /// @endcond
 

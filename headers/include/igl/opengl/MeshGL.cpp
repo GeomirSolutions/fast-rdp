@@ -13,242 +13,259 @@
 #include "verasansmono_compressed.h"
 #include <iostream>
 
-IGL_INLINE igl::opengl::MeshGL::MeshGL():
-  tex_filter(GL_LINEAR),
-  tex_wrap(GL_REPEAT)
+IGL_INLINE igl::opengl::MeshGL::MeshGL()
+    : tex_filter(GL_LINEAR), tex_wrap(GL_REPEAT)
 {
 }
 
 IGL_INLINE void igl::opengl::MeshGL::init_buffers()
 {
-  // Mesh: Vertex Array Object & Buffer objects
-  glGenVertexArrays(1, &vao_mesh);
-  glBindVertexArray(vao_mesh);
-  glGenBuffers(1, &vbo_V);
-  glGenBuffers(1, &vbo_V_normals);
-  glGenBuffers(1, &vbo_V_ambient);
-  glGenBuffers(1, &vbo_V_diffuse);
-  glGenBuffers(1, &vbo_V_specular);
-  glGenBuffers(1, &vbo_V_uv);
-  glGenBuffers(1, &vbo_F);
-  glGenTextures(1, &vbo_tex);
-  glGenTextures(1, &font_atlas);
+    // Mesh: Vertex Array Object & Buffer objects
+    glGenVertexArrays(1, &vao_mesh);
+    glBindVertexArray(vao_mesh);
+    glGenBuffers(1, &vbo_V);
+    glGenBuffers(1, &vbo_V_normals);
+    glGenBuffers(1, &vbo_V_ambient);
+    glGenBuffers(1, &vbo_V_diffuse);
+    glGenBuffers(1, &vbo_V_specular);
+    glGenBuffers(1, &vbo_V_uv);
+    glGenBuffers(1, &vbo_F);
+    glGenTextures(1, &vbo_tex);
+    glGenTextures(1, &font_atlas);
 
-  // Line overlay
-  glGenVertexArrays(1, &vao_overlay_lines);
-  glBindVertexArray(vao_overlay_lines);
-  glGenBuffers(1, &vbo_lines_F);
-  glGenBuffers(1, &vbo_lines_V);
-  glGenBuffers(1, &vbo_lines_V_colors);
+    // Line overlay
+    glGenVertexArrays(1, &vao_overlay_lines);
+    glBindVertexArray(vao_overlay_lines);
+    glGenBuffers(1, &vbo_lines_F);
+    glGenBuffers(1, &vbo_lines_V);
+    glGenBuffers(1, &vbo_lines_V_colors);
 
-  // Point overlay
-  glGenVertexArrays(1, &vao_overlay_points);
-  glBindVertexArray(vao_overlay_points);
-  glGenBuffers(1, &vbo_points_F);
-  glGenBuffers(1, &vbo_points_V);
-  glGenBuffers(1, &vbo_points_V_colors);
+    // Point overlay
+    glGenVertexArrays(1, &vao_overlay_points);
+    glBindVertexArray(vao_overlay_points);
+    glGenBuffers(1, &vbo_points_F);
+    glGenBuffers(1, &vbo_points_V);
+    glGenBuffers(1, &vbo_points_V_colors);
 
-  // Text Labels
-  vertex_labels.init_buffers();
-  face_labels.init_buffers();
-  custom_labels.init_buffers();
+    // Text Labels
+    vertex_labels.init_buffers();
+    face_labels.init_buffers();
+    custom_labels.init_buffers();
 
-  dirty = MeshGL::DIRTY_ALL;
+    dirty = MeshGL::DIRTY_ALL;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::free_buffers()
 {
-  if (is_initialized)
-  {
-    glDeleteVertexArrays(1, &vao_mesh);
-    glDeleteVertexArrays(1, &vao_overlay_lines);
-    glDeleteVertexArrays(1, &vao_overlay_points);
+    if (is_initialized) {
+        glDeleteVertexArrays(1, &vao_mesh);
+        glDeleteVertexArrays(1, &vao_overlay_lines);
+        glDeleteVertexArrays(1, &vao_overlay_points);
 
-    glDeleteBuffers(1, &vbo_V);
-    glDeleteBuffers(1, &vbo_V_normals);
-    glDeleteBuffers(1, &vbo_V_ambient);
-    glDeleteBuffers(1, &vbo_V_diffuse);
-    glDeleteBuffers(1, &vbo_V_specular);
-    glDeleteBuffers(1, &vbo_V_uv);
-    glDeleteBuffers(1, &vbo_F);
-    glDeleteBuffers(1, &vbo_lines_F);
-    glDeleteBuffers(1, &vbo_lines_V);
-    glDeleteBuffers(1, &vbo_lines_V_colors);
-    glDeleteBuffers(1, &vbo_points_F);
-    glDeleteBuffers(1, &vbo_points_V);
-    glDeleteBuffers(1, &vbo_points_V_colors);
+        glDeleteBuffers(1, &vbo_V);
+        glDeleteBuffers(1, &vbo_V_normals);
+        glDeleteBuffers(1, &vbo_V_ambient);
+        glDeleteBuffers(1, &vbo_V_diffuse);
+        glDeleteBuffers(1, &vbo_V_specular);
+        glDeleteBuffers(1, &vbo_V_uv);
+        glDeleteBuffers(1, &vbo_F);
+        glDeleteBuffers(1, &vbo_lines_F);
+        glDeleteBuffers(1, &vbo_lines_V);
+        glDeleteBuffers(1, &vbo_lines_V_colors);
+        glDeleteBuffers(1, &vbo_points_F);
+        glDeleteBuffers(1, &vbo_points_V);
+        glDeleteBuffers(1, &vbo_points_V_colors);
 
-    // Text Labels
-    vertex_labels.free_buffers();
-    face_labels.free_buffers();
-    custom_labels.free_buffers();
+        // Text Labels
+        vertex_labels.free_buffers();
+        face_labels.free_buffers();
+        custom_labels.free_buffers();
 
-    glDeleteTextures(1, &vbo_tex);
-    glDeleteTextures(1, &font_atlas);
-  }
+        glDeleteTextures(1, &vbo_tex);
+        glDeleteTextures(1, &font_atlas);
+    }
 }
 
 IGL_INLINE void igl::opengl::MeshGL::TextGL::init_buffers()
 {
-  glGenVertexArrays(1, &vao_labels);
-  glBindVertexArray(vao_labels);
-  glGenBuffers(1, &vbo_labels_pos);
-  glGenBuffers(1, &vbo_labels_characters);
-  glGenBuffers(1, &vbo_labels_offset);
-  glGenBuffers(1, &vbo_labels_indices);
+    glGenVertexArrays(1, &vao_labels);
+    glBindVertexArray(vao_labels);
+    glGenBuffers(1, &vbo_labels_pos);
+    glGenBuffers(1, &vbo_labels_characters);
+    glGenBuffers(1, &vbo_labels_offset);
+    glGenBuffers(1, &vbo_labels_indices);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::TextGL::free_buffers()
 {
-  glDeleteBuffers(1, &vbo_labels_pos);
-  glDeleteBuffers(1, &vbo_labels_characters);
-  glDeleteBuffers(1, &vbo_labels_offset);
-  glDeleteBuffers(1, &vbo_labels_indices);
+    glDeleteBuffers(1, &vbo_labels_pos);
+    glDeleteBuffers(1, &vbo_labels_characters);
+    glDeleteBuffers(1, &vbo_labels_offset);
+    glDeleteBuffers(1, &vbo_labels_indices);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
 {
-  glBindVertexArray(vao_mesh);
-  glUseProgram(shader_mesh);
-  bind_vertex_attrib_array(shader_mesh,"position", vbo_V, V_vbo, dirty & MeshGL::DIRTY_POSITION);
-  bind_vertex_attrib_array(shader_mesh,"normal", vbo_V_normals, V_normals_vbo, dirty & MeshGL::DIRTY_NORMAL);
-  bind_vertex_attrib_array(shader_mesh,"Ka", vbo_V_ambient, V_ambient_vbo, dirty & MeshGL::DIRTY_AMBIENT);
-  bind_vertex_attrib_array(shader_mesh,"Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & MeshGL::DIRTY_DIFFUSE);
-  bind_vertex_attrib_array(shader_mesh,"Ks", vbo_V_specular, V_specular_vbo, dirty & MeshGL::DIRTY_SPECULAR);
-  bind_vertex_attrib_array(shader_mesh,"texcoord", vbo_V_uv, V_uv_vbo, dirty & MeshGL::DIRTY_UV);
+    glBindVertexArray(vao_mesh);
+    glUseProgram(shader_mesh);
+    bind_vertex_attrib_array(shader_mesh, "position", vbo_V, V_vbo,
+                             dirty & MeshGL::DIRTY_POSITION);
+    bind_vertex_attrib_array(shader_mesh, "normal", vbo_V_normals,
+                             V_normals_vbo, dirty & MeshGL::DIRTY_NORMAL);
+    bind_vertex_attrib_array(shader_mesh, "Ka", vbo_V_ambient, V_ambient_vbo,
+                             dirty & MeshGL::DIRTY_AMBIENT);
+    bind_vertex_attrib_array(shader_mesh, "Kd", vbo_V_diffuse, V_diffuse_vbo,
+                             dirty & MeshGL::DIRTY_DIFFUSE);
+    bind_vertex_attrib_array(shader_mesh, "Ks", vbo_V_specular, V_specular_vbo,
+                             dirty & MeshGL::DIRTY_SPECULAR);
+    bind_vertex_attrib_array(shader_mesh, "texcoord", vbo_V_uv, V_uv_vbo,
+                             dirty & MeshGL::DIRTY_UV);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
-  if (dirty & MeshGL::DIRTY_FACE)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*F_vbo.size(), F_vbo.data(), GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
+    if (dirty & MeshGL::DIRTY_FACE)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * F_vbo.size(),
+                     F_vbo.data(), GL_DYNAMIC_DRAW);
 
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, vbo_tex);
-  if (dirty & MeshGL::DIRTY_TEXTURE)
-  {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tex_wrap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tex_wrap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex_filter);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_u, tex_v, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.data());
-  }
-  glUniform1i(glGetUniformLocation(shader_mesh,"tex"), 0);
-  dirty &= ~MeshGL::DIRTY_MESH;
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, vbo_tex);
+    if (dirty & MeshGL::DIRTY_TEXTURE) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tex_wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tex_wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex_filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex_filter);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_u, tex_v, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE, tex.data());
+    }
+    glUniform1i(glGetUniformLocation(shader_mesh, "tex"), 0);
+    dirty &= ~MeshGL::DIRTY_MESH;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_overlay_lines()
 {
-  bool is_dirty = dirty & MeshGL::DIRTY_OVERLAY_LINES;
+    bool is_dirty = dirty & MeshGL::DIRTY_OVERLAY_LINES;
 
-  glBindVertexArray(vao_overlay_lines);
-  glUseProgram(shader_overlay_lines);
- bind_vertex_attrib_array(shader_overlay_lines,"position", vbo_lines_V, lines_V_vbo, is_dirty);
- bind_vertex_attrib_array(shader_overlay_lines,"color", vbo_lines_V_colors, lines_V_colors_vbo, is_dirty);
+    glBindVertexArray(vao_overlay_lines);
+    glUseProgram(shader_overlay_lines);
+    bind_vertex_attrib_array(shader_overlay_lines, "position", vbo_lines_V,
+                             lines_V_vbo, is_dirty);
+    bind_vertex_attrib_array(shader_overlay_lines, "color", vbo_lines_V_colors,
+                             lines_V_colors_vbo, is_dirty);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_F);
-  if (is_dirty)
-  {
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*lines_F_vbo.size(), lines_F_vbo.data(), GL_DYNAMIC_DRAW);
-  }
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_F);
+    if (is_dirty) {
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     sizeof(unsigned) * lines_F_vbo.size(), lines_F_vbo.data(),
+                     GL_DYNAMIC_DRAW);
+    }
 
-  dirty &= ~MeshGL::DIRTY_OVERLAY_LINES;
+    dirty &= ~MeshGL::DIRTY_OVERLAY_LINES;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 {
-  bool is_dirty = dirty & MeshGL::DIRTY_OVERLAY_POINTS;
+    bool is_dirty = dirty & MeshGL::DIRTY_OVERLAY_POINTS;
 
-  glBindVertexArray(vao_overlay_points);
-  glUseProgram(shader_overlay_points);
- bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
- bind_vertex_attrib_array(shader_overlay_points,"color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
+    glBindVertexArray(vao_overlay_points);
+    glUseProgram(shader_overlay_points);
+    bind_vertex_attrib_array(shader_overlay_points, "position", vbo_points_V,
+                             points_V_vbo, is_dirty);
+    bind_vertex_attrib_array(shader_overlay_points, "color",
+                             vbo_points_V_colors, points_V_colors_vbo,
+                             is_dirty);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
-  if (is_dirty)
-  {
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*points_F_vbo.size(), points_F_vbo.data(), GL_DYNAMIC_DRAW);
-  }
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
+    if (is_dirty) {
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     sizeof(unsigned) * points_F_vbo.size(),
+                     points_F_vbo.data(), GL_DYNAMIC_DRAW);
+    }
 
-  dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
+    dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::init_text_rendering()
 {
-  // Decompress the png of the font atlas
-  unsigned char verasansmono_font_atlas[256*256];
-  decompress_verasansmono_atlas(verasansmono_font_atlas);
+    // Decompress the png of the font atlas
+    unsigned char verasansmono_font_atlas[256 * 256];
+    decompress_verasansmono_atlas(verasansmono_font_atlas);
 
-  // Bind atlas
-  glBindTexture(GL_TEXTURE_2D, font_atlas);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, verasansmono_font_atlas);
+    // Bind atlas
+    glBindTexture(GL_TEXTURE_2D, font_atlas);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED,
+                 GL_UNSIGNED_BYTE, verasansmono_font_atlas);
 
-  // TextGL initialization
-  vertex_labels.dirty_flag = MeshGL::DIRTY_VERTEX_LABELS;
-  face_labels.dirty_flag = MeshGL::DIRTY_FACE_LABELS;
-  custom_labels.dirty_flag = MeshGL::DIRTY_CUSTOM_LABELS;
+    // TextGL initialization
+    vertex_labels.dirty_flag = MeshGL::DIRTY_VERTEX_LABELS;
+    face_labels.dirty_flag = MeshGL::DIRTY_FACE_LABELS;
+    custom_labels.dirty_flag = MeshGL::DIRTY_CUSTOM_LABELS;
 }
 
-IGL_INLINE void igl::opengl::MeshGL::bind_labels(const TextGL& labels)
+IGL_INLINE void igl::opengl::MeshGL::bind_labels(const TextGL &labels)
 {
-  bool is_dirty = dirty & labels.dirty_flag;
-  glBindTexture(GL_TEXTURE_2D, font_atlas);
-  glBindVertexArray(labels.vao_labels);
-  glUseProgram(shader_text);
-  bind_vertex_attrib_array(shader_text, "position" , labels.vbo_labels_pos       , labels.label_pos_vbo   , is_dirty);
-  bind_vertex_attrib_array(shader_text, "character", labels.vbo_labels_characters, labels.label_char_vbo  , is_dirty);
-  bind_vertex_attrib_array(shader_text, "offset"   , labels.vbo_labels_offset    , labels.label_offset_vbo, is_dirty);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, labels.vbo_labels_indices);
-  if (is_dirty)
-  {
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*labels.label_indices_vbo.size(), labels.label_indices_vbo.data(), GL_DYNAMIC_DRAW);
-  }
-  dirty &= ~labels.dirty_flag;
+    bool is_dirty = dirty & labels.dirty_flag;
+    glBindTexture(GL_TEXTURE_2D, font_atlas);
+    glBindVertexArray(labels.vao_labels);
+    glUseProgram(shader_text);
+    bind_vertex_attrib_array(shader_text, "position", labels.vbo_labels_pos,
+                             labels.label_pos_vbo, is_dirty);
+    bind_vertex_attrib_array(shader_text, "character",
+                             labels.vbo_labels_characters,
+                             labels.label_char_vbo, is_dirty);
+    bind_vertex_attrib_array(shader_text, "offset", labels.vbo_labels_offset,
+                             labels.label_offset_vbo, is_dirty);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, labels.vbo_labels_indices);
+    if (is_dirty) {
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     sizeof(unsigned) * labels.label_indices_vbo.size(),
+                     labels.label_indices_vbo.data(), GL_DYNAMIC_DRAW);
+    }
+    dirty &= ~labels.dirty_flag;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
 {
-  glPolygonMode(GL_FRONT_AND_BACK, solid ? GL_FILL : GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, solid ? GL_FILL : GL_LINE);
 
-  /* Avoid Z-buffer fighting between filled triangles & wireframe lines */
-  if (solid)
-  {
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1.0, 1.0);
-  }
-  glDrawElements(GL_TRIANGLES, 3*F_vbo.rows(), GL_UNSIGNED_INT, 0);
+    /* Avoid Z-buffer fighting between filled triangles & wireframe lines */
+    if (solid) {
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(1.0, 1.0);
+    }
+    glDrawElements(GL_TRIANGLES, 3 * F_vbo.rows(), GL_UNSIGNED_INT, 0);
 
-  glDisable(GL_POLYGON_OFFSET_FILL);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_lines()
 {
-  glDrawElements(GL_LINES, lines_F_vbo.rows(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_LINES, lines_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()
 {
-  glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
-IGL_INLINE void igl::opengl::MeshGL::draw_labels(const TextGL& labels)
+IGL_INLINE void igl::opengl::MeshGL::draw_labels(const TextGL &labels)
 {
-  glDrawElements(GL_POINTS, labels.label_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_POINTS, labels.label_indices_vbo.rows(), GL_UNSIGNED_INT,
+                   0);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::init()
 {
-  if(is_initialized)
-  {
-    return;
-  }
-  is_initialized = true;
-  std::string mesh_vertex_shader_string =
-R"(#version 150
+    if (is_initialized) {
+        return;
+    }
+    is_initialized = true;
+    std::string mesh_vertex_shader_string =
+        R"(#version 150
   uniform mat4 view;
   uniform mat4 proj;
   uniform mat4 normal_matrix;
@@ -290,8 +307,8 @@ R"(#version 150
   }
 )";
 
-  std::string mesh_fragment_shader_string =
-R"(#version 150
+    std::string mesh_fragment_shader_string =
+        R"(#version 150
   uniform mat4 view;
   uniform mat4 proj;
   uniform vec4 fixed_color;
@@ -337,24 +354,24 @@ R"(#version 150
     float shadow = 1.0;
     if(is_shadow_mapping)
     {
-      vec3 shadow_pos = (position_shadow.xyz / position_shadow.w) * 0.5 + 0.5; 
+      vec3 shadow_pos = (position_shadow.xyz / position_shadow.w) * 0.5 + 0.5;
       float currentDepth = shadow_pos.z;
       //float bias = 0.005;
       float ddd = max(dot(normalize(normal_eye), direction_to_light_eye),0);
-      float bias = max(0.02 * (1.0 - ddd), 0.005);  
+      float bias = max(0.02 * (1.0 - ddd), 0.005);
       // 5-point stencil
       if(shadow_pos.z < 1.0)
       {
         float closestDepth = texture( shadow_tex , shadow_pos.xy).r;
-        shadow = currentDepth - bias >= closestDepth ? 0.0 : 1.0;  
+        shadow = currentDepth - bias >= closestDepth ? 0.0 : 1.0;
         vec2 texelSize = 1.0 / textureSize(shadow_tex, 0);
         for(int x = -1; x <= 1; x+=2)
         {
           for(int y = -1; y <= 1; y+=2)
           {
-            float pcfDepth = texture(shadow_tex,  shadow_pos.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth - bias >= pcfDepth ? 0.0 : 1.0;        
-          }    
+            float pcfDepth = texture(shadow_tex,  shadow_pos.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias >= pcfDepth ? 0.0 : 1.0;
+          }
         }
         shadow /= 5.0;
       }
@@ -385,8 +402,8 @@ R"(#version 150
   }
 )";
 
-  std::string overlay_vertex_shader_string =
-R"(#version 150
+    std::string overlay_vertex_shader_string =
+        R"(#version 150
   uniform mat4 view;
   uniform mat4 proj;
   in vec3 position;
@@ -400,8 +417,8 @@ R"(#version 150
   }
 )";
 
-  std::string overlay_fragment_shader_string =
-R"(#version 150
+    std::string overlay_fragment_shader_string =
+        R"(#version 150
   in vec3 color_frag;
   out vec4 outColor;
   void main()
@@ -410,8 +427,8 @@ R"(#version 150
   }
 )";
 
-  std::string overlay_point_fragment_shader_string =
-R"(#version 150
+    std::string overlay_point_fragment_shader_string =
+        R"(#version 150
   in vec3 color_frag;
   out vec4 outColor;
   void main()
@@ -422,8 +439,8 @@ R"(#version 150
   }
 )";
 
-  std::string text_vert_shader =
-R"(#version 330
+    std::string text_vert_shader =
+        R"(#version 330
     in vec3 position;
     in float character;
     in float offset;
@@ -439,8 +456,8 @@ R"(#version 330
     }
 )";
 
-  std::string text_geom_shader =
-R"(#version 150 core
+    std::string text_geom_shader =
+        R"(#version 150 core
     layout(points) in;
     layout(triangle_strip, max_vertices = 4) out;
     out vec2 gTexCoord;
@@ -480,8 +497,8 @@ R"(#version 150 core
     }
 )";
 
-  std::string text_frag_shader =
-R"(#version 330
+    std::string text_frag_shader =
+        R"(#version 330
     out vec4 outColor;
     in vec2 gTexCoord;
     uniform sampler2D font_atlas;
@@ -493,48 +510,34 @@ R"(#version 330
     }
 )";
 
-  init_buffers();
-  init_text_rendering();
-  create_shader_program(
-    mesh_vertex_shader_string,
-    mesh_fragment_shader_string,
-    {},
-    shader_mesh);
-  create_shader_program(
-    overlay_vertex_shader_string,
-    overlay_fragment_shader_string,
-    {},
-    shader_overlay_lines);
-  create_shader_program(
-    overlay_vertex_shader_string,
-    overlay_point_fragment_shader_string,
-    {},
-    shader_overlay_points);
-  create_shader_program(
-    text_geom_shader,
-    text_vert_shader,
-    text_frag_shader,
-    {},
-    shader_text);
+    init_buffers();
+    init_text_rendering();
+    create_shader_program(mesh_vertex_shader_string,
+                          mesh_fragment_shader_string, {}, shader_mesh);
+    create_shader_program(overlay_vertex_shader_string,
+                          overlay_fragment_shader_string, {},
+                          shader_overlay_lines);
+    create_shader_program(overlay_vertex_shader_string,
+                          overlay_point_fragment_shader_string, {},
+                          shader_overlay_points);
+    create_shader_program(text_geom_shader, text_vert_shader, text_frag_shader,
+                          {}, shader_text);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::free()
 {
-  const auto free = [](GLuint & id)
-  {
-    if(id)
-    {
-      destroy_shader_program(id);
-      id = 0;
-    }
-  };
+    const auto free = [](GLuint &id) {
+        if (id) {
+            destroy_shader_program(id);
+            id = 0;
+        }
+    };
 
-  if (is_initialized)
-  {
-    free(shader_mesh);
-    free(shader_overlay_lines);
-    free(shader_overlay_points);
-    free(shader_text);
-    free_buffers();
-  }
+    if (is_initialized) {
+        free(shader_mesh);
+        free(shader_overlay_lines);
+        free(shader_overlay_points);
+        free(shader_text);
+        free_buffers();
+    }
 }

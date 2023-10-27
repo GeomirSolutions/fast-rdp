@@ -180,7 +180,6 @@ intersect_segments(const Eigen::Vector3d &a1, const Eigen::Vector3d &a2,
                            (hb - ha) / 2.0);
 }
 
-
 struct LineSegment
 {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

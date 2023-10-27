@@ -7,21 +7,21 @@
 #include <jni/tagging.hpp>
 
 namespace jni
-   {
-    template < class TheTag, class T >
-    class Field
-       {
-        private:
-            jfieldID& field;
+{
+template <class TheTag, class T> class Field
+{
+  private:
+    jfieldID &field;
 
-        public:
-            using TagType = TheTag;
-            using FieldType = T;
+  public:
+    using TagType = TheTag;
+    using FieldType = T;
 
-            Field(JNIEnv& env, const Class<TagType>& clazz, const char* name)
-              : field(GetFieldID(env, *clazz, name, TypeSignature<T>()()))
-               {}
+    Field(JNIEnv &env, const Class<TagType> &clazz, const char *name)
+        : field(GetFieldID(env, *clazz, name, TypeSignature<T>()()))
+    {
+    }
 
-            operator jfieldID&() const { return field; }
-       };
-   }
+    operator jfieldID &() const { return field; }
+};
+} // namespace jni

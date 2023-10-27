@@ -15,51 +15,66 @@
 
 namespace igl
 {
-  namespace opengl
-  {
-    namespace glfw
+namespace opengl
+{
+namespace glfw
+{
+class Viewer;
+namespace imgui
+{
+// Forward declaration of the parent plugin
+class ImGuiPlugin;
+/// Abstract class for imgui "widgets". A widget is something that uses
+/// imgui, but doesn't own the entire imgui IO stack: the single
+/// ImGuiPlugin owns that and widgets are registered with it.
+class ImGuiWidget
+{
+  public:
+    IGL_INLINE ImGuiWidget() { name = "dummy"; }
+    virtual ~ImGuiWidget() {}
+    IGL_INLINE virtual void init(Viewer *_viewer, ImGuiPlugin *_plugin)
     {
-      class Viewer;
-      namespace imgui
-      {
-        // Forward declaration of the parent plugin
-        class ImGuiPlugin;
-        /// Abstract class for imgui "widgets". A widget is something that uses
-        /// imgui, but doesn't own the entire imgui IO stack: the single
-        /// ImGuiPlugin owns that and widgets are registered with it.
-        class ImGuiWidget 
-        {
-          public:
-            IGL_INLINE ImGuiWidget(){ name = "dummy"; }
-            virtual ~ImGuiWidget(){}
-            IGL_INLINE virtual void init(Viewer *_viewer, ImGuiPlugin *_plugin)
-              { viewer = _viewer; plugin = _plugin; }
-            IGL_INLINE virtual void shutdown() {}
-            IGL_INLINE virtual void draw() {}
-            IGL_INLINE virtual bool mouse_down(int /*button*/, int /*modifier*/)
-              { return false;}
-            IGL_INLINE virtual bool mouse_up(int /*button*/, int /*modifier*/)
-              { return false;}
-            IGL_INLINE virtual bool mouse_move(int /*mouse_x*/, int /*mouse_y*/)
-              { return false;}
-            IGL_INLINE virtual bool key_pressed(unsigned int /*key*/, int /*modifiers*/)
-              { return false;}
-            IGL_INLINE virtual bool key_down(int /*key*/, int /*modifiers*/)
-              { return false;}
-            IGL_INLINE virtual bool key_up(int /*key*/, int /*modifiers*/)
-              { return false;}
-            std::string name;
-          protected:
-            // Pointer to ImGuiPlugin's parent viewer
-            Viewer *viewer;
-            // Pointer to parent ImGuiPlugin class
-            ImGuiPlugin *plugin;
-        };
-
-      }
+        viewer = _viewer;
+        plugin = _plugin;
     }
-  }
-}
+    IGL_INLINE virtual void shutdown() {}
+    IGL_INLINE virtual void draw() {}
+    IGL_INLINE virtual bool mouse_down(int /*button*/, int /*modifier*/)
+    {
+        return false;
+    }
+    IGL_INLINE virtual bool mouse_up(int /*button*/, int /*modifier*/)
+    {
+        return false;
+    }
+    IGL_INLINE virtual bool mouse_move(int /*mouse_x*/, int /*mouse_y*/)
+    {
+        return false;
+    }
+    IGL_INLINE virtual bool key_pressed(unsigned int /*key*/, int /*modifiers*/)
+    {
+        return false;
+    }
+    IGL_INLINE virtual bool key_down(int /*key*/, int /*modifiers*/)
+    {
+        return false;
+    }
+    IGL_INLINE virtual bool key_up(int /*key*/, int /*modifiers*/)
+    {
+        return false;
+    }
+    std::string name;
+
+  protected:
+    // Pointer to ImGuiPlugin's parent viewer
+    Viewer *viewer;
+    // Pointer to parent ImGuiPlugin class
+    ImGuiPlugin *plugin;
+};
+
+} // namespace imgui
+} // namespace glfw
+} // namespace opengl
+} // namespace igl
 
 #endif
-

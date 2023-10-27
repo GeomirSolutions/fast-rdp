@@ -93,8 +93,7 @@ public:                                                                         
     template <typename T_,                                                                        \
               ::pybind11::detail::enable_if_t<                                                    \
                   std::is_same<type, ::pybind11::detail::remove_cv_t<T_>>::value,                 \
-                  int>                                                                            \
-              = 0>                                                                                \
+                  int> = 0>                                                                       \
     static ::pybind11::handle cast(                                                               \
         T_ *src, ::pybind11::return_value_policy policy, ::pybind11::handle parent) {             \
         if (!src)                                                                                 \
@@ -1062,8 +1061,7 @@ PYBIND11_NAMESPACE_END(detail)
 template <typename T,
           detail::enable_if_t<!detail::is_pyobject<T>::value
                                   && !detail::is_same_ignoring_cvref<T, PyObject *>::value,
-                              int>
-          = 0>
+                              int> = 0>
 T cast(const handle &handle) {
     using namespace detail;
     static_assert(!cast_is_temporary_value_reference<T>::value,
@@ -1089,8 +1087,7 @@ template <typename T,
           typename Handle,
           detail::enable_if_t<detail::is_same_ignoring_cvref<T, PyObject *>::value
                                   && detail::is_same_ignoring_cvref<Handle, handle>::value,
-                              int>
-          = 0>
+                              int> = 0>
 T cast(Handle &&handle) {
     return handle.inc_ref().ptr();
 }
@@ -1099,8 +1096,7 @@ template <typename T,
           typename Object,
           detail::enable_if_t<detail::is_same_ignoring_cvref<T, PyObject *>::value
                                   && detail::is_same_ignoring_cvref<Object, object>::value,
-                              int>
-          = 0>
+                              int> = 0>
 T cast(Object &&obj) {
     return obj.release().ptr();
 }

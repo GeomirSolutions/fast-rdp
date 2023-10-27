@@ -1,7 +1,6 @@
 import re
 
 import pytest
-
 from pybind11_tests import ConstructorStats
 from pybind11_tests import factory_constructors as m
 from pybind11_tests.factory_constructors import tag

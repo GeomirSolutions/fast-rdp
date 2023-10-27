@@ -14,26 +14,24 @@
 #include <Eigen/Core>
 namespace igl
 {
-  namespace predicates
-  {
-    /// Given two segments in 2d test whether they intersect each other
-    /// using predicates orient2d
-    /// 
-    /// @param[in] A:   1st endpoint of segment 1
-    /// @param[in] B:   2st endpoint of segment 1
-    /// @param[in] C:   1st endpoint of segment 2
-    /// @param[in] D:   2st endpoint of segment 2
-    /// @return true if they intersect
-    template <typename DerivedP>
-    IGL_INLINE bool segment_segment_intersect(
-      const Eigen::MatrixBase<DerivedP>& A,
-      const Eigen::MatrixBase<DerivedP>& B,
-      const Eigen::MatrixBase<DerivedP>& C,
-      const Eigen::MatrixBase<DerivedP>& D
-    );
-  }
-}
+namespace predicates
+{
+/// Given two segments in 2d test whether they intersect each other
+/// using predicates orient2d
+///
+/// @param[in] A:   1st endpoint of segment 1
+/// @param[in] B:   2st endpoint of segment 1
+/// @param[in] C:   1st endpoint of segment 2
+/// @param[in] D:   2st endpoint of segment 2
+/// @return true if they intersect
+template <typename DerivedP>
+IGL_INLINE bool segment_segment_intersect(const Eigen::MatrixBase<DerivedP> &A,
+                                          const Eigen::MatrixBase<DerivedP> &B,
+                                          const Eigen::MatrixBase<DerivedP> &C,
+                                          const Eigen::MatrixBase<DerivedP> &D);
+} // namespace predicates
+} // namespace igl
 #ifndef IGL_STATIC_LIBRARY
-#   include "segment_segment_intersect.cpp"
+#include "segment_segment_intersect.cpp"
 #endif
 #endif

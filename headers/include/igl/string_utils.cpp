@@ -9,14 +9,17 @@
 
 #include <cstring>
 
-namespace igl {
+namespace igl
+{
 
-IGL_INLINE bool starts_with(const std::string &str, const std::string &prefix) {
-  return (str.rfind(prefix, 0) == 0);
+IGL_INLINE bool starts_with(const std::string &str, const std::string &prefix)
+{
+    return (str.rfind(prefix, 0) == 0);
 }
 
-IGL_INLINE bool starts_with(const char *str, const char* prefix) {
-  return strncmp(prefix, str, strlen(prefix)) == 0;
+IGL_INLINE bool starts_with(const char *str, const char *prefix)
+{
+    return strncmp(prefix, str, strlen(prefix)) == 0;
 }
 
-}
+} // namespace igl

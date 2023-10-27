@@ -21,7 +21,8 @@ documentation.
 
 #include <type_traits>
 
-namespace protozero {
+namespace protozero
+{
 
 /**
  * This class represents a protobuf message. Either a top-level message or
@@ -61,14 +62,15 @@ namespace protozero {
  *
  * Read the tutorial to understand how this class is used.
  */
-template <typename T>
-class pbf_message : public pbf_reader {
+template <typename T> class pbf_message : public pbf_reader
+{
 
-    static_assert(std::is_same<pbf_tag_type, typename std::underlying_type<T>::type>::value,
-                  "T must be enum with underlying type protozero::pbf_tag_type");
+    static_assert(
+        std::is_same<pbf_tag_type,
+                     typename std::underlying_type<T>::type>::value,
+        "T must be enum with underlying type protozero::pbf_tag_type");
 
-public:
-
+  public:
     /// The type of messages this class will read.
     using enum_type = T;
 
@@ -77,8 +79,10 @@ public:
      * parent class.
      */
     template <typename... Args>
-    pbf_message(Args&&... args) noexcept : // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-        pbf_reader{std::forward<Args>(args)...} {
+    pbf_message(Args &&...args) noexcept
+        : // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+          pbf_reader{std::forward<Args>(args)...}
+    {
     }
 
     /**
@@ -96,9 +100,7 @@ public:
      * @pre There must be no current field.
      * @post If it returns `true` there is a current field now.
      */
-    bool next() {
-        return pbf_reader::next();
-    }
+    bool next() { return pbf_reader::next(); }
 
     /**
      * Set next field with given tag in the message as the current field.
@@ -126,11 +128,10 @@ public:
      *
      * @returns `true` if there is a next field with this tag.
      * @pre There must be no current field.
-     * @post If it returns `true` there is a current field now with the given tag.
+     * @post If it returns `true` there is a current field now with the given
+     * tag.
      */
-    bool next(T next_tag) {
-        return pbf_reader::next(pbf_tag_type(next_tag));
-    }
+    bool next(T next_tag) { return pbf_reader::next(pbf_tag_type(next_tag)); }
 
     /**
      * Set next field with given tag and wire type in the message as the
@@ -139,7 +140,8 @@ public:
      *
      * @code
      *    pbf_message<Example1> message{...};
-     *    while (message.next(Example1::repeated_fixed64_r, pbf_wire_type::varint)) {
+     *    while (message.next(Example1::repeated_fixed64_r,
+     * pbf_wire_type::varint)) {
      *        // handle field
      *    }
      * @endcode
@@ -148,7 +150,8 @@ public:
      *
      * @code
      *    pbf_message<Example1> message{...};
-     *    if (message.next(Example1::required_uint32_x, pbf_wire_type::varint)) {
+     *    if (message.next(Example1::required_uint32_x, pbf_wire_type::varint))
+     * {
      *        // handle field
      *    }
      * @endcode
@@ -158,9 +161,11 @@ public:
      *
      * @returns `true` if there is a next field with this tag.
      * @pre There must be no current field.
-     * @post If it returns `true` there is a current field now with the given tag.
+     * @post If it returns `true` there is a current field now with the given
+     * tag.
      */
-    bool next(T next_tag, pbf_wire_type type) {
+    bool next(T next_tag, pbf_wire_type type)
+    {
         return pbf_reader::next(pbf_tag_type(next_tag), type);
     }
 
@@ -171,11 +176,10 @@ public:
      * Call next() before calling this function to set the current field.
      *
      * @returns tag of the current field.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      */
-    T tag() const noexcept {
-        return T(pbf_reader::tag());
-    }
+    T tag() const noexcept { return T(pbf_reader::tag()); }
 
 }; // class pbf_message
 

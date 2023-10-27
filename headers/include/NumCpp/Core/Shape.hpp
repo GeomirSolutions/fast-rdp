@@ -5,22 +5,23 @@
 /// License
 /// Copyright 2018-2022 David Pilger
 ///
-/// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-/// software and associated documentation files(the "Software"), to deal in the Software
-/// without restriction, including without limitation the rights to use, copy, modify,
-/// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-/// permit persons to whom the Software is furnished to do so, subject to the following
-/// conditions :
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files(the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions :
 ///
-/// The above copyright notice and this permission notice shall be included in all copies
-/// or substantial portions of the Software.
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
 ///
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-/// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-/// PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-/// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-/// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-/// DEALINGS IN THE SOFTWARE.
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+/// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+/// IN THE SOFTWARE.
 ///
 /// Description
 /// A Shape Class for NdArrays
@@ -35,129 +36,117 @@
 
 namespace nc
 {
-    //================================================================================
-    /// A Shape Class for NdArrays
-    class Shape
+//================================================================================
+/// A Shape Class for NdArrays
+class Shape
+{
+  public:
+    //====================================Attributes==============================
+    uint32 rows{0};
+    uint32 cols{0};
+
+    //============================================================================
+    /// Constructor
+    ///
+    constexpr Shape() = default;
+
+    //============================================================================
+    /// Constructor
+    ///
+    /// @param inSquareSize
+    ///
+    constexpr explicit Shape(uint32 inSquareSize) noexcept
+        : rows(inSquareSize), cols(inSquareSize)
     {
-    public:
-        //====================================Attributes==============================
-        uint32 rows{ 0 };
-        uint32 cols{ 0 };
+    }
 
-        //============================================================================
-        /// Constructor
-        ///
-        constexpr Shape() = default;
+    //============================================================================
+    /// Constructor
+    ///
+    /// @param inRows
+    /// @param inCols
+    ///
+    constexpr Shape(uint32 inRows, uint32 inCols) noexcept
+        : rows(inRows), cols(inCols)
+    {
+    }
 
-        //============================================================================
-        /// Constructor
-        ///
-        /// @param inSquareSize
-        ///
-        constexpr explicit Shape(uint32 inSquareSize) noexcept :
-            rows(inSquareSize),
-            cols(inSquareSize)
-        {
-        }
+    //============================================================================
+    /// Equality operator
+    ///
+    /// @param inOtherShape
+    ///
+    /// @return bool
+    ///
+    bool operator==(const Shape &inOtherShape) const noexcept
+    {
+        return rows == inOtherShape.rows && cols == inOtherShape.cols;
+    }
 
-        //============================================================================
-        /// Constructor
-        ///
-        /// @param inRows
-        /// @param inCols
-        ///
-        constexpr Shape(uint32 inRows, uint32 inCols) noexcept :
-            rows(inRows),
-            cols(inCols)
-        {
-        }
+    //============================================================================
+    /// Not equality operator
+    ///
+    /// @param inOtherShape
+    ///
+    /// @return bool
+    ///
+    bool operator!=(const Shape &inOtherShape) const noexcept
+    {
+        return !(*this == inOtherShape);
+    }
 
-        //============================================================================
-        /// Equality operator
-        ///
-        /// @param inOtherShape
-        ///
-        /// @return bool
-        ///
-        bool operator==(const Shape& inOtherShape) const noexcept
-        {
-            return rows == inOtherShape.rows && cols == inOtherShape.cols;
-        }
+    //============================================================================
+    /// Returns the size of the shape
+    ///
+    /// @return size
+    ///
+    uint32 size() const noexcept { return rows * cols; }
 
-        //============================================================================
-        /// Not equality operator
-        ///
-        /// @param inOtherShape
-        ///
-        /// @return bool
-        ///
-        bool operator!=(const Shape& inOtherShape) const noexcept
-        {
-            return !(*this == inOtherShape);
-        }
+    //============================================================================
+    /// Returns whether the shape is null (constructed with the
+    /// default constructor).
+    ///
+    /// @return bool
+    ///
+    bool isnull() const noexcept { return rows == 0 && cols == 0; }
 
-        //============================================================================
-        /// Returns the size of the shape
-        ///
-        /// @return size
-        ///
-        uint32 size() const noexcept
-        {
-            return rows * cols;
-        }
+    //============================================================================
+    /// Returns whether the shape is square or not.
+    ///
+    /// @return bool
+    ///
+    bool issquare() const noexcept { return rows == cols; }
 
-        //============================================================================
-        /// Returns whether the shape is null (constructed with the
-        /// default constructor).
-        ///
-        /// @return bool
-        ///
-        bool isnull() const noexcept
-        {
-            return rows == 0 && cols == 0;
-        }
+    //============================================================================
+    /// Returns the shape as a string representation
+    ///
+    /// @return std::string
+    ///
+    std::string str() const
+    {
+        std::string out =
+            "[" + utils::num2str(rows) + ", " + utils::num2str(cols) + "]\n";
+        return out;
+    }
 
-        //============================================================================
-        /// Returns whether the shape is square or not.
-        ///
-        /// @return bool
-        ///
-        bool issquare() const noexcept
-        {
-            return rows == cols;
-        }
+    //============================================================================
+    /// Prints the shape to the console
+    ///
+    void print() const { std::cout << *this; }
 
-        //============================================================================
-        /// Returns the shape as a string representation
-        ///
-        /// @return std::string
-        ///
-        std::string str() const
-        {
-            std::string out = "[" + utils::num2str(rows) + ", " + utils::num2str(cols) + "]\n";
-            return out;
-        }
-
-        //============================================================================
-        /// Prints the shape to the console
-        ///
-        void print() const
-        {
-            std::cout << *this;
-        }
-
-        //============================================================================
-        /// IO operator for the Shape class
-        ///
-        /// @param inOStream
-        /// @param inShape
-        ///
-        /// @return std::ostream
-        ///
-        friend std::ostream& operator<<(std::ostream& inOStream, const Shape& inShape)
-        {
-            inOStream << inShape.str();
-            return inOStream;
-        }
-    };
+    //============================================================================
+    /// IO operator for the Shape class
+    ///
+    /// @param inOStream
+    /// @param inShape
+    ///
+    /// @return std::ostream
+    ///
+    friend std::ostream &operator<<(std::ostream &inOStream,
+                                    const Shape &inShape)
+    {
+        inOStream << inShape.str();
+        return inOStream;
+    }
+};
 } // namespace nc

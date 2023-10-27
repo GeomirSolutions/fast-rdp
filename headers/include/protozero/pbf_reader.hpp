@@ -24,7 +24,7 @@ documentation.
 #include "varint.hpp"
 
 #if PROTOZERO_BYTE_ORDER != PROTOZERO_LITTLE_ENDIAN
-# include <protozero/byteswap.hpp>
+#include <protozero/byteswap.hpp>
 #endif
 
 #include <cstddef>
@@ -33,7 +33,8 @@ documentation.
 #include <string>
 #include <utility>
 
-namespace protozero {
+namespace protozero
+{
 
 /**
  * This class represents a protobuf message. Either a top-level message or
@@ -59,13 +60,14 @@ namespace protozero {
  * change the pbf_reader object they are called on. Use the get_view() method
  * instead of get_bytes() or get_string(), if you need this guarantee.
  */
-class pbf_reader {
+class pbf_reader
+{
 
     // A pointer to the next unread data.
-    const char* m_data = nullptr;
+    const char *m_data = nullptr;
 
     // A pointer to one past the end of data.
-    const char* m_end = nullptr;
+    const char *m_end = nullptr;
 
     // The wire type of the current field.
     pbf_wire_type m_wire_type = pbf_wire_type::unknown;
@@ -73,10 +75,10 @@ class pbf_reader {
     // The tag of the current field.
     pbf_tag_type m_tag = 0;
 
-    template <typename T>
-    T get_fixed() {
+    template <typename T> T get_fixed()
+    {
         T result;
-        const char* data = m_data;
+        const char *data = m_data;
         skip_bytes(sizeof(T));
         std::memcpy(&result, data, sizeof(T));
 #if PROTOZERO_BYTE_ORDER != PROTOZERO_LITTLE_ENDIAN
@@ -85,9 +87,10 @@ class pbf_reader {
         return result;
     }
 
-    template <typename T>
-    iterator_range<const_fixed_iterator<T>> packed_fixed() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
+    template <typename T> iterator_range<const_fixed_iterator<T>> packed_fixed()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
         const auto len = get_len_and_skip();
         if (len % sizeof(T) != 0) {
             throw invalid_length_exception{};
@@ -96,23 +99,24 @@ class pbf_reader {
                 const_fixed_iterator<T>(m_data)};
     }
 
-    template <typename T>
-    T get_varint() {
+    template <typename T> T get_varint()
+    {
         const auto val = static_cast<T>(decode_varint(&m_data, m_end));
         return val;
     }
 
-    template <typename T>
-    T get_svarint() {
-        protozero_assert((has_wire_type(pbf_wire_type::varint) || has_wire_type(pbf_wire_type::length_delimited)) && "not a varint");
+    template <typename T> T get_svarint()
+    {
+        protozero_assert((has_wire_type(pbf_wire_type::varint) ||
+                          has_wire_type(pbf_wire_type::length_delimited)) &&
+                         "not a varint");
         return static_cast<T>(decode_zigzag64(decode_varint(&m_data, m_end)));
     }
 
-    pbf_length_type get_length() {
-        return get_varint<pbf_length_type>();
-    }
+    pbf_length_type get_length() { return get_varint<pbf_length_type>(); }
 
-    void skip_bytes(pbf_length_type len) {
+    void skip_bytes(pbf_length_type len)
+    {
         if (m_end - m_data < static_cast<ptrdiff_t>(len)) {
             throw end_of_buffer_exception{};
         }
@@ -125,22 +129,22 @@ class pbf_reader {
 #endif
     }
 
-    pbf_length_type get_len_and_skip() {
+    pbf_length_type get_len_and_skip()
+    {
         const auto len = get_length();
         skip_bytes(len);
         return len;
     }
 
-    template <typename T>
-    iterator_range<T> get_packed() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
+    template <typename T> iterator_range<T> get_packed()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
         const auto len = get_len_and_skip();
-        return {T{m_data - len, m_data},
-                T{m_data, m_data}};
+        return {T{m_data - len, m_data}, T{m_data, m_data}};
     }
 
-public:
-
+  public:
     /**
      * Construct a pbf_reader message from a data_view. The pointer from the
      * data_view will be stored inside the pbf_reader object, no data is
@@ -151,9 +155,9 @@ public:
      *
      * @post There is no current field.
      */
-    explicit pbf_reader(const data_view& view) noexcept
-        : m_data{view.data()},
-          m_end{view.data() + view.size()} {
+    explicit pbf_reader(const data_view &view) noexcept
+        : m_data{view.data()}, m_end{view.data() + view.size()}
+    {
     }
 
     /**
@@ -166,9 +170,9 @@ public:
      *
      * @post There is no current field.
      */
-    pbf_reader(const char* data, std::size_t size) noexcept
-        : m_data{data},
-          m_end{data + size} {
+    pbf_reader(const char *data, std::size_t size) noexcept
+        : m_data{data}, m_end{data + size}
+    {
     }
 
 #ifndef PROTOZERO_STRICT_API
@@ -183,9 +187,10 @@ public:
      * @post There is no current field.
      * @deprecated Use one of the other constructors.
      */
-    explicit pbf_reader(const std::pair<const char*, std::size_t>& data) noexcept
-        : m_data{data.first},
-          m_end{data.first + data.second} {
+    explicit pbf_reader(
+        const std::pair<const char *, std::size_t> &data) noexcept
+        : m_data{data.first}, m_end{data.first + data.second}
+    {
     }
 #endif
 
@@ -199,9 +204,9 @@ public:
      *
      * @post There is no current field.
      */
-    explicit pbf_reader(const std::string& data) noexcept
-        : m_data{data.data()},
-          m_end{data.data() + data.size()} {
+    explicit pbf_reader(const std::string &data) noexcept
+        : m_data{data.data()}, m_end{data.data() + data.size()}
+    {
     }
 
     /**
@@ -211,16 +216,16 @@ public:
     pbf_reader() noexcept = default;
 
     /// pbf_reader messages can be copied trivially.
-    pbf_reader(const pbf_reader&) noexcept = default;
+    pbf_reader(const pbf_reader &) noexcept = default;
 
     /// pbf_reader messages can be moved trivially.
-    pbf_reader(pbf_reader&&) noexcept = default;
+    pbf_reader(pbf_reader &&) noexcept = default;
 
     /// pbf_reader messages can be copied trivially.
-    pbf_reader& operator=(const pbf_reader& other) noexcept = default;
+    pbf_reader &operator=(const pbf_reader &other) noexcept = default;
 
     /// pbf_reader messages can be moved trivially.
-    pbf_reader& operator=(pbf_reader&& other) noexcept = default;
+    pbf_reader &operator=(pbf_reader &&other) noexcept = default;
 
     ~pbf_reader() = default;
 
@@ -229,7 +234,8 @@ public:
      *
      * @param other Other object to swap data with.
      */
-    void swap(pbf_reader& other) noexcept {
+    void swap(pbf_reader &other) noexcept
+    {
         using std::swap;
         swap(m_data, other.m_data);
         swap(m_end, other.m_end);
@@ -242,14 +248,16 @@ public:
      * are still fields available and to `false` if the last field has been
      * read.
      */
-    operator bool() const noexcept { // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+    operator bool() const noexcept
+    { // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
         return m_data != m_end;
     }
 
     /**
      * Get a view of the not yet read data.
      */
-    data_view data() const noexcept {
+    data_view data() const noexcept
+    {
         return {m_data, static_cast<std::size_t>(m_end - m_data)};
     }
 
@@ -262,9 +270,7 @@ public:
      * buffer. Of course you have to know reasonably well what data to expect
      * and how it is encoded for this number to have any meaning.
      */
-    std::size_t length() const noexcept {
-        return std::size_t(m_end - m_data);
-    }
+    std::size_t length() const noexcept { return std::size_t(m_end - m_data); }
 
     /**
      * Set next field in the message as the current field. This is usually
@@ -281,7 +287,8 @@ public:
      * @pre There must be no current field.
      * @post If it returns `true` there is a current field now.
      */
-    bool next() {
+    bool next()
+    {
         if (m_data == m_end) {
             return false;
         }
@@ -297,13 +304,13 @@ public:
 
         m_wire_type = pbf_wire_type(value & 0x07U);
         switch (m_wire_type) {
-            case pbf_wire_type::varint:
-            case pbf_wire_type::fixed64:
-            case pbf_wire_type::length_delimited:
-            case pbf_wire_type::fixed32:
-                break;
-            default:
-                throw unknown_pbf_wire_type_exception{};
+        case pbf_wire_type::varint:
+        case pbf_wire_type::fixed64:
+        case pbf_wire_type::length_delimited:
+        case pbf_wire_type::fixed32:
+            break;
+        default:
+            throw unknown_pbf_wire_type_exception{};
         }
 
         return true;
@@ -335,9 +342,11 @@ public:
      *
      * @returns `true` if there is a next field with this tag.
      * @pre There must be no current field.
-     * @post If it returns `true` there is a current field now with the given tag.
+     * @post If it returns `true` there is a current field now with the given
+     * tag.
      */
-    bool next(pbf_tag_type next_tag) {
+    bool next(pbf_tag_type next_tag)
+    {
         while (next()) {
             if (m_tag == next_tag) {
                 return true;
@@ -373,9 +382,11 @@ public:
      *
      * @returns `true` if there is a next field with this tag.
      * @pre There must be no current field.
-     * @post If it returns `true` there is a current field now with the given tag.
+     * @post If it returns `true` there is a current field now with the given
+     * tag.
      */
-    bool next(pbf_tag_type next_tag, pbf_wire_type type) {
+    bool next(pbf_tag_type next_tag, pbf_wire_type type)
+    {
         while (next()) {
             if (m_tag == next_tag && m_wire_type == type) {
                 return true;
@@ -392,11 +403,10 @@ public:
      * Call next() before calling this function to set the current field.
      *
      * @returns tag of the current field.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      */
-    pbf_tag_type tag() const noexcept {
-        return m_tag;
-    }
+    pbf_tag_type tag() const noexcept { return m_tag; }
 
     /**
      * Get the wire type of the current field. The wire types are:
@@ -411,11 +421,10 @@ public:
      * Call next() before calling this function to set the current field.
      *
      * @returns wire type of the current field.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      */
-    pbf_wire_type wire_type() const noexcept {
-        return m_wire_type;
-    }
+    pbf_wire_type wire_type() const noexcept { return m_wire_type; }
 
     /**
      * Get the tag and wire type of the current field in one integer suitable
@@ -439,7 +448,8 @@ public:
      *    }
      * @endcode
      */
-    uint32_t tag_and_type() const noexcept {
+    uint32_t tag_and_type() const noexcept
+    {
         return protozero::tag_and_type(tag(), wire_type());
     }
 
@@ -447,35 +457,39 @@ public:
      * Check the wire type of the current field.
      *
      * @returns `true` if the current field has the given wire type.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      */
-    bool has_wire_type(pbf_wire_type type) const noexcept {
+    bool has_wire_type(pbf_wire_type type) const noexcept
+    {
         return wire_type() == type;
     }
 
     /**
      * Consume the current field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @post The current field was consumed and there is no current field now.
      */
-    void skip() {
+    void skip()
+    {
         protozero_assert(tag() != 0 && "call next() before calling skip()");
         switch (wire_type()) {
-            case pbf_wire_type::varint:
-                skip_varint(&m_data, m_end);
-                break;
-            case pbf_wire_type::fixed64:
-                skip_bytes(8);
-                break;
-            case pbf_wire_type::length_delimited:
-                skip_bytes(get_length());
-                break;
-            case pbf_wire_type::fixed32:
-                skip_bytes(4);
-                break;
-            default:
-                break;
+        case pbf_wire_type::varint:
+            skip_varint(&m_data, m_end);
+            break;
+        case pbf_wire_type::fixed64:
+            skip_bytes(8);
+            break;
+        case pbf_wire_type::length_delimited:
+            skip_bytes(get_length());
+            break;
+        case pbf_wire_type::fixed32:
+            skip_bytes(4);
+            break;
+        default:
+            break;
         }
     }
 
@@ -487,13 +501,17 @@ public:
     /**
      * Consume and return value of current "bool" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "bool".
      * @post The current field was consumed and there is no current field now.
      */
-    bool get_bool() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    bool get_bool()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         const bool result = m_data[0] != 0;
         skip_varint(&m_data, m_end);
         return result;
@@ -502,162 +520,207 @@ public:
     /**
      * Consume and return value of current "enum" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "enum".
      * @post The current field was consumed and there is no current field now.
      */
-    int32_t get_enum() {
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    int32_t get_enum()
+    {
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         return get_varint<int32_t>();
     }
 
     /**
      * Consume and return value of current "int32" varint field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "int32".
      * @post The current field was consumed and there is no current field now.
      */
-    int32_t get_int32() {
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    int32_t get_int32()
+    {
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         return get_varint<int32_t>();
     }
 
     /**
      * Consume and return value of current "sint32" varint field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "sint32".
      * @post The current field was consumed and there is no current field now.
      */
-    int32_t get_sint32() {
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    int32_t get_sint32()
+    {
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         return get_svarint<int32_t>();
     }
 
     /**
      * Consume and return value of current "uint32" varint field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "uint32".
      * @post The current field was consumed and there is no current field now.
      */
-    uint32_t get_uint32() {
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    uint32_t get_uint32()
+    {
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         return get_varint<uint32_t>();
     }
 
     /**
      * Consume and return value of current "int64" varint field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "int64".
      * @post The current field was consumed and there is no current field now.
      */
-    int64_t get_int64() {
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    int64_t get_int64()
+    {
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         return get_varint<int64_t>();
     }
 
     /**
      * Consume and return value of current "sint64" varint field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "sint64".
      * @post The current field was consumed and there is no current field now.
      */
-    int64_t get_sint64() {
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    int64_t get_sint64()
+    {
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         return get_svarint<int64_t>();
     }
 
     /**
      * Consume and return value of current "uint64" varint field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "uint64".
      * @post The current field was consumed and there is no current field now.
      */
-    uint64_t get_uint64() {
-        protozero_assert(has_wire_type(pbf_wire_type::varint) && "not a varint");
+    uint64_t get_uint64()
+    {
+        protozero_assert(has_wire_type(pbf_wire_type::varint) &&
+                         "not a varint");
         return get_varint<uint64_t>();
     }
 
     /**
      * Consume and return value of current "fixed32" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "fixed32".
      * @post The current field was consumed and there is no current field now.
      */
-    uint32_t get_fixed32() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::fixed32) && "not a 32-bit fixed");
+    uint32_t get_fixed32()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::fixed32) &&
+                         "not a 32-bit fixed");
         return get_fixed<uint32_t>();
     }
 
     /**
      * Consume and return value of current "sfixed32" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "sfixed32".
      * @post The current field was consumed and there is no current field now.
      */
-    int32_t get_sfixed32() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::fixed32) && "not a 32-bit fixed");
+    int32_t get_sfixed32()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::fixed32) &&
+                         "not a 32-bit fixed");
         return get_fixed<int32_t>();
     }
 
     /**
      * Consume and return value of current "fixed64" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "fixed64".
      * @post The current field was consumed and there is no current field now.
      */
-    uint64_t get_fixed64() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::fixed64) && "not a 64-bit fixed");
+    uint64_t get_fixed64()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::fixed64) &&
+                         "not a 64-bit fixed");
         return get_fixed<uint64_t>();
     }
 
     /**
      * Consume and return value of current "sfixed64" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "sfixed64".
      * @post The current field was consumed and there is no current field now.
      */
-    int64_t get_sfixed64() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::fixed64) && "not a 64-bit fixed");
+    int64_t get_sfixed64()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::fixed64) &&
+                         "not a 64-bit fixed");
         return get_fixed<int64_t>();
     }
 
     /**
      * Consume and return value of current "float" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "float".
      * @post The current field was consumed and there is no current field now.
      */
-    float get_float() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::fixed32) && "not a 32-bit fixed");
+    float get_float()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::fixed32) &&
+                         "not a 32-bit fixed");
         return get_fixed<float>();
     }
 
     /**
      * Consume and return value of current "double" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "double".
      * @post The current field was consumed and there is no current field now.
      */
-    double get_double() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::fixed64) && "not a 64-bit fixed");
+    double get_double()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::fixed64) &&
+                         "not a 64-bit fixed");
         return get_fixed<double>();
     }
 
@@ -666,13 +729,17 @@ public:
      * field.
      *
      * @returns A data_view object.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "bytes", "string", or "message".
      * @post The current field was consumed and there is no current field now.
      */
-    data_view get_view() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::length_delimited) && "not of type string, bytes or message");
+    data_view get_view()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::length_delimited) &&
+                         "not of type string, bytes or message");
         const auto len = get_len_and_skip();
         return {m_data - len, len};
     }
@@ -682,13 +749,17 @@ public:
      * Consume and return value of current "bytes" or "string" field.
      *
      * @returns A pair with a pointer to the data and the length of the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "bytes" or "string".
      * @post The current field was consumed and there is no current field now.
      */
-    std::pair<const char*, pbf_length_type> get_data() {
-        protozero_assert(tag() != 0 && "call next() before accessing field value");
-        protozero_assert(has_wire_type(pbf_wire_type::length_delimited) && "not of type string, bytes or message");
+    std::pair<const char *, pbf_length_type> get_data()
+    {
+        protozero_assert(tag() != 0 &&
+                         "call next() before accessing field value");
+        protozero_assert(has_wire_type(pbf_wire_type::length_delimited) &&
+                         "not of type string, bytes or message");
         const auto len = get_len_and_skip();
         return {m_data - len, len};
     }
@@ -697,46 +768,43 @@ public:
     /**
      * Consume and return value of current "bytes" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "bytes".
      * @post The current field was consumed and there is no current field now.
      */
-    std::string get_bytes() {
-        return std::string(get_view());
-    }
+    std::string get_bytes() { return std::string(get_view()); }
 
     /**
      * Consume and return value of current "string" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "string".
      * @post The current field was consumed and there is no current field now.
      */
-    std::string get_string() {
-        return std::string(get_view());
-    }
+    std::string get_string() { return std::string(get_view()); }
 
     /**
      * Consume and return value of current "message" field.
      *
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "message".
      * @post The current field was consumed and there is no current field now.
      */
-    pbf_reader get_message() {
-        return pbf_reader{get_view()};
-    }
+    pbf_reader get_message() { return pbf_reader{get_view()}; }
 
     ///@}
 
     /// Forward iterator for iterating over bool (int32 varint) values.
-    using const_bool_iterator   = const_varint_iterator< int32_t>;
+    using const_bool_iterator = const_varint_iterator<int32_t>;
 
     /// Forward iterator for iterating over enum (int32 varint) values.
-    using const_enum_iterator   = const_varint_iterator< int32_t>;
+    using const_enum_iterator = const_varint_iterator<int32_t>;
 
     /// Forward iterator for iterating over int32 (varint) values.
-    using const_int32_iterator  = const_varint_iterator< int32_t>;
+    using const_int32_iterator = const_varint_iterator<int32_t>;
 
     /// Forward iterator for iterating over sint32 (varint) values.
     using const_sint32_iterator = const_svarint_iterator<int32_t>;
@@ -745,7 +813,7 @@ public:
     using const_uint32_iterator = const_varint_iterator<uint32_t>;
 
     /// Forward iterator for iterating over int64 (varint) values.
-    using const_int64_iterator  = const_varint_iterator< int64_t>;
+    using const_int64_iterator = const_varint_iterator<int64_t>;
 
     /// Forward iterator for iterating over sint64 (varint) values.
     using const_sint64_iterator = const_svarint_iterator<int64_t>;
@@ -781,11 +849,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed bool".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_bool_iterator> get_packed_bool() {
+    iterator_range<pbf_reader::const_bool_iterator> get_packed_bool()
+    {
         return get_packed<pbf_reader::const_bool_iterator>();
     }
 
@@ -794,11 +864,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed enum".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_enum_iterator> get_packed_enum() {
+    iterator_range<pbf_reader::const_enum_iterator> get_packed_enum()
+    {
         return get_packed<pbf_reader::const_enum_iterator>();
     }
 
@@ -807,11 +879,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed int32".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_int32_iterator> get_packed_int32() {
+    iterator_range<pbf_reader::const_int32_iterator> get_packed_int32()
+    {
         return get_packed<pbf_reader::const_int32_iterator>();
     }
 
@@ -820,11 +894,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed sint32".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_sint32_iterator> get_packed_sint32() {
+    iterator_range<pbf_reader::const_sint32_iterator> get_packed_sint32()
+    {
         return get_packed<pbf_reader::const_sint32_iterator>();
     }
 
@@ -833,11 +909,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed uint32".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_uint32_iterator> get_packed_uint32() {
+    iterator_range<pbf_reader::const_uint32_iterator> get_packed_uint32()
+    {
         return get_packed<pbf_reader::const_uint32_iterator>();
     }
 
@@ -846,11 +924,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed int64".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_int64_iterator> get_packed_int64() {
+    iterator_range<pbf_reader::const_int64_iterator> get_packed_int64()
+    {
         return get_packed<pbf_reader::const_int64_iterator>();
     }
 
@@ -859,11 +939,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed sint64".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_sint64_iterator> get_packed_sint64() {
+    iterator_range<pbf_reader::const_sint64_iterator> get_packed_sint64()
+    {
         return get_packed<pbf_reader::const_sint64_iterator>();
     }
 
@@ -872,11 +954,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed uint64".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_uint64_iterator> get_packed_uint64() {
+    iterator_range<pbf_reader::const_uint64_iterator> get_packed_uint64()
+    {
         return get_packed<pbf_reader::const_uint64_iterator>();
     }
 
@@ -885,11 +969,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed fixed32".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_fixed32_iterator> get_packed_fixed32() {
+    iterator_range<pbf_reader::const_fixed32_iterator> get_packed_fixed32()
+    {
         return packed_fixed<uint32_t>();
     }
 
@@ -898,11 +984,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed sfixed32".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_sfixed32_iterator> get_packed_sfixed32() {
+    iterator_range<pbf_reader::const_sfixed32_iterator> get_packed_sfixed32()
+    {
         return packed_fixed<int32_t>();
     }
 
@@ -911,11 +999,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed fixed64".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_fixed64_iterator> get_packed_fixed64() {
+    iterator_range<pbf_reader::const_fixed64_iterator> get_packed_fixed64()
+    {
         return packed_fixed<uint64_t>();
     }
 
@@ -924,11 +1014,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed sfixed64".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_sfixed64_iterator> get_packed_sfixed64() {
+    iterator_range<pbf_reader::const_sfixed64_iterator> get_packed_sfixed64()
+    {
         return packed_fixed<int64_t>();
     }
 
@@ -937,11 +1029,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed float".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_float_iterator> get_packed_float() {
+    iterator_range<pbf_reader::const_float_iterator> get_packed_float()
+    {
         return packed_fixed<float>();
     }
 
@@ -950,11 +1044,13 @@ public:
      *
      * @returns a pair of iterators to the beginning and one past the end of
      *          the data.
-     * @pre There must be a current field (ie. next() must have returned `true`).
+     * @pre There must be a current field (ie. next() must have returned
+     * `true`).
      * @pre The current field must be of type "repeated packed double".
      * @post The current field was consumed and there is no current field now.
      */
-    iterator_range<pbf_reader::const_double_iterator> get_packed_double() {
+    iterator_range<pbf_reader::const_double_iterator> get_packed_double()
+    {
         return packed_fixed<double>();
     }
 
@@ -968,9 +1064,7 @@ public:
  * @param lhs First object.
  * @param rhs Second object.
  */
-inline void swap(pbf_reader& lhs, pbf_reader& rhs) noexcept {
-    lhs.swap(rhs);
-}
+inline void swap(pbf_reader &lhs, pbf_reader &rhs) noexcept { lhs.swap(rhs); }
 
 } // end namespace protozero
 

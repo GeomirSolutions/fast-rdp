@@ -7,7 +7,8 @@
 @brief critical include file
 */
 
-namespace tf {
+namespace tf
+{
 
 // ----------------------------------------------------------------------------
 // CriticalSection
@@ -46,10 +47,10 @@ executor.run(taskflow).wait();
 @endcode
 
 */
-class CriticalSection : public Semaphore {
+class CriticalSection : public Semaphore
+{
 
   public:
-
     /**
     @brief constructs a critical region of a limited number of workers
     */
@@ -58,21 +59,18 @@ class CriticalSection : public Semaphore {
     /**
     @brief adds a task into the critical region
     */
-    template <typename... Tasks>
-    void add(Tasks...tasks);
+    template <typename... Tasks> void add(Tasks... tasks);
 };
 
-inline CriticalSection::CriticalSection(size_t max_workers) :
-  Semaphore {max_workers} {
+inline CriticalSection::CriticalSection(size_t max_workers)
+    : Semaphore{max_workers}
+{
 }
 
-template <typename... Tasks>
-void CriticalSection::add(Tasks... tasks) {
-  (tasks.acquire(*this), ...);
-  (tasks.release(*this), ...);
+template <typename... Tasks> void CriticalSection::add(Tasks... tasks)
+{
+    (tasks.acquire(*this), ...);
+    (tasks.release(*this), ...);
 }
 
-
-}  // end of namespace tf. ---------------------------------------------------
-
-
+} // namespace tf

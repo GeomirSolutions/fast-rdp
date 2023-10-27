@@ -14,40 +14,52 @@
 #include <vector>
 #include <unordered_map>
 
-namespace mapbox {
+namespace mapbox
+{
 
-namespace feature {
+namespace feature
+{
 struct value;
 
 struct null_value_t
 {
 };
 
-constexpr bool operator==(const null_value_t&, const null_value_t&) { return true; }
-constexpr bool operator!=(const null_value_t&, const null_value_t&) { return false; }
-constexpr bool operator<(const null_value_t&, const null_value_t&) { return false; }
+constexpr bool operator==(const null_value_t &, const null_value_t &)
+{
+    return true;
+}
+constexpr bool operator!=(const null_value_t &, const null_value_t &)
+{
+    return false;
+}
+constexpr bool operator<(const null_value_t &, const null_value_t &)
+{
+    return false;
+}
 
 constexpr null_value_t null_value = null_value_t();
 
-#define DECLARE_VALUE_TYPE_ACCESOR(NAME, TYPE)        \
-    TYPE* get##NAME() noexcept                        \
-    {                                                 \
-        return match(                                 \
-            [](TYPE& val) -> TYPE* { return &val; },  \
-            [](auto&) -> TYPE* { return nullptr; });  \
-    }                                                 \
-    const TYPE* get##NAME() const noexcept            \
-    {                                                 \
-        return const_cast<value*>(this)->get##NAME(); \
+#define DECLARE_VALUE_TYPE_ACCESOR(NAME, TYPE)                                 \
+    TYPE *get##NAME() noexcept                                                 \
+    {                                                                          \
+        return match([](TYPE &val) -> TYPE * { return &val; },                 \
+                     [](auto &) -> TYPE * { return nullptr; });                \
+    }                                                                          \
+    const TYPE *get##NAME() const noexcept                                     \
+    {                                                                          \
+        return const_cast<value *>(this)->get##NAME();                         \
     }
-// Multiple numeric types (uint64_t, int64_t, double) are present in order to support
-// the widest possible range of JSON numbers, which do not have a maximum range.
-// Implementations that produce `value`s should use that order for type preference,
-// using uint64_t for positive integers, int64_t for negative integers, and double
-// for non-integers and integers outside the range of 64 bits.
-using value_base = mapbox::util::variant<null_value_t, bool, uint64_t, int64_t, double, std::string,
-                                         mapbox::util::recursive_wrapper<std::vector<value>>,
-                                         mapbox::util::recursive_wrapper<std::unordered_map<std::string, value>>>;
+// Multiple numeric types (uint64_t, int64_t, double) are present in order to
+// support the widest possible range of JSON numbers, which do not have a
+// maximum range. Implementations that produce `value`s should use that order
+// for type preference, using uint64_t for positive integers, int64_t for
+// negative integers, and double for non-integers and integers outside the range
+// of 64 bits.
+using value_base = mapbox::util::variant<
+    null_value_t, bool, uint64_t, int64_t, double, std::string,
+    mapbox::util::recursive_wrapper<std::vector<value>>,
+    mapbox::util::recursive_wrapper<std::unordered_map<std::string, value>>>;
 
 struct value : public value_base
 {
@@ -57,22 +69,25 @@ struct value : public value_base
     value() : value_base(null_value) {}
     value(null_value_t) : value_base(null_value) {}
     value(bool v) : value_base(v) {}
-    value(const char* c) : value_base(std::string(c)) {}
+    value(const char *c) : value_base(std::string(c)) {}
     value(std::string str) : value_base(std::move(str)) {}
 
-    template <typename T, typename std::enable_if_t<std::is_integral<T>::value, int> = 0,
+    template <typename T,
+              typename std::enable_if_t<std::is_integral<T>::value, int> = 0,
               typename std::enable_if_t<std::is_signed<T>::value, int> = 0>
     value(T t) : value_base(int64_t(t))
     {
     }
 
-    template <typename T, typename std::enable_if_t<std::is_integral<T>::value, int> = 0,
+    template <typename T,
+              typename std::enable_if_t<std::is_integral<T>::value, int> = 0,
               typename std::enable_if_t<!std::is_signed<T>::value, int> = 0>
     value(T t) : value_base(uint64_t(t))
     {
     }
 
-    template <typename T, typename std::enable_if_t<std::is_floating_point<T>::value, int> = 0>
+    template <typename T, typename std::enable_if_t<
+                              std::is_floating_point<T>::value, int> = 0>
     value(T t) : value_base(double(t))
     {
     }
@@ -94,11 +109,14 @@ struct value : public value_base
 
 using property_map = value::object_type;
 
-// The same considerations and requirement for numeric types apply as for `value_base`.
-using identifier = mapbox::util::variant<null_value_t, uint64_t, int64_t, double, std::string>;
-}
+// The same considerations and requirement for numeric types apply as for
+// `value_base`.
+using identifier =
+    mapbox::util::variant<null_value_t, uint64_t, int64_t, double, std::string>;
+} // namespace feature
 
-namespace geometry {
+namespace geometry
+{
 using value = mapbox::feature::value;
 using null_value_t = mapbox::feature::null_value_t;
 using property_map = mapbox::feature::property_map;
@@ -108,14 +126,11 @@ template <typename T, template <typename...> class Cont = std::vector>
 struct geometry_collection;
 
 template <typename T, template <typename...> class Cont = std::vector>
-using geometry_base = mapbox::util::variant<empty,
-                                            point<T>,
-                                            line_string<T, Cont>,
-                                            polygon<T, Cont>,
-                                            multi_point<T, Cont>,
-                                            multi_line_string<T, Cont>,
-                                            multi_polygon<T, Cont>,
-                                            geometry_collection<T, Cont>>;
+using geometry_base =
+    mapbox::util::variant<empty, point<T>, line_string<T, Cont>,
+                          polygon<T, Cont>, multi_point<T, Cont>,
+                          multi_line_string<T, Cont>, multi_polygon<T, Cont>,
+                          geometry_collection<T, Cont>>;
 
 template <typename T, template <typename...> class Cont = std::vector>
 struct geometry : geometry_base<T, Cont>
@@ -134,11 +149,14 @@ struct geometry_collection : Cont<geometry<T>>
     using size_type = typename container_type::size_type;
 
     template <class... Args>
-    geometry_collection(Args&&... args) : container_type(std::forward<Args>(args)...)
+    geometry_collection(Args &&...args)
+        : container_type(std::forward<Args>(args)...)
     {
     }
     geometry_collection(std::initializer_list<geometry_type> args)
-        : container_type(std::move(args)) {}
+        : container_type(std::move(args))
+    {
+    }
 };
 
 } // namespace geometry

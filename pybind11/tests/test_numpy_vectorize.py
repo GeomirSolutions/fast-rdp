@@ -1,5 +1,4 @@
 import pytest
-
 from pybind11_tests import numpy_vectorize as m
 
 np = pytest.importorskip("numpy")

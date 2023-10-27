@@ -11,32 +11,28 @@
 #include <Eigen/Core>
 namespace igl
 {
-  /// Construct a ray (source point + direction vector) given a screen space
-  /// positions (e.g. mouse) and a model-view projection constellation.
-  ///
-  /// @param[in] pos  2d screen-space position (x,y) 
-  /// @param[in] model  4x4 model-view matrix
-  /// @param[in] proj  4x4 projection matrix
-  /// @param[in] viewport  4-long viewport vector
-  /// @param[out] s  source of ray (pos unprojected with z=0)
-  /// @param[out] dir  direction of ray (d - s) where d is pos unprojected with z=1
-  /// 
-  template <
-    typename Derivedpos,
-    typename Derivedmodel,
-    typename Derivedproj,
-    typename Derivedviewport,
-    typename Deriveds,
-    typename Deriveddir>
-  IGL_INLINE void unproject_ray(
-    const Eigen::MatrixBase<Derivedpos> & pos,
-    const Eigen::MatrixBase<Derivedmodel> & model,
-    const Eigen::MatrixBase<Derivedproj> & proj,
-    const Eigen::MatrixBase<Derivedviewport> & viewport,
-    Eigen::PlainObjectBase<Deriveds> & s,
-    Eigen::PlainObjectBase<Deriveddir> & dir);
-}
+/// Construct a ray (source point + direction vector) given a screen space
+/// positions (e.g. mouse) and a model-view projection constellation.
+///
+/// @param[in] pos  2d screen-space position (x,y)
+/// @param[in] model  4x4 model-view matrix
+/// @param[in] proj  4x4 projection matrix
+/// @param[in] viewport  4-long viewport vector
+/// @param[out] s  source of ray (pos unprojected with z=0)
+/// @param[out] dir  direction of ray (d - s) where d is pos unprojected with
+/// z=1
+///
+template <typename Derivedpos, typename Derivedmodel, typename Derivedproj,
+          typename Derivedviewport, typename Deriveds, typename Deriveddir>
+IGL_INLINE void
+unproject_ray(const Eigen::MatrixBase<Derivedpos> &pos,
+              const Eigen::MatrixBase<Derivedmodel> &model,
+              const Eigen::MatrixBase<Derivedproj> &proj,
+              const Eigen::MatrixBase<Derivedviewport> &viewport,
+              Eigen::PlainObjectBase<Deriveds> &s,
+              Eigen::PlainObjectBase<Deriveddir> &dir);
+} // namespace igl
 #ifndef IGL_STATIC_LIBRARY
-#  include "unproject_ray.cpp"
+#include "unproject_ray.cpp"
 #endif
 #endif
