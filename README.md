@@ -40,14 +40,14 @@ pip install git+https://github.com/GeomirSolutions/fast-rdp.git
 from fast_rdp import rdp
 
 rdp([[1, 1], [2, 2], [3, 3], [4, 4]])
-[[1, 1], [4, 4]]
+>> [[1, 1], [4, 4]]
 ```
 
 Для epsilon=0.5:
 
 ```python
 rdp([[1, 1], [1, 1.1], [2, 2]], epsilon=0.5)
-[[1.0, 1.0], [2.0, 2.0]]
+>> [[1.0, 1.0], [2.0, 2.0]]
 ```
 
 Пример Numpy:
